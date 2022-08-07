@@ -24,3 +24,21 @@ class TMP2(Base):
             for c in obj['content']
             if c['text'].get('main')
         }
+
+    @encode_mapping(PATH_QUESTION, PATH_ENCODED_QUESTION)
+    def encode_question(self, obj: dict):
+        assert len({c['id'] for c in obj['content']}) == len(obj['content'])
+        result = {}
+        for c in obj['content']:
+            assert c['id'] not in result
+            assert c['text'] is not None
+            assert len(c['choices']) == 4
+            corrects = [i['correct'] for i in c['choices']]
+            assert corrects.count(True) == 1
+            answer = corrects.index(True) + 1
+            result[c['id']] = '{}\n{}\n{}'.format(
+                c['text'],
+                '\n'.join([i['text'] for i in c['choices']]),
+                answer
+            )
+        return result
