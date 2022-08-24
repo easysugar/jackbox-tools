@@ -1,4 +1,4 @@
-# original
+# encoded
 PATH = r'C:\Program Files (x86)\Steam\steamapps\common\Quiplash 2 InterLASHional'
 PATH_QUESTIONS = PATH + r'\content\QuiplashQuestion'
 PATH_QUESTIONS_JSON = PATH + r'\content\QuiplashQuestion.jet'
