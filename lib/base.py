@@ -31,13 +31,13 @@ class Base:
         media = self._read(path_original)
         expanded = self._read_json(path_expanded)
         translated = self._read_json(path_translated)
-        text_map = {translated[v['id']]: v['text'] for c in expanded for v in c['versions']
+        text_map = {v['text']: translated[v['id']] for c in expanded for v in c['versions']
                     if v['id'] in translated}
-        for new, old in text_map.items():
+        for old, new in text_map.items():
             old = self._encode_for_swf(old)
             new = self._encode_for_swf(new)
             assert media.count(old) == 1, f'Count of `{old}` should be equal to 1, not {media.count(old)}'
-            media.replace(old, new)
+            media = media.replace(old, new)
         self._write(dst, media)
 
 

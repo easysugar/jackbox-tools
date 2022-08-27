@@ -47,6 +47,11 @@ class TeeKO(Base):
             c['suggestion'] = translations[c['id']]
         return obj
 
-    @encode_mapping('data/teeko/encoded/AwShirt_StarterPack_GameMain_Expanded.json', 'data/teeko/encoded/audio_subtitles.json')
+    @encode_mapping('data/teeko/encoded/expanded.json', 'data/teeko/encoded/audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
         return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and v['locale'] == 'en'}
+
+    @encode_mapping('data/teeko/encoded/expanded.json', 'data/teeko/encoded/text_subtitles.json')
+    def encode_text_subtitles(self, obj: dict):
+        return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'
+                and v['locale'] == 'en' and not v['text'].startswith('SFX/')}
