@@ -1,15 +1,14 @@
-import os
-import json
-import shutil
-
-from lib.base import Base, encode_mapping, decode_mappings
+from lib.base import Base, encode_mapping
 from settings.drawful2 import *
 
 
 class Drawful2(Base):
     @encode_mapping('data/drawful2/encoded/expanded.json', 'data/drawful2/encoded/audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
-        return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and v['locale'] == 'en'}
+        return {
+            v['id']: v['text'].replace('[category=host]', '').strip() for c in obj for v in c['versions']
+            if c['type'] == 'A' and v['tags'] == 'en' and not v['text'].endswith('[Unsubtitled]')
+        }
 
     @encode_mapping('data/drawful2/encoded/expanded.json', 'data/drawful2/encoded/text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
