@@ -15,8 +15,8 @@ class Base:
 
     @staticmethod
     def _read_json(src: str):
-        with open(src, 'r', encoding='utf8') as f:
-            return json.load(f)
+        with open(src, 'rb') as f:
+            return json.loads(f.read().decode('utf-8-sig'))
 
     @staticmethod
     def _write_json(dst: str, obj):
