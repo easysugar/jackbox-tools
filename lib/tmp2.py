@@ -1,9 +1,11 @@
 import os
-import json
-import shutil
+import re
+from collections import defaultdict
 
 from lib.base import Base, encode_mapping
 from settings.tmp2 import *
+
+subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
 
 
 class TMP2(Base):
@@ -86,3 +88,50 @@ class TMP2(Base):
         for folder in dirs:
             if folder.isdigit():
                 self._rewrite_question(translations, int(folder), os.path.join(PATH_QUESTION_DIR, folder, 'data.jet'))
+
+    @encode_mapping('data/tmp2/encoded/expanded.json', 'data/tmp2/encoded/text_subtitles.json')
+    def encode_text_subtitles(self, obj: dict):
+        result = defaultdict(dict)
+        for c in obj:
+            # use only text subtitles
+            if c['type'] != 'T':
+                continue
+            # get fr text for comparing
+            fr_versions = defaultdict(set)
+            for v in c['versions']:
+                if v['locale'] == 'fr':
+                    fr_versions[v['tags']].add(v['text'])
+
+            for v in c['versions']:
+                if v['locale'] == 'en':
+                    if v['tags'] not in fr_versions:
+                        # print('[NOT FOUND]', v['tags'], ':', v['text'])
+                        assert re.fullmatch(subtitles_technical_regex, v['text'].strip())  # technical text
+                    elif v['text'] not in fr_versions[v['tags']]:
+                        assert v['id'] not in result[v['tags']]
+                        result[v['tags']][v['id']] = v['text']
+                    else:
+                        # print('[DUPLICATED]', v['tags'], ':', v['text'])
+                        assert re.fullmatch(subtitles_technical_regex, v['text'].strip())  # technical text
+        return result
+
+    @encode_mapping(PATH_FINAL_ROUND, 'data/tmp2/encoded/final_questions.json')
+    def encode_final_round(self, obj: dict):
+        res = {}
+        for q in obj['content']:
+            assert set(q) == {'choices', 'id', 'isValid', 'text', 'us', 'x'}
+            assert q['isValid'] == ''
+            text = q['text']
+            corrects = defaultdict(set)
+            for c in q['choices']:
+                assert set(c) == {'correct', 'difficulty', 'text'}
+                assert c['correct'] in (True, False)
+                assert c['difficulty'] in (-1, 0, 1)
+                assert c['text'].strip()
+                t = c['text'].strip()
+                # assert t not in (corrects[True] | corrects[False]), f'answer {t} duplicated in {q["id"]}'
+                corrects[c['correct']].add(t)
+            for c, answers in corrects.items():
+                text += '\n' + '-+'[c] + '\n' + '\n'.join(answers)
+            res[q['id']] = text
+        return res
