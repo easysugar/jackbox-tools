@@ -1,0 +1,2 @@
+TOKEN = "changeme"
+PROJECT_LIST = [528690, 528716]
