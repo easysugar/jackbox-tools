@@ -4,6 +4,7 @@ PATH_QUIPLASH = PATH + r'\content\en\QuiplashContent.jet'
 PATH_DICTATION = PATH + r'\content\en\TDDictation.jet'
 PATH_SEQUEL = PATH + r'\content\en\TDSequel.jet'
 PATH_QUESTION = PATH + r'\content\en\TDQuestion.jet'
+PATH_FINAL_ROUND = PATH + r'\content\en\TDFinalRound.jet'
 PATH_QUESTION_DIR = PATH + r'\content\en\TDQuestion'
 
 # encoded

@@ -1,5 +1,6 @@
 import functools
 import json
+import os
 
 
 class Base:
@@ -10,6 +11,7 @@ class Base:
 
     @staticmethod
     def _write(dst: str, text: str):
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
         with open(dst, 'w', encoding='utf8') as f:
             return f.write(text)
 
@@ -20,6 +22,7 @@ class Base:
 
     @staticmethod
     def _write_json(dst: str, obj):
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
         with open(dst, 'w', encoding='utf8') as f:
             return json.dump(obj, f, indent=2, ensure_ascii=False)
 
@@ -49,6 +52,7 @@ def encode_mapping(src: str, dst: str):
         def wrapped(self, *args, **kwargs):
             obj = self._read_json(src)
             obj = func(self, obj, *args, **kwargs)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
             self._write_json(dst, obj)
 
         return wrapped
@@ -65,6 +69,7 @@ def decode_mappings(original: str, translated: str, dst: str):
             or_obj = self._read_json(original)
             tr_obj = self._read_json(translated)
             obj = func(self, or_obj, tr_obj, *args, **kwargs)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
             self._write_json(dst, obj)
 
         return wrapped
