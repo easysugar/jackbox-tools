@@ -61,6 +61,6 @@ class Quiplash(Base):
     def encode_quiplash_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
 
-    @encode_mapping(PATH_AUDIENCE_JSON, 'data/quiplash2/TranslatedAudienceQuestions.json')
+    @encode_mapping(PATH_AUDIENCE_JSON, 'data/quiplash2/translated/TranslatedAudienceQuestions.json')
     def encode_audience_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
