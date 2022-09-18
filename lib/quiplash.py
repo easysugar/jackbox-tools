@@ -1,9 +1,8 @@
 import os
 import shutil
 
-from settings.quiplash import *
-
 from lib.base import Base, encode_mapping
+from settings.quiplash import *
 
 
 class NotFoundPromptTextException(Exception):
@@ -58,6 +57,10 @@ class Quiplash(Base):
                 os.mkdir(dst_folder)
             shutil.copyfile(os.path.join(PATH_QUESTIONS, folder, 'data.jet'), os.path.join(dst_folder, 'data.jet'))
 
-    @encode_mapping(PATH_QUESTIONS_JSON, PATH_ENCODED_QUESTIONS)
+    @encode_mapping(PATH_QUESTIONS_JSON, 'data/quiplash2/EncodedOriginalQuiplashQuestions.json')
     def encode_quiplash_questions(self, obj: dict) -> dict:
+        return {c.pop('id'): c['prompt'] for c in obj['content']}
+
+    @encode_mapping(PATH_AUDIENCE_JSON, 'data/quiplash2/TranslatedAudienceQuestions.json')
+    def encode_audience_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
