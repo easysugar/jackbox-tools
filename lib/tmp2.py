@@ -135,3 +135,70 @@ class TMP2(Base):
                 text += '\n' + '-+'[c] + '\n' + '\n'.join(answers)
             res[q['id']] = text
         return res
+
+    def encode_question_template(self, obj: dict, host=False):
+        assert len({c['id'] for c in obj['content']}) == len(obj['content'])
+        result = {}
+        for c in obj['content']:
+            assert c['id'] not in result
+            assert c['text'] is not None
+            assert len(c['choices']) == 4
+            assert not c['pic']
+            corrects = [i['correct'] for i in c['choices']]
+            assert corrects.count(True) == 1
+            answer = corrects.index(True) + 1
+            result[c['id']] = '{}\n{}\n{}'.format(
+                c['text'].replace('[EventName=HOST/AltHost]', '') if host else c['text'],
+                '\n'.join([i['text'] for i in c['choices']]),
+                answer
+            )
+        return result
+
+    @encode_mapping(PATH_QUESTION_HAT, 'data/tmp2/EncodedQuestionHat.json')
+    def encode_question_hat(self, obj):
+        return self.encode_question_template(obj)
+
+    @encode_mapping(PATH_QUESTION_WIG, 'data/tmp2/EncodedQuestionWig.json')
+    def encode_question_wig(self, obj):
+        return self.encode_question_template(obj)
+
+    @encode_mapping(PATH_QUESTION_GHOST, 'data/tmp2/encoded/question_ghost.json')
+    def encode_question_ghost(self, obj):
+        return self.encode_question_template(obj, True)
+
+    @encode_mapping(PATH_QUESTION_BOMB, 'data/tmp2/encoded/question_bomb.json')
+    def encode_question_bomb(self, obj):
+        return self.encode_question_template(obj, True)
+
+    @encode_mapping(PATH_QUESTION_KNIFE, 'data/tmp2/encoded/question_knife.json')
+    def encode_question_knife(self, obj):
+        return self.encode_question_template(obj, True)
+
+    @encode_mapping(PATH_QUESTION_MADNESS, 'data/tmp2/encoded/question_madness.json')
+    def encode_question_madness(self, obj):
+        return self.encode_question_template(obj, True)
+
+    @encode_mapping(PATH_MIRROR_TUTORIAL, 'data/tmp2/encoded/mirror_tutorial.json')
+    def encode_mirror_tutorial(self, obj):
+        return {c['id']: c['password'] for c in obj['content']}
+
+    @encode_mapping(PATH_MIRROR, 'data/tmp2/encoded/mirror.json')
+    def encode_mirror(self, obj):
+        return {c['id']: c['password'] for c in obj['content']}
+
+    @encode_mapping(PATH_MIND_MELD, 'data/tmp2/encoded/mind_meld.json')
+    def encode_mind_meld(self, obj):
+        separator = ', '
+        result = {}
+        for c in obj['content']:
+            answers = []
+            for a in c['answers']:
+                assert a['answer'] not in a['alt']
+                alts = []
+                for ans in [a['answer']] + a['alt']:
+                    if ans != '':
+                        assert separator.strip() not in ans
+                        alts.append(ans)
+                answers.append(separator.join(alts))
+            result[c['id']] = c['text'] + '\n' + '\n'.join(answers)
+        return result
