@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from lib.base import Base, encode_mapping
+from lib.game import Game, encode_mapping
 from settings.quiplash import *
 
 
@@ -13,7 +13,7 @@ class NotFoundPromptAudioException(Exception):
     pass
 
 
-class Quiplash(Base):
+class Quiplash(Game):
     def __init__(self):
         self.translations = {}
         self._read_questions_json()

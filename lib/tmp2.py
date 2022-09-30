@@ -2,13 +2,13 @@ import os
 import re
 from collections import defaultdict
 
-from lib.base import Base, encode_mapping
+from lib.game import Game, encode_mapping
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
 
 
-class TMP2(Base):
+class TMP2(Game):
     @encode_mapping(PATH_QUIPLASH, PATH_ENCODED_QUIPLASH)
     def encode_quiplash(self, obj: dict):
         return {c['id']: c['prompt'].replace('[EventName=HOST/AltHost]', '') for c in obj['content']}

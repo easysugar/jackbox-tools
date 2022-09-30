@@ -1,12 +1,8 @@
-import os
-import json
-import shutil
-
-from lib.base import Base, encode_mapping, decode_mappings
+from lib.game import Game, encode_mapping, decode_mappings
 from settings.teeko import *
 
 
-class TeeKO(Base):
+class TeeKO(Game):
     @encode_mapping(PATH_SLOGANS, 'data/teeko/encoded/slogans.json')
     def encode_slogans(self, obj: dict):
         return {c['id']: c['suggestion'].strip() for c in obj['content']}

@@ -1,8 +1,8 @@
-from lib.base import Base, encode_mapping
+from lib.game import Game, encode_mapping
 from settings.drawful2 import *
 
 
-class Drawful2(Base):
+class Drawful2(Game):
     @encode_mapping('data/drawful2/encoded/expanded.json', 'data/drawful2/encoded/audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
         return {
