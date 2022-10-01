@@ -130,3 +130,5 @@ dmypy.json
 
 # own folders
 data/
+main.py
+settings/crowdin.py
