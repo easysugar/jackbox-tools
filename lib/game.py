@@ -50,7 +50,7 @@ class Game:
 
     def decode_all(self):
         for f in dir(self):
-            if f.__name__.startswith('decode_') and f.__name__ != 'decode_all' and callable(getattr(self, f)):
+            if f.startswith('decode_') and f != 'decode_all' and callable(getattr(self, f)):
                 getattr(self, f)()
 
 
@@ -70,15 +70,15 @@ def encode_mapping(src: str, dst: str):
     return decorator
 
 
-def decode_mappings(original: str, translated: str, dst: str):
-    """Read encoded file, translated mappings and write result into a new file"""
+def decode_mapping(*files):
+    """Read several JSON files and write result into a new file"""
 
     def decorator(func):
         @functools.wraps(func)
         def wrapped(self, *args, **kwargs):
-            or_obj = self._read_json(original)
-            tr_obj = self._read_json(translated)
-            obj = func(self, or_obj, tr_obj, *args, **kwargs)
+            dst = files[-1]
+            objs = [self._read_json(f) for f in files[:-1]]
+            obj = func(self, *objs, *args, **kwargs)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             self._write_json(dst, obj)
 
