@@ -53,6 +53,11 @@ class Game:
             if f.startswith('decode_') and f != 'decode_all' and callable(getattr(self, f)):
                 getattr(self, f)()
 
+    def unpack_all(self):
+        for f in dir(self):
+            if f.startswith('unpack_') and f != 'unpack_all' and callable(getattr(self, f)):
+                getattr(self, f)()
+
 
 def encode_mapping(src: str, dst: str):
     """Read JSON file from `src` and write function's result into `dst` file"""

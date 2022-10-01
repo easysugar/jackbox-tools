@@ -1,4 +1,5 @@
 import os
+import random
 import re
 from collections import defaultdict
 
@@ -6,6 +7,7 @@ from lib.game import Game, encode_mapping, decode_mapping
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
+random.seed(34)
 
 
 class TMP2(Game):
@@ -13,7 +15,7 @@ class TMP2(Game):
     def encode_quiplash(self, obj: dict):
         return {c['id']: c['prompt'].replace('[EventName=HOST/AltHost]', '') for c in obj['content']}
 
-    @decode_mapping(PATH_QUIPLASH, PATH_BUILD_QUIPLASH, 'data/tmp2/decoded/quiplash.json')
+    @decode_mapping(PATH_QUIPLASH, PATH_BUILD_QUIPLASH, PATH_QUIPLASH)
     def decode_quiplash(self, obj, translations):
         for c in obj['content']:
             c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']]
@@ -23,7 +25,7 @@ class TMP2(Game):
     def encode_dictation(self, obj: dict):
         return {c['id']: '\n'.join(c['text']) for c in obj['content']}
 
-    @decode_mapping(PATH_DICTATION, PATH_BUILD_DICTATION, 'data/tmp2/decoded/dictation.json')
+    @decode_mapping(PATH_DICTATION, PATH_BUILD_DICTATION, PATH_DICTATION)
     def decode_dictation(self, obj, translations):
         for c in obj['content']:
             c['text'] = translations[c['id']].strip().split('\n')
@@ -39,7 +41,7 @@ class TMP2(Game):
             if c['text'].get('main')
         }
 
-    @decode_mapping(PATH_SEQUEL, PATH_BUILD_SEQUEL, 'data/tmp2/decoded/sequel.json')
+    @decode_mapping(PATH_SEQUEL, PATH_BUILD_SEQUEL, PATH_SEQUEL)
     def decode_sequel(self, obj, translations):
         for c in obj['content']:
             if c['text'].get('main'):
@@ -67,6 +69,10 @@ class TMP2(Game):
             )
         return result
 
+    @decode_mapping(PATH_QUESTION, PATH_BUILD_QUESTION, PATH_QUESTION)
+    def decode_question(self, obj, trans):
+        return self._decode_question_template(obj, trans)
+
     def _rewrite_question(self, translations: dict, oid: int, path: str):
         obj = self._read_json(path)
         text = translations[oid]
@@ -78,6 +84,17 @@ class TMP2(Game):
                 f['s'] = text
         self._write_json(path, obj)
 
+    def _rewrite_final_question(self, translations: dict, oid: int, path: str):
+        obj = self._read_json(path)
+        text = translations[oid]
+        text = text.replace('ʼ', "'")
+        fields = obj['fields']
+        assert len([f for f in fields if f['v'] == 'question']) == 1
+        for f in fields:
+            if f['v'] == 'question':
+                f['s'] = text
+        self._write_json(path, obj)
+
     def unpack_question(self):
         obj = self._read_json(PATH_QUESTION)
         translations = {int(i['id']): i['text'] for i in obj['content']}
@@ -85,6 +102,14 @@ class TMP2(Game):
         for folder in dirs:
             if folder.isdigit():
                 self._rewrite_question(translations, int(folder), os.path.join(PATH_QUESTION_DIR, folder, 'data.jet'))
+
+    def unpack_final_round(self):
+        obj = self._read_json(PATH_FINAL_ROUND)
+        translations = {int(i['id']): i['text'] for i in obj['content']}
+        dirs = os.listdir(PATH_FINAL_ROUND_DIR)
+        for folder in dirs:
+            if folder.isdigit():
+                self._rewrite_final_question(translations, int(folder), os.path.join(PATH_FINAL_ROUND_DIR, folder, 'data.jet'))
 
     @encode_mapping('data/tmp2/encoded/expanded.json', 'data/tmp2/encoded/text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
@@ -133,6 +158,24 @@ class TMP2(Game):
             res[q['id']] = text
         return res
 
+    @decode_mapping(PATH_FINAL_ROUND, PATH_BUILD_FINAL_ROUND, PATH_FINAL_ROUND)
+    def decode_final_round(self, obj, trans):
+        for c in obj['content']:
+            text, *answers = trans[c['id']].strip().split('\n')
+            c['text'] = text.strip()
+            assert len(answers) > 1
+            corrects = defaultdict(set)
+            sign = None
+            for a in answers:
+                if a in ('+', '-'):
+                    sign = a
+                else:
+                    assert sign is not None
+                    corrects[sign].add(a)
+            c['choices'] = [{'text': a.strip(), 'correct': s == '+', 'difficulty': 0} for s, alist in corrects.items() for a in alist]
+            random.shuffle(c['choices'])
+        return obj
+
     @staticmethod
     def _encode_question_template(obj: dict, host=False):
         assert len({c['id'] for c in obj['content']}) == len(obj['content'])
@@ -170,7 +213,7 @@ class TMP2(Game):
     def encode_question_hat(self, obj):
         return self._encode_question_template(obj)
 
-    @decode_mapping(PATH_QUESTION_HAT, PATH_BUILD_QUESTION_HAT, 'data/tmp2/decoded/question_hat.json')
+    @decode_mapping(PATH_QUESTION_HAT, PATH_BUILD_QUESTION_HAT, PATH_QUESTION_HAT)
     def decode_question_hat(self, obj, trans):
         return self._decode_question_template(obj, trans)
 
@@ -178,7 +221,7 @@ class TMP2(Game):
     def encode_question_wig(self, obj):
         return self._encode_question_template(obj)
 
-    @decode_mapping(PATH_QUESTION_WIG, PATH_BUILD_QUESTION_WIG, 'data/tmp2/decoded/question_wig.json')
+    @decode_mapping(PATH_QUESTION_WIG, PATH_BUILD_QUESTION_WIG, PATH_QUESTION_WIG)
     def decode_question_wig(self, obj, trans):
         return self._decode_question_template(obj, trans)
 
@@ -186,7 +229,7 @@ class TMP2(Game):
     def encode_question_ghost(self, obj):
         return self._encode_question_template(obj, True)
 
-    @decode_mapping(PATH_QUESTION_GHOST, PATH_BUILD_QUESTION_GHOST, 'data/tmp2/decoded/question_ghost.json')
+    @decode_mapping(PATH_QUESTION_GHOST, PATH_BUILD_QUESTION_GHOST, PATH_QUESTION_GHOST)
     def decode_question_ghost(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
 
@@ -194,7 +237,7 @@ class TMP2(Game):
     def encode_question_bomb(self, obj):
         return self._encode_question_template(obj, True)
 
-    @decode_mapping(PATH_QUESTION_BOMB, PATH_BUILD_QUESTION_BOMB, 'data/tmp2/decoded/question_bomb.json')
+    @decode_mapping(PATH_QUESTION_BOMB, PATH_BUILD_QUESTION_BOMB, PATH_QUESTION_BOMB)
     def decode_question_bomb(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
 
@@ -202,7 +245,7 @@ class TMP2(Game):
     def encode_question_knife(self, obj):
         return self._encode_question_template(obj, True)
 
-    @decode_mapping(PATH_QUESTION_KNIFE, PATH_BUILD_QUESTION_KNIFE, 'data/tmp2/decoded/question_knife.json')
+    @decode_mapping(PATH_QUESTION_KNIFE, PATH_BUILD_QUESTION_KNIFE, PATH_QUESTION_KNIFE)
     def decode_question_knife(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
 
@@ -210,7 +253,7 @@ class TMP2(Game):
     def encode_question_madness(self, obj):
         return self._encode_question_template(obj, True)
 
-    @decode_mapping(PATH_QUESTION_MADNESS, PATH_BUILD_QUESTION_MADNESS, 'data/tmp2/decoded/question_madness.json')
+    @decode_mapping(PATH_QUESTION_MADNESS, PATH_BUILD_QUESTION_MADNESS, PATH_QUESTION_MADNESS)
     def decode_question_madness(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
 
@@ -218,7 +261,7 @@ class TMP2(Game):
     def encode_mirror_tutorial(self, obj):
         return {c['id']: c['password'] for c in obj['content']}
 
-    @decode_mapping(PATH_MIRROR_TUTORIAL, PATH_BUILD_MIRROR_TUTORIAL, 'data/tmp2/decoded/mirror_tutorial.json')
+    @decode_mapping(PATH_MIRROR_TUTORIAL, PATH_BUILD_MIRROR_TUTORIAL, PATH_MIRROR_TUTORIAL)
     def decode_mirror_tutorial(self, obj, translations):
         for c in obj['content']:
             c['password'] = translations[c['id']]
@@ -228,7 +271,7 @@ class TMP2(Game):
     def encode_mirror(self, obj):
         return {c['id']: c['password'] for c in obj['content']}
 
-    @decode_mapping(PATH_MIRROR, PATH_BUILD_MIRROR, 'data/tmp2/decoded/mirror.json')
+    @decode_mapping(PATH_MIRROR, PATH_BUILD_MIRROR, PATH_MIRROR)
     def decode_mirror(self, obj, translations):
         for c in obj['content']:
             c['password'] = translations[c['id']]
@@ -251,7 +294,7 @@ class TMP2(Game):
             result[c['id']] = c['text'] + '\n' + '\n'.join(answers)
         return result
 
-    @decode_mapping(PATH_MIND_MELD, PATH_BUILD_MIND_MELD, 'data/tmp2/decoded/mind_meld.json')
+    @decode_mapping(PATH_MIND_MELD, PATH_BUILD_MIND_MELD, PATH_MIND_MELD)
     def decode_mind_meld(self, obj, trans):
         separator = ', '
         for c in obj['content']:

@@ -15,7 +15,9 @@ PATH_QUESTION_MADNESS = PATH_EN + r'\TDQuestionMadness.jet'
 PATH_QUESTION_KNIFE = PATH_EN + r'\TDQuestionKnife.jet'
 PATH_QUESTION_BOMB = PATH_EN + r'\TDQuestionBomb.jet'
 PATH_FINAL_ROUND = PATH_EN + r'\TDFinalRound.jet'
+# dirs
 PATH_QUESTION_DIR = PATH_EN + r'\TDQuestion'
+PATH_FINAL_ROUND_DIR = PATH_EN + r'\TDFinalRound'
 
 # encoded
 PATH_ENCODED_QUIPLASH = 'data/tmp2/EncodedTMP2QuiplashContent.json'
