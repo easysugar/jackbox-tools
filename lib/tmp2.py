@@ -2,7 +2,7 @@ import os
 import re
 from collections import defaultdict
 
-from lib.game import Game, encode_mapping
+from lib.game import Game, encode_mapping, decode_mapping
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
@@ -13,23 +13,21 @@ class TMP2(Game):
     def encode_quiplash(self, obj: dict):
         return {c['id']: c['prompt'].replace('[EventName=HOST/AltHost]', '') for c in obj['content']}
 
-    def decode_quiplash(self, translated_path: str, save_path: str):
-        obj = self._read_json(PATH_QUIPLASH)
-        translations = self._read_json(translated_path)
+    @decode_mapping(PATH_QUIPLASH, 'build/uk/TMP2/in-game/EncodedTMP2QuiplashContent.json', 'data/tmp2/decoded/quiplash.json')
+    def decode_quiplash(self, obj, translations):
         for c in obj['content']:
             c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']]
-        self._write_json(save_path, obj)
+        return obj
 
     @encode_mapping(PATH_DICTATION, PATH_ENCODED_DICTATION)
     def encode_dictation(self, obj: dict):
         return {c['id']: '\n'.join(c['text']) for c in obj['content']}
 
-    def decode_dictation(self, translated_path: str, save_path: str):
-        obj = self._read_json(PATH_DICTATION)
-        translations = self._read_json(translated_path)
+    @decode_mapping(PATH_DICTATION, 'build/uk/TMP2/in-game/EncodedTMP2Dictation.json', 'data/tmp2/decoded/dictation.json')
+    def decode_dictation(self, obj, translations):
         for c in obj['content']:
             c['text'] = translations[c['id']].strip().split('\n')
-        self._write_json(save_path, obj)
+        return obj
 
     @encode_mapping(PATH_SEQUEL, PATH_ENCODED_SEQUEL)
     def encode_sequel(self, obj: dict):
@@ -41,16 +39,15 @@ class TMP2(Game):
             if c['text'].get('main')
         }
 
-    def decode_sequel(self, translated_path: str, save_path: str):
-        obj = self._read_json(PATH_SEQUEL)
-        translations = self._read_json(translated_path)
+    @decode_mapping(PATH_SEQUEL, 'build/uk/TMP2/in-game/EncodedTDSequel.json', 'data/tmp2/decoded/sequel.json')
+    def decode_sequel(self, obj, translations):
         for c in obj['content']:
             if c['text'].get('main'):
                 t = translations[c['id']]['text'].strip().split('\n')
                 c['text']['main'] = t[0]
                 if len(t) > 1:
                     c['text']['sub'] = t[1]
-        self._write_json(save_path, obj)
+        return obj
 
     @encode_mapping(PATH_QUESTION, PATH_ENCODED_QUESTION)
     def encode_question(self, obj: dict):
