@@ -43,6 +43,16 @@ class Game:
             media = media.replace(old, new)
         self._write(dst, media)
 
+    def encode_all(self):
+        for f in dir(self):
+            if f.__name__.startswith('encode_') and f.__name__ != 'encode_all' and callable(getattr(self, f)):
+                getattr(self, f)()
+
+    def decode_all(self):
+        for f in dir(self):
+            if f.__name__.startswith('decode_') and f.__name__ != 'decode_all' and callable(getattr(self, f)):
+                getattr(self, f)()
+
 
 def encode_mapping(src: str, dst: str):
     """Read JSON file from `src` and write function's result into `dst` file"""
