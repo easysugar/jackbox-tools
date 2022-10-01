@@ -25,3 +25,20 @@ PATH_ENCODED_QUESTION = 'data/tmp2/EncodedQuestion.json'
 
 # release
 PATH_RELEASE = r'~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua'
+
+# build
+PATH_BUILD_QUIPLASH = 'build/uk/TMP2/in-game/EncodedTMP2QuiplashContent.json'
+PATH_BUILD_DICTATION = 'build/uk/TMP2/in-game/EncodedTMP2Dictation.json'
+PATH_BUILD_SEQUEL = 'build/uk/TMP2/in-game/EncodedTDSequel.json'
+PATH_BUILD_MIRROR = 'build/uk/TMP2/in-game/mirror.json'
+PATH_BUILD_MIRROR_TUTORIAL = 'build/uk/TMP2/in-game/mirror_tutorial.json'
+PATH_BUILD_MIND_MELD = 'build/uk/TMP2/in-game/mind_meld.json'
+PATH_BUILD_QUESTION = 'build/uk/TMP2/in-game/EncodedQuestion.json'
+PATH_BUILD_QUESTION_HAT = 'build/uk/TMP2/in-game/EncodedQuestionHat.json'
+PATH_BUILD_QUESTION_WIG = 'build/uk/TMP2/in-game/EncodedQuestionWig.json'
+PATH_BUILD_QUESTION_GHOST = 'build/uk/TMP2/in-game/question_ghost.json'
+PATH_BUILD_QUESTION_MADNESS = 'build/uk/TMP2/in-game/question_madness.json'
+PATH_BUILD_QUESTION_KNIFE = 'build/uk/TMP2/in-game/question_knife.json'
+PATH_BUILD_QUESTION_BOMB = 'build/uk/TMP2/in-game/question_bomb.json'
+PATH_BUILD_FINAL_ROUND = 'build/uk/TMP2/in-game/final_questions.json'
+PATH_BUILD_WORDLIST_RULES = 'build/uk/TMP2/in-game/wordlistRules_en.txt'
