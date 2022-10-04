@@ -1,10 +1,13 @@
-from crowdin_api import CrowdinClient
-from settings.crowdin import *
+import zipfile
 from collections import Counter
 from datetime import datetime, timedelta
 from typing import Callable, List, Dict
 
 import pytz
+import requests
+from crowdin_api import CrowdinClient
+
+from settings.crowdin import *
 
 utc = pytz.UTC
 
@@ -13,6 +16,7 @@ class Crowdin:
     def __init__(self):
         class Client(CrowdinClient):
             TOKEN = TOKEN
+
         self.client = Client()
 
     def get_all_translations(self, project_id: int):
@@ -133,3 +137,20 @@ class Crowdin:
         users = self.get_top_contributors_last_week(list_projects)
         usernames = self.get_users_usernames(list(users), list_projects)
         return {usernames[u]: cnt for u, cnt in users.items()}
+
+    def _get_last_build_id(self, project_id: int) -> int:
+        return self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']['id']
+
+    def _download_build(self, project_id: int, build_id):
+        url = self.client.translations.download_project_translations(project_id, build_id)['data']['url']
+        r = requests.get(url)
+        with open('build.zip', 'wb') as f:
+            f.write(r.content)
+
+    def download_last_build(self, project_id: int):
+        self._download_build(project_id, self._get_last_build_id(project_id))
+
+    @staticmethod
+    def unzip_build(path_build: str = 'build.zip', path_folder: str = 'build'):
+        with zipfile.ZipFile(path_build, 'r') as zip_ref:
+            zip_ref.extractall(path_folder)
