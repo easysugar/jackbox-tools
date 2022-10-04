@@ -3,7 +3,7 @@ import random
 import re
 from collections import defaultdict
 
-from lib.game import Game, encode_mapping, decode_mapping
+from lib.game import Game, encode_mapping, decode_mapping, copy_file
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
@@ -309,3 +309,17 @@ class TMP2(Game):
                     'alt': [''] if not alt else list(alt),
                 })
         return obj
+
+    @staticmethod
+    def decode_rules_wordlist():
+        copy_file(PATH_BUILD_WORDLIST_RULES, PATH_WORDLIST_RULES)
+
+    def decode_media_dict(self):
+        source = self._read('data/tmp2/swf/dict.txt')
+        audio = self._read_json('build/uk/TMP2/EncodedAudio.json')
+        text = self._read_json('build/uk/TMP2/in-game/text_subtitles.json')
+        text = {k: text for v in text.values() for k, text in v.items()}
+        translations = {**audio, **text}
+        editable = self._read('data/tmp2/swf/editable.txt')
+        _dict = self._update_media_dict(source, translations, editable)
+        self._write('data/tmp2/swf/translated_dict.txt', _dict)

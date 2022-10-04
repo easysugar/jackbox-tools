@@ -80,9 +80,10 @@ class Game:
                 fpath = os.path.join(root, f)
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
                 if ts >= start_ts:
-                    _copy_file(fpath, fpath.replace(src, dst))
+                    copy_file(fpath, fpath.replace(src, dst))
 
-    def _update_media_dict(self, source: str, translation: Dict[str, str], editable: str):
+    @staticmethod
+    def _update_media_dict(source: str, translation: Dict[str, str], editable: str):
         lines = editable.split('\n')
         mids = set()
         processed = set()
@@ -110,23 +111,6 @@ class Game:
                 new = '^' + trans + ('' if not suffix else suffix.group(0)) + '^'
                 source = source.replace(old, new, 1)
         return source
-
-    # def update_editable_media(self, src: str, trans: dict, dst: str):
-    #     body = self._read(src)
-    #     lines = body.split('\n')
-    #     mid2line = {}
-    #     for i, l in enumerate(lines):
-    #         match = re.search(r'^\$\[(\d+)].*$', l)
-    #         if match:
-    #             mid = match.group(1)
-    #             assert int(mid)
-    #             assert mid not in mid2line
-    #             mid2line[mid] = i
-    #     for mid in trans:
-    #         line = lines[mid2line[mid] + 1]
-    #         suffix = re.search(r'(\[[\w=]+])*$', line)
-    #         lines[mid2line[mid] + 1] = trans[mid] + ('' if not suffix else suffix.group(0))
-    #     self._write(dst, '\n'.join(lines))
 
 
 def encode_mapping(src: str, dst: str):
@@ -162,7 +146,8 @@ def decode_mapping(*files):
     return decorator
 
 
-def _copy_file(src: str, dst: str):
+def copy_file(src: str, dst: str):
+    """Copy file from `src` to `dst`. Create all directories that are used in `dst` path"""
     dst_folder = os.path.dirname(dst)
     Path(dst_folder).mkdir(parents=True, exist_ok=True)
     shutil.copyfile(src, dst)
