@@ -116,9 +116,9 @@ class Crowdin:
 
     def get_top_contributors_last_week(self, list_projects: List[int]) -> Counter:
         return (
-            self.get_total_translators(list_projects) +
-            self.get_total_approvers(list_projects) +
-            self.get_total_commenters(list_projects)
+                self.get_total_translators(list_projects) +
+                self.get_total_approvers(list_projects) +
+                self.get_total_commenters(list_projects)
         )
 
     def get_users_usernames(self, users: List[int], list_projects: List[int]) -> dict:
@@ -133,10 +133,10 @@ class Crowdin:
                 break
         return usernames
 
-    def get_top_contributors_usernames(self, list_projects: List[int]) -> Dict[str, int]:
+    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST) -> Dict[str, int]:
         users = self.get_top_contributors_last_week(list_projects)
         usernames = self.get_users_usernames(list(users), list_projects)
-        return {usernames[u]: cnt for u, cnt in users.items()}
+        return {usernames[u]: cnt for u, cnt in users.most_common()}
 
     def _get_last_build_id(self, project_id: int) -> int:
         return self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']['id']
