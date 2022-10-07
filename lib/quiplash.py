@@ -64,3 +64,11 @@ class Quiplash(Game):
     @encode_mapping(PATH_AUDIENCE_JSON, 'data/quiplash2/translated/TranslatedAudienceQuestions.json')
     def encode_audience_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
+
+    @encode_mapping(PATH_MEDIA, 'data/quiplash2/encoded/audio_subtitles.json')
+    def encode_audio_subtitles(self, obj: dict):
+        return self._encode_subtitles(obj, 'A')
+
+    @encode_mapping(PATH_MEDIA, 'data/quiplash2/encoded/text_subtitles.json')
+    def encode_text_subtitles(self, obj: dict):
+        return self._encode_subtitles(obj, 'T')

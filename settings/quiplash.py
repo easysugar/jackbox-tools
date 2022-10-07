@@ -9,6 +9,7 @@ PATH_AUDIENCE_JSON = PATH + r'\content\AudienceQuestion.jet'
 PATH_RELEASE = r'~\Desktop\Jackbox\Quiplash 2\jackbox-quiplash2-ua'
 
 # encoded
+PATH_MEDIA = 'data/quiplash2/swf/Quiplash2_International_GameMain_Expanded.json'
 PATH_ENCODED_QUESTIONS = 'data/quiplash2/EncodedOriginalQuiplashQuestions.json'
 
 # backup
