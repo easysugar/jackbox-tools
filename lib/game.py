@@ -117,22 +117,6 @@ class Game:
         return source
 
 
-def encode_mapping(src: str, dst: str):
-    """Read JSON file from `src` and write function's result into `dst` file"""
-
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapped(self, *args, **kwargs):
-            obj = self._read_json(src)
-            obj = func(self, obj, *args, **kwargs)
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            self._write_json(dst, obj)
-
-        return wrapped
-
-    return decorator
-
-
 def decode_mapping(*files):
     """Read several JSON files and write result into a new file"""
 
@@ -148,6 +132,9 @@ def decode_mapping(*files):
         return wrapped
 
     return decorator
+
+
+encode_mapping = decode_mapping
 
 
 def copy_file(src: str, dst: str):

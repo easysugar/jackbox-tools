@@ -1,11 +1,11 @@
 import re
 
-from lib.game import Game, encode_mapping
+from lib.game import Game, decode_mapping
 from settings.guesspionage import *
 
 
 class Guesspionage(Game):
-    @encode_mapping(PATH_EXPANDED, 'data/pp3/pollposition/encoded/audio_subtitles.json')
+    @decode_mapping(PATH_EXPANDED, 'data/pp3/pollposition/encoded/audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
         sfx = re.compile(r'\[category=(sfx|music)]$|^\w+\d:\n|^PP_\w+|^Radio Play short |^Radio Play |Back button pressed')
         return {
