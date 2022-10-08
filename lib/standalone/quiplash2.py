@@ -13,7 +13,7 @@ class NotFoundPromptAudioException(Exception):
     pass
 
 
-class Quiplash(Game):
+class Quiplash2(Game):
     def __init__(self):
         self.translations = {}
         self._read_questions_json()
