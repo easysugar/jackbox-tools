@@ -24,8 +24,7 @@ class Game:
 
     @staticmethod
     def _read_json(src: str):
-        with open(src, 'rb') as f:
-            return json.loads(f.read().decode('utf-8-sig'))
+        return read_json(src)
 
     @staticmethod
     def _write_json(dst: str, obj):
@@ -142,3 +141,8 @@ def copy_file(src: str, dst: str):
     dst_folder = os.path.dirname(dst)
     Path(dst_folder).mkdir(parents=True, exist_ok=True)
     shutil.copyfile(src, dst)
+
+
+def read_json(src: str):
+    with open(src, 'rb') as f:
+        return json.loads(f.read().decode('utf-8-sig'))
