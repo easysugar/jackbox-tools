@@ -5,6 +5,7 @@ from typing import Callable, List, Dict
 
 import pytz
 import requests
+import tqdm
 from crowdin_api import CrowdinClient
 
 from settings.crowdin import *
@@ -154,3 +155,37 @@ class Crowdin:
     def unzip_build(path_build: str = 'build.zip', path_folder: str = 'build'):
         with zipfile.ZipFile(path_build, 'r') as zip_ref:
             zip_ref.extractall(path_folder)
+
+    def get_strings_ids(self, project_id: int, file_id: int) -> Dict[str, int]:
+        result = {}
+        offset = 0
+        while True:
+            batch = self.client.source_strings.list_strings(project_id, file_id, limit=500, offset=offset)
+            if not batch or not batch['data']:
+                return result
+            for s in batch['data']:
+                _id = s['data']['identifier'].split('.')[-1]
+                if _id in result:
+                    raise Exception(f'{_id} duplicated!')
+                result[_id] = s['data']['id']
+            offset += 500
+
+    def publish_audio_links(self, project_id: int, links: dict):
+        crowdin_audio_path = '/TeeKO/audio_subtitles.json'
+        file_id = [f['data']['id'] for f in self.client.source_files.list_files(project_id)['data'] if f['data']['path'] == crowdin_audio_path][0]
+        strings = self.get_strings_ids(project_id, file_id)
+        for audio_id in tqdm.tqdm(list(strings)):
+            self.publish_comment(project_id, strings[audio_id], links[audio_id])
+
+    def publish_comment(self, project_id: int, string_id: int, text: str, target_language_id='uk'):
+        self.client.string_comments.requester.request(
+            method="post",
+            path=self.client.string_comments.get_string_comments_path(projectId=project_id),
+            request_data={
+                "text": text,
+                "stringId": string_id,
+                "targetLanguageId": target_language_id,
+                "type": 'comment',
+                "issueType": None,
+            },
+        )
