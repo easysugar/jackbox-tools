@@ -3,4 +3,4 @@ PATH_QUESTIONS = PATH + r'\PollPositionQuestions.jet'
 PATH_BONUS_QUESTIONS = PATH + r'\PollPositionBonusQuestions.jet'
 
 # local
-PATH_EXPANDED = 'data/jpp3/pollposition/swf/PollPosition_GameMain_Expanded.json'
+PATH_EXPANDED = 'data/pp3/pollposition/swf/PollPosition_GameMain_Expanded.json'
