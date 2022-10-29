@@ -21,6 +21,18 @@ class Fakin(Game):
             if c['type'] == 'A' and not sfx.search(v['text'])
         }
 
+    @decode_mapping(PATH_TASKS, PATH_TASKS_ENCODED)
+    def encode_tasks(self, obj: dict):
+        return {i['id']: {i['type']: i['category']} for i in obj['content']}
+
+    @decode_mapping(PATH_CATEGORIES, PATH_CATEGORIES_ENCODED)
+    def encode_categories(self, obj: dict):
+        return {i['id']: {i['type']: i['name']} for i in obj['content']}
+
+    @decode_mapping(PATH_INPUT, PATH_INPUT_ENCODED)
+    def encode_input(self, obj: dict):
+        return {i['id']: '\n'.join([i['category'], *[j['v'] for j in i['tasks']]]) for i in obj['content']}
+
     # @encode_mapping(PATH_EXPANDED, 'data/pp3/pollposition/encoded/audio_subtitles.json')
     # def encode_audio_subtitles(self, obj: dict):
     #     sfx = re.compile(r'\[category=(sfx|music)]$|^\w+\d:\n|^PP_\w+|^Radio Play short |^Radio Play |Back button pressed')
