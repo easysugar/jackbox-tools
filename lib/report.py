@@ -8,9 +8,9 @@ from pilmoji import Pilmoji
 # from IPython.display import display
 from settings.report import *
 
-translate_color = (89, 180, 222)
-progressbar_color = (220, 222, 220)
-approve_color = (74, 186, 74)
+progressbar_color = GREY
+translate_color = BLUE
+approve_color = GREEN
 
 
 def load_img_from_url(url):
@@ -91,6 +91,8 @@ def draw_text(img: Image, font: ImageFont, text: str, width, height, margin_up: 
         x, y = (width - w) // 2 + margin_left, margin_up
     elif align == 'left bottom':
         x, y = margin_left, height - h + margin_up
+    elif align == 'right':
+        x, y = width - w + margin_left, margin_up
     else:
         x, y = margin_left, margin_up
 
@@ -115,7 +117,7 @@ def draw_game_percent(img: Image, game: str, width: int, height: int):
     tr, apr = GAMES[game].get('translated', 0), GAMES[game].get('approved', 0)
     if not tr:
         return
-    new_bar(img, width // 5, height * 2 // 3, width * 3 // 5, 15, tr, apr)
+    new_bar(img, width // 5, height * 2 // 3, width * 3 // 5, 15, tr / 100, apr / 100)
 
     font = ImageFont.truetype(*FONT_PERCENT)
 
@@ -141,8 +143,10 @@ def draw_voice_actor(img: Image, game: str, width: int, height: int):
     if not actor:
         return
     font = ImageFont.truetype(*FONT_VOICE)
-    text = f'🔊 {actor}'
-    draw_text(img, font, text, width, height, drawer=Pilmoji(img), margin_up=-0.1, margin_left=0.05, align='left bottom')
+    # text = f'🔊 {actor}'
+    text = f'{actor}'
+    draw_text(img, font, text, width, height, drawer=Pilmoji(img), margin_up=-0.1, margin_left=0.05, align='left bottom',
+              icon=AVATARS[actor])
 
 
 def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
@@ -151,6 +155,8 @@ def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
     for i, user in enumerate(CONTRIBUTORS, 1):
         draw_text(img, font, user['name'], width, height, margin_left=0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
                   align='none', icon=user['url'], icon_size=FONT_CONTRIBUTORS[1])
+        draw_text(img, font, str(user['count']), width, height, margin_left=-0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
+                  align='right', fill=BLUE)
 
 
 def create_game_icon(game: str, width: int, height: int):
@@ -177,7 +183,7 @@ def create_game_icon(game: str, width: int, height: int):
 def create_top_contributors_icon(width: int, height: int):
     img = Image.new("RGBA", (width, height), 'black')
     font = ImageFont.truetype(*FONT_HEAD)
-    draw_text(img, font, TOP_CONTRIBUTORS_TEXT, width, height, align='top', margin_up=0.1)
+    draw_text(img, font, TOP_CONTRIBUTORS_TEXT, width, height, align='top', margin_up=0.1, fill='yellow')
     draw_top_contributors(img, width, height, int(0.1 * height))
     return img
 
