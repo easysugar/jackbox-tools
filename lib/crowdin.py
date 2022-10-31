@@ -173,9 +173,9 @@ class Crowdin:
                 result[_id] = s['data']['id']
             offset += 500
 
-    def publish_audio_links(self, project_id: int, links: dict):
-        crowdin_audio_path = '/TeeKO/audio_subtitles.json'
-        file_id = [f['data']['id'] for f in self.client.source_files.list_files(project_id)['data'] if f['data']['path'] == crowdin_audio_path][0]
+    def publish_audio_links(self, project_id: int, links: dict, crowdin_audio_path: str):
+        list_files = self.client.source_files.list_files(project_id, limit=500)
+        file_id = [f['data']['id'] for f in list_files['data'] if f['data']['path'] == crowdin_audio_path][0]
         strings = self.get_strings_ids(project_id, file_id)
         for audio_id in tqdm.tqdm(list(strings)):
             self.publish_comment(project_id, strings[audio_id], links[audio_id])
