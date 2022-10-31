@@ -91,6 +91,8 @@ def draw_text(img: Image, font: ImageFont, text: str, width, height, margin_up: 
         x, y = (width - w) // 2 + margin_left, margin_up
     elif align == 'left bottom':
         x, y = margin_left, height - h + margin_up
+    elif align == 'right bottom':
+        x, y = width - w + margin_left, height - h + margin_up
     elif align == 'right':
         x, y = width - w + margin_left, margin_up
     else:
@@ -149,6 +151,14 @@ def draw_voice_actor(img: Image, game: str, width: int, height: int):
               icon=AVATARS[actor])
 
 
+def draw_status_icon(img: Image, game: str, width: int, height: int):
+    status = GAMES[game].get('status')
+    if not status:
+        return
+    font = ImageFont.truetype(*FONT_VOICE)
+    draw_text(img, font, status, width, height, drawer=Pilmoji(img), margin_up=-0.1, margin_left=-0.05, align='right bottom')
+
+
 def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
     font = ImageFont.truetype(*FONT_CONTRIBUTORS)
     # font = None
@@ -177,6 +187,7 @@ def create_game_icon(game: str, width: int, height: int):
     draw_game_title(img, game, width, height)
     draw_game_percent(img, game, width, height)
     draw_voice_actor(img, game, width, height)
+    draw_status_icon(img, game, width, height)
     return img
 
 

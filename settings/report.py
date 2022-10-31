@@ -22,7 +22,7 @@ GAMES = {
     'q3': {'name': 'Жартлист 3'},
     'q2': {'name': 'Жартлист 2', 'approved': 78, 'translated': 100},
     'tmp2': {'name': 'Смертельні\nВечорниці 2', 'approved': 43, 'translated': 99},
-    'tko': {'name': 'Футбол К.О.', 'approved': 100, 'translated': 100, 'actor': 'Pad0n'},
+    'tko': {'name': 'Футбол К.О.', 'approved': 100, 'translated': 100, 'actor': 'Pad0n', 'status': '👑'},
     'd2': {'name': 'Малювач 2', 'approved': 66, 'translated': 99, 'actor': 'Lunar Shadow'},
     'poll': {'name': 'Шпигадаш'},
     'tmp1': {'name': 'Смертельні\nВечорниці'},
