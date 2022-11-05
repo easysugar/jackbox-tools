@@ -116,6 +116,12 @@ class Game:
         return source
 
 
+def read_from_folder(cid: str, path_folder: str):
+    path = os.path.join(path_folder, cid, 'data.jet')
+    x = read_json(path)
+    return {_['n']: _ for _ in x['fields']}
+
+
 def decode_mapping(*files):
     """Read several JSON files and write result into a new file"""
 
