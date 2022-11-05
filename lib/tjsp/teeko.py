@@ -7,7 +7,7 @@ class TeeKO(Game):
     def encode_slogans(self, obj: dict):
         return {c['id']: c['suggestion'].strip() for c in obj['content']}
 
-    @decode_mapping(PATH_SLOGANS, 'data/teeko/translated/slogans.json', PATH_SLOGANS)
+    @decode_mapping(PATH_SLOGANS, PATH_BUILD_SLOGANS, PATH_SLOGANS)
     def decode_slogans(self, obj, translations):
         for c in obj['content']:
             c['suggestion'] = translations[c['id']]
@@ -17,7 +17,7 @@ class TeeKO(Game):
     def encode_suggestions(self, obj: dict):
         return {c['id']: c['suggestion'].strip() for c in obj['content']}
 
-    @decode_mapping(PATH_SUGGESTIONS, 'data/teeko/translated/suggestions.json', PATH_SUGGESTIONS)
+    @decode_mapping(PATH_SUGGESTIONS, PATH_BUILD_SUGGESTIONS, PATH_SUGGESTIONS)
     def decode_suggestions(self, obj, translations):
         for c in obj['content']:
             c['suggestion'] = translations[c['id']]
@@ -27,7 +27,7 @@ class TeeKO(Game):
     def encode_moderated_slogans(self, obj: dict):
         return {c['id']: c['slogan'].strip() for c in obj['content']}
 
-    @decode_mapping(PATH_MODERATED_SLOGANS, 'data/teeko/translated/moderated_slogans.json', PATH_MODERATED_SLOGANS)
+    @decode_mapping(PATH_MODERATED_SLOGANS, PATH_BUILD_MODERATED_SLOGANS, PATH_MODERATED_SLOGANS)
     def decode_moderated_slogans(self, obj, translations):
         for c in obj['content']:
             c['slogan'] = translations[c['id']]
@@ -37,7 +37,7 @@ class TeeKO(Game):
     def encode_slogan_suggestions(self, obj: dict):
         return {c['id']: c['suggestion'].strip() for c in obj['content']}
 
-    @decode_mapping(PATH_SLOGAN_SUGGESTIONS, 'data/teeko/translated/slogan_suggestions.json', PATH_SLOGAN_SUGGESTIONS)
+    @decode_mapping(PATH_SLOGAN_SUGGESTIONS, PATH_BUILD_SLOGAN_SUGGESTIONS, PATH_SLOGAN_SUGGESTIONS)
     def decode_slogan_suggestions(self, obj, translations):
         for c in obj['content']:
             c['suggestion'] = translations[c['id']]

@@ -7,3 +7,10 @@ PATH_SLOGAN_SUGGESTIONS = r'C:\Program Files (x86)\Steam\steamapps\common\The Ja
 
 # release
 PATH_RELEASE = r'~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua'
+
+# build
+PATH_BUILD_GAME = '../build/uk/TeeKO/in-game/'
+PATH_BUILD_SLOGANS = PATH_BUILD_GAME + 'slogans.json'
+PATH_BUILD_SUGGESTIONS = PATH_BUILD_GAME + 'suggestions.json'
+PATH_BUILD_MODERATED_SLOGANS = PATH_BUILD_GAME + 'moderated_slogans.json'
+PATH_BUILD_SLOGAN_SUGGESTIONS = PATH_BUILD_GAME + 'slogan_suggestions.json'
