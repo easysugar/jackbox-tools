@@ -55,14 +55,9 @@ class Game:
                 getattr(self, f)()
 
     def decode_all(self):
-        for f in dir(self):
-            if f.startswith('decode_') and f != 'decode_all' and callable(getattr(self, f)):
-                getattr(self, f)()
-
-    def unpack_all(self):
-        for f in dir(self):
-            if f.startswith('unpack_') and f != 'unpack_all' and callable(getattr(self, f)):
-                getattr(self, f)()
+        to_call = [f for f in dir(self) if (f.startswith('decode_') or f.startswith('unpack_')) and f != 'decode_all' and callable(getattr(self, f))]
+        for f in tqdm.tqdm(to_call):
+            getattr(self, f)()
 
     def update_localization(self, src: str, translation: str):
         obj = self._read_json(src)
@@ -122,7 +117,7 @@ def read_from_folder(cid: str, path_folder: str):
     return {_['n']: _ for _ in x['fields']}
 
 
-def decode_mapping(*files):
+def decode_mapping(*files, write_json=True):
     """Read several JSON files and write result into a new file"""
 
     def decorator(func):
@@ -132,7 +127,7 @@ def decode_mapping(*files):
             objs = [self._read_json(f) for f in files[:-1]]
             obj = func(self, *objs, *args, **kwargs)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
-            self._write_json(dst, obj)
+            self._write_json(dst, obj) if write_json else self._write(dst, obj)
 
         return wrapped
 
