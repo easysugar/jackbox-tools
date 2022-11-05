@@ -314,7 +314,7 @@ class TMP2(Game):
     def decode_rules_wordlist():
         copy_file(PATH_BUILD_WORDLIST_RULES, PATH_WORDLIST_RULES)
 
-    @decode_mapping(PATH_AUDIO, PATH_SUBTITLES, PATH_TRANSLATED_DICT, write_json=False)
+    @decode_mapping(PATH_BUILD_AUDIO, PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, write_json=False)
     def decode_media_dict(self, audio, text):
         source = self._read(PATH_SOURCE_DICT)
         editable = self._read(PATH_EDITABLE_DICT)
