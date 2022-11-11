@@ -14,11 +14,12 @@ utc = pytz.UTC
 
 
 class Crowdin:
-    def __init__(self):
+    def __init__(self, start_ts: datetime = None):
         class Client(CrowdinClient):
             TOKEN = TOKEN
 
         self.client = Client()
+        self.start_ts = (start_ts or datetime.now() - timedelta(days=7)).replace(tzinfo=utc)
 
     def get_all_translations(self, project_id: int):
         res = []
@@ -80,9 +81,8 @@ class Crowdin:
                 res.append(t['id'])
         return res
 
-    @staticmethod
-    def _get_users_counter_last_week(project_id: int, func: Callable) -> Counter:
-        ts = (datetime.now() - timedelta(days=7)).replace(tzinfo=utc)
+    def _get_users_counter_last_time(self, project_id: int, func: Callable) -> Counter:
+        ts = self.start_ts
         users = Counter()
         res = func(project_id)
         for i in res:
@@ -90,14 +90,14 @@ class Crowdin:
                 users[i['id']] += 1
         return users
 
-    def get_translators_last_week(self, project_id: int) -> Counter:
-        return self._get_users_counter_last_week(project_id, self.get_all_translations)
+    def get_translators_last_time(self, project_id: int) -> Counter:
+        return self._get_users_counter_last_time(project_id, self.get_all_translations)
 
-    def get_commenters_last_week(self, project_id: int) -> Counter:
-        return self._get_users_counter_last_week(project_id, self.get_all_comments)
+    def get_commenters_last_time(self, project_id: int) -> Counter:
+        return self._get_users_counter_last_time(project_id, self.get_all_comments)
 
-    def get_approvers_last_week(self, project_id: int) -> Counter:
-        return self._get_users_counter_last_week(project_id, self.get_all_approves)
+    def get_approvers_last_time(self, project_id: int) -> Counter:
+        return self._get_users_counter_last_time(project_id, self.get_all_approves)
 
     @staticmethod
     def _get_total_by_projects(list_projects: List[int], func: Callable) -> Counter:
@@ -107,37 +107,40 @@ class Crowdin:
         return res
 
     def get_total_translators(self, list_projects: List[int]) -> Counter:
-        return self._get_total_by_projects(list_projects, self.get_translators_last_week)
+        return self._get_total_by_projects(list_projects, self.get_translators_last_time)
 
     def get_total_approvers(self, list_projects: List[int]) -> Counter:
-        return self._get_total_by_projects(list_projects, self.get_approvers_last_week)
+        return self._get_total_by_projects(list_projects, self.get_approvers_last_time)
 
     def get_total_commenters(self, list_projects: List[int]) -> Counter:
-        return self._get_total_by_projects(list_projects, self.get_commenters_last_week)
+        return self._get_total_by_projects(list_projects, self.get_commenters_last_time)
 
-    def get_top_contributors_last_week(self, list_projects: List[int]) -> Counter:
+    def get_top_contributors_last_time(self, list_projects: List[int]) -> Counter:
         return (
-                self.get_total_translators(list_projects) +
-                self.get_total_approvers(list_projects) +
-                self.get_total_commenters(list_projects)
+            self.get_total_translators(list_projects) +
+            self.get_total_approvers(list_projects) +
+            self.get_total_commenters(list_projects)
         )
 
-    def get_users_usernames(self, users: List[int], list_projects: List[int]) -> dict:
-        usernames = {}
+    def get_users_info(self, users: List[int], list_projects: List[int]) -> dict:
+        info = {}
         for uid in users:
             for jid in list_projects:
                 try:
                     u = self.client.users.get_member_info(jid, uid)
                 except:
                     continue
-                usernames[uid] = u['data'].get('username') or u['data'].get('fullName')
+                info[uid] = {
+                    'name': u['data'].get('username') or u['data'].get('fullName'),
+                    'avatar': u['data'].get('avatarUrl'),
+                }
                 break
-        return usernames
+        return info
 
-    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST) -> Dict[str, int]:
-        users = self.get_top_contributors_last_week(list_projects)
-        usernames = self.get_users_usernames(list(users), list_projects)
-        return {usernames[u]: cnt for u, cnt in users.most_common()}
+    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST) -> List[dict]:
+        users = self.get_top_contributors_last_time(list_projects)
+        info = self.get_users_info(list(users), list_projects)
+        return [{'name': info[u]['name'], 'count': cnt, 'url': info[u]['avatar']} for u, cnt in users.most_common()]
 
     def _get_last_build_id(self, project_id: int) -> int:
         return self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']['id']
