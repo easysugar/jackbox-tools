@@ -1,6 +1,6 @@
 import os
 
-from lib.game import Game, encode_mapping, read_json
+from lib.game import Game, encode_mapping, read_json, decode_mapping, read_from_folder, write_to_folder
 from settings.drawful2 import *
 
 
@@ -23,6 +23,12 @@ class Drawful2(Game):
     def encode_decoy(self, obj: dict):
         return {c['id']: c['text'].strip() for c in obj['content']}
 
+    @decode_mapping(PATH_DECOY, PATH_BUILD_DECOY, PATH_DECOY)
+    def decode_decoy(self, obj, trans):
+        for c in obj['content']:
+            c['text'] = trans[str(c['id'])]
+        return obj
+
     @encode_mapping(PATH_PROMPT, folder + 'prompt.json')
     def encode_prompt(self, obj: dict):
         result = {}
@@ -40,3 +46,38 @@ class Drawful2(Game):
                 body += '\n' + audio
             result[cid] = body
         return result
+
+    @decode_mapping(PATH_PROMPT, PATH_BUILD_PROMPT, PATH_PROMPT)
+    def decode_prompt(self, obj, trans):
+        for c in obj['content']:
+            cid = str(c['id'])
+            assert trans[cid].count('\n') <= 1, f"Incorrect cid: {cid}"
+            c['category'] = trans[cid].split('\n')[0].strip()
+        return obj
+
+    @decode_mapping(PATH_BUILD_PROMPT, PATH_PROMPT)
+    def unpack_question(self, trans):
+        dirs = os.listdir(PATH_PROMPT_DIR)
+        for cid in dirs:
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_PROMPT_DIR)
+            assert trans[cid].strip().count('\n') <= 1
+            text, *comment = trans[cid].strip().split('\n')
+            text = text.strip().replace('ʼ', "'")
+            obj['QuestionText']['v'] = text
+            if 'AlternateSpellings' in obj:
+                obj['AlternateSpellings']['v'] = text
+            if 'JokeAudio' in obj and comment and comment[0]:
+                obj['JokeAudio']['s'] = comment[0].strip()
+            write_to_folder(cid, PATH_PROMPT_DIR, obj)
+
+    def decode_localization(self):
+        self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
+
+    @decode_mapping(PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, write_json=False)
+    def decode_media_dict(self, audio):
+        source = self._read(PATH_SOURCE_DICT)
+        editable = self._read(PATH_EDITABLE_DICT)
+        translations = {**audio}
+        return self._update_media_dict(source, translations, editable)

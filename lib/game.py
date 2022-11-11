@@ -28,9 +28,7 @@ class Game:
 
     @staticmethod
     def _write_json(dst: str, obj):
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-        with open(dst, 'w', encoding='utf8') as f:
-            return json.dump(obj, f, indent=2, ensure_ascii=False)
+        return write_json(dst, obj)
 
     # @staticmethod
     # def _encode_for_swf(text: str):
@@ -104,7 +102,7 @@ class Game:
                 processed.add(text)
                 suffix = re.search(r'(\[[\w=]+])*$', text)
                 text = text.replace("'", r"\'").replace('"', r'\"')
-                trans = translation[mid].replace("'", r"\'").replace('"', r'\"')
+                trans = translation[mid].replace("'", r"\'").replace('"', r'\"').replace('\n', r'\n')
                 old = '^' + text + '^'
                 new = '^' + trans + ('' if not suffix else suffix.group(0)) + '^'
                 source = source.replace(old, new, 1)
@@ -115,6 +113,12 @@ def read_from_folder(cid: str, path_folder: str):
     path = os.path.join(path_folder, cid, 'data.jet')
     x = read_json(path)
     return {_['n']: _ for _ in x['fields']}
+
+
+def write_to_folder(cid: str, path_folder: str, value: dict):
+    path = os.path.join(path_folder, cid, 'data.jet')
+    x = {'fields': list(value.values())}
+    write_json(path, x)
 
 
 def decode_mapping(*files, write_json=True):
@@ -147,3 +151,9 @@ def copy_file(src: str, dst: str):
 def read_json(src: str):
     with open(src, 'rb') as f:
         return json.loads(f.read().decode('utf-8-sig'))
+
+
+def write_json(dst: str, obj: dict):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, 'w', encoding='utf8') as f:
+        return json.dump(obj, f, indent=2, ensure_ascii=False)
