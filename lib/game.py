@@ -49,7 +49,7 @@ class Game:
 
     def encode_all(self):
         for f in dir(self):
-            if f.__name__.startswith('encode_') and f.__name__ != 'encode_all' and callable(getattr(self, f)):
+            if f.startswith('encode_') and f != 'encode_all' and callable(getattr(self, f)):
                 getattr(self, f)()
 
     def decode_all(self):
