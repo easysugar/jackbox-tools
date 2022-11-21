@@ -55,8 +55,8 @@ class Drawful2(Game):
             c['category'] = trans[cid].split('\n')[0].strip()
         return obj
 
-    @decode_mapping(PATH_BUILD_PROMPT, PATH_PROMPT)
-    def unpack_question(self, trans):
+    def unpack_question(self):
+        trans = read_json(PATH_BUILD_PROMPT)
         dirs = os.listdir(PATH_PROMPT_DIR)
         for cid in dirs:
             if not cid.isdigit():
