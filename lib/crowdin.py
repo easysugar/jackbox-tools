@@ -35,8 +35,9 @@ class Crowdin:
                 res.append({'id': t['user']['id'], 'createdAt': t['createdAt'].replace(tzinfo=utc)})
         return res
 
-    def get_project_files(self, project_id):
-        return [f['data']['id'] for f in self.client.source_files.list_files(project_id, limit=500)['data']]
+    def get_project_files(self, project_id, path: str = None):
+        list_files = self.client.source_files.list_files(project_id, limit=500)
+        return [f['data']['id'] for f in list_files['data'] if not path or f['data']['path'].startswith(path)]
 
     def get_all_approves(self, project_id):
         files = self.get_project_files(project_id)
