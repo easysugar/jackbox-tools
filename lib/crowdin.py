@@ -142,7 +142,7 @@ class Crowdin:
                 break
         return info
 
-    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST) -> List[dict]:
+    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST.values()) -> List[dict]:
         users = self.get_top_contributors_last_time(list_projects)
         info = self.get_users_info(list(users), list_projects)
         return [{'name': info[u]['name'], 'count': cnt, 'url': info[u]['avatar']} for u, cnt in users.most_common()]
