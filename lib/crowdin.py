@@ -228,3 +228,19 @@ class Crowdin:
             for sid in string_ids
             for x in self.client.string_translations.list_translation_approvals(project_id, stringId=sid, languageId='uk')['data']
         }
+
+    def get_directories_ids(self, project_id: int) -> Dict[str, int]:
+        directories = self.client.source_files.list_directories(project_id, limit=500)
+        paths = {}
+        for d in directories['data']:
+            d = d['data']
+            dir_id = d['id']
+            if d['directoryId'] is None:
+                paths[dir_id] = '/' + d['name']
+            else:
+                paths[dir_id] = paths[d['directoryId']] + '/' + d['name']
+        return {v: k for k, v in paths.items()}
+
+    def get_directory_progress(self, project_id: int, directory_id: int):
+        data = self.client.translation_status.get_directory_progress(project_id, directory_id)['data'][0]['data']
+        return {'translated': data['translationProgress'], 'approved': data['approvalProgress']}
