@@ -116,7 +116,11 @@ def draw_game_title(img: Image, game: str, width: int, height: int):
 
 
 def draw_game_percent(img: Image, game: str, width: int, height: int):
-    tr, apr = GAMES[game].get('translated', 0), GAMES[game].get('approved', 0)
+    try:
+        p = PROGRESS[game]
+    except KeyError:
+        return
+    tr, apr = p['translated'], p['approved']
     if not tr:
         return
     new_bar(img, width // 5, height * 2 // 3, width * 3 // 5, 15, tr / 100, apr / 100)
