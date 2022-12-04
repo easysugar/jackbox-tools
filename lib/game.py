@@ -66,6 +66,7 @@ class Game:
         self._write_json(src, obj)
 
     def copy_to_release(self, src: str, dst: str, start_ts: datetime):
+        print('Coping to release')
         for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
             for f in files:
                 fpath = os.path.join(root, f)
@@ -138,4 +139,3 @@ def decode_mapping(*files, out_json=True):
 
 
 encode_mapping = decode_mapping
-
