@@ -155,6 +155,9 @@ class Crowdin:
     def download_last_build(self, project_id: int, path_build='build.zip'):
         self._download_build(project_id, self._get_last_build_id(project_id), path_build)
 
+    def create_build(self, project_id: int):
+        self.client.translations.build_crowdin_project_translation(project_id)
+
     @staticmethod
     def unzip_build(path_build: str = 'build.zip', path_folder: str = 'build'):
         with zipfile.ZipFile(path_build, 'r') as zip_ref:
