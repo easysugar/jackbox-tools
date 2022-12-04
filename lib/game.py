@@ -1,13 +1,11 @@
 import functools
-import json
-import os
 import re
-import shutil
 from datetime import datetime
-from pathlib import Path
 from typing import Dict
 
 import tqdm
+
+from .common import *
 
 
 class Game:
@@ -28,9 +26,7 @@ class Game:
 
     @staticmethod
     def _write_json(dst: str, obj):
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-        with open(dst, 'w', encoding='utf8') as f:
-            return json.dump(obj, f, indent=2, ensure_ascii=False)
+        return write_json(dst, obj)
 
     # @staticmethod
     # def _encode_for_swf(text: str):
@@ -51,18 +47,14 @@ class Game:
 
     def encode_all(self):
         for f in dir(self):
-            if f.__name__.startswith('encode_') and f.__name__ != 'encode_all' and callable(getattr(self, f)):
+            if f.startswith('encode_') and f != 'encode_all' and callable(getattr(self, f)):
                 getattr(self, f)()
 
     def decode_all(self):
-        for f in dir(self):
-            if f.startswith('decode_') and f != 'decode_all' and callable(getattr(self, f)):
-                getattr(self, f)()
-
-    def unpack_all(self):
-        for f in dir(self):
-            if f.startswith('unpack_') and f != 'unpack_all' and callable(getattr(self, f)):
-                getattr(self, f)()
+        print('Decoding', self.__class__.__name__)
+        to_call = [f for f in dir(self) if (f.startswith('decode_') or f.startswith('unpack_')) and f != 'decode_all' and callable(getattr(self, f))]
+        for f in tqdm.tqdm(to_call):
+            getattr(self, f)()
 
     def update_localization(self, src: str, translation: str):
         obj = self._read_json(src)
@@ -74,6 +66,7 @@ class Game:
         self._write_json(src, obj)
 
     def copy_to_release(self, src: str, dst: str, start_ts: datetime):
+        print('Coping to release')
         for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
             for f in files:
                 fpath = os.path.join(root, f)
@@ -109,14 +102,26 @@ class Game:
                 processed.add(text)
                 suffix = re.search(r'(\[[\w=]+])*$', text)
                 text = text.replace("'", r"\'").replace('"', r'\"')
-                trans = translation[mid].replace("'", r"\'").replace('"', r'\"')
+                trans = translation[mid].replace("'", r"\'").replace('"', r'\"').replace('\n', r'\n')
                 old = '^' + text + '^'
                 new = '^' + trans + ('' if not suffix else suffix.group(0)) + '^'
                 source = source.replace(old, new, 1)
         return source
 
 
-def decode_mapping(*files):
+def read_from_folder(cid: str, path_folder: str):
+    path = os.path.join(path_folder, cid, 'data.jet')
+    x = read_json(path)
+    return {_['n']: _ for _ in x['fields']}
+
+
+def write_to_folder(cid: str, path_folder: str, value: dict):
+    path = os.path.join(path_folder, cid, 'data.jet')
+    x = {'fields': list(value.values())}
+    write_json(path, x)
+
+
+def decode_mapping(*files, out_json=True):
     """Read several JSON files and write result into a new file"""
 
     def decorator(func):
@@ -126,7 +131,7 @@ def decode_mapping(*files):
             objs = [self._read_json(f) for f in files[:-1]]
             obj = func(self, *objs, *args, **kwargs)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
-            self._write_json(dst, obj)
+            self._write_json(dst, obj) if out_json else self._write(dst, obj)
 
         return wrapped
 
@@ -134,15 +139,3 @@ def decode_mapping(*files):
 
 
 encode_mapping = decode_mapping
-
-
-def copy_file(src: str, dst: str):
-    """Copy file from `src` to `dst`. Create all directories that are used in `dst` path"""
-    dst_folder = os.path.dirname(dst)
-    Path(dst_folder).mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(src, dst)
-
-
-def read_json(src: str):
-    with open(src, 'rb') as f:
-        return json.loads(f.read().decode('utf-8-sig'))
