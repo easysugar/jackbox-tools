@@ -75,7 +75,7 @@ class Drawful2(Game):
     def decode_localization(self):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
 
-    @decode_mapping(PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, write_json=False)
+    @decode_mapping(PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, out_json=False)
     def decode_media_dict(self, audio):
         source = self._read(PATH_SOURCE_DICT)
         editable = self._read(PATH_EDITABLE_DICT)

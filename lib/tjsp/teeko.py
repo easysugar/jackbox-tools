@@ -52,7 +52,7 @@ class TeeKO(Game):
         return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'
                 and v['locale'] == 'en' and not v['text'].startswith('SFX/')}
 
-    @decode_mapping(PATH_BUILD_AUDIO, PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, write_json=False)
+    @decode_mapping(PATH_BUILD_AUDIO, PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, out_json=False)
     def decode_media_dict(self, audio, text):
         source = self._read(PATH_SOURCE_DICT)
         editable = self._read(PATH_EDITABLE_DICT)
