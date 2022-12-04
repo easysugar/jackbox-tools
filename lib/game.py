@@ -1,13 +1,11 @@
 import functools
-import json
-import os
 import re
-import shutil
 from datetime import datetime
-from pathlib import Path
 from typing import Dict
 
 import tqdm
+
+from .common import *
 
 
 class Game:
@@ -53,6 +51,7 @@ class Game:
                 getattr(self, f)()
 
     def decode_all(self):
+        print('Decoding', self.__class__.__name__)
         to_call = [f for f in dir(self) if (f.startswith('decode_') or f.startswith('unpack_')) and f != 'decode_all' and callable(getattr(self, f))]
         for f in tqdm.tqdm(to_call):
             getattr(self, f)()
@@ -121,7 +120,7 @@ def write_to_folder(cid: str, path_folder: str, value: dict):
     write_json(path, x)
 
 
-def decode_mapping(*files, write_json=True):
+def decode_mapping(*files, out_json=True):
     """Read several JSON files and write result into a new file"""
 
     def decorator(func):
@@ -131,7 +130,7 @@ def decode_mapping(*files, write_json=True):
             objs = [self._read_json(f) for f in files[:-1]]
             obj = func(self, *objs, *args, **kwargs)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
-            self._write_json(dst, obj) if write_json else self._write(dst, obj)
+            self._write_json(dst, obj) if out_json else self._write(dst, obj)
 
         return wrapped
 
@@ -140,20 +139,3 @@ def decode_mapping(*files, write_json=True):
 
 encode_mapping = decode_mapping
 
-
-def copy_file(src: str, dst: str):
-    """Copy file from `src` to `dst`. Create all directories that are used in `dst` path"""
-    dst_folder = os.path.dirname(dst)
-    Path(dst_folder).mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(src, dst)
-
-
-def read_json(src: str):
-    with open(src, 'rb') as f:
-        return json.loads(f.read().decode('utf-8-sig'))
-
-
-def write_json(dst: str, obj: dict):
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    with open(dst, 'w', encoding='utf8') as f:
-        return json.dump(obj, f, indent=2, ensure_ascii=False)
