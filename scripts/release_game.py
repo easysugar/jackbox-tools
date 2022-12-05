@@ -1,24 +1,37 @@
 from datetime import datetime
 
-from lib import TMP2
+from lib import TMP2, TeeKO, Drawful2
 
-GAME = 'tmp2'
-PROJECT = 'Jackbox UA'
-AUDIO_PATH = '/Drawful2/audio_subtitles.json'
-PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua'
-START_TIME = datetime(2022, 7, 25)
+START_TIME = datetime(2022, 11, 25)
 
-if __name__ == '__main__':
+
+def release_drawful2():
+    PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\Drawful 2'
+    PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\drawful2\jackbox-drawful-2-ua'
+    t = Drawful2()
+    t.decode_localization()
+    t.decode_decoy()
+    t.decode_prompt()
+    t.unpack_question()
+    t.copy_to_release(PATH_GAME, PATH_RELEASE, START_TIME)
+
+
+def release_starter_pack():
+    PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter'
+    PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua'
     t = TMP2()
     t.decode_all()
-    t.update_localization(r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\localization_manager.json',
-                          '../build/uk/localization_managerEN.json')
-    t.update_localization(r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\LocalizationPause.json',
-                          '../build/uk/LocalizationPauseEN.json')
-    t.update_localization(r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\Localization.json',
-                          '../build/uk/LocalizationEN-MAIN.json')
-    t.update_localization(r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\PartyPack\Localization.json',
-                          '../build/uk/LocalizationPack.json')
-
+    t = TeeKO()
+    t.decode_all()
+    t.update_localization(rf'{PATH_GAME}\localization_manager.json', '../build/uk/localization_managerEN.json')
+    t.update_localization(rf'{PATH_GAME}\LocalizationPause.json', '../build/uk/LocalizationPauseEN.json')
+    t.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/LocalizationEN-MAIN.json')
+    t.update_localization(rf'{PATH_GAME}\games\PartyPack\Localization.json', '../build/uk/LocalizationPack.json')
+    t.update_localization(rf'{PATH_GAME}\localization_manager.json', '../build/uk/localization_managerEN.json')
+    t.update_localization(rf'{PATH_GAME}\games\triviadeath2\Localization.json', '../build/uk/TMP2/LocalizationEN.json')
+    t.update_localization(rf'{PATH_GAME}\games\AwShirt\Localization.json', '../build/uk/TeeKO/LocalizationShirts.json')
     t.copy_to_release(PATH_GAME, PATH_RELEASE, START_TIME)
+
+
+if __name__ == '__main__':
+    release_starter_pack()
