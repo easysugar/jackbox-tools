@@ -20,8 +20,9 @@ class Crowdin:
 
         self.client = Client()
         self.start_ts = (start_ts or datetime.now() - timedelta(days=7)).replace(tzinfo=utc)
+        self.usernames = {}
 
-    def get_all_translations(self, project_id: int):
+    def get_all_translations(self, project_id: int, strings_ids: Set[int] = None):
         res = []
         offset = 0
         while True:
@@ -32,12 +33,16 @@ class Crowdin:
             offset += 500
             for t in data:
                 t = t['data']
-                res.append({
+                if strings_ids is not None and t['stringId'] not in strings_ids:
+                    continue
+                item = {
                     'id': t['user']['id'],
                     'username': t['user'].get('username') or t['user'].get('fullName'),
                     'createdAt': t['createdAt'].replace(tzinfo=utc),
                     'string_id': t['stringId'],
-                })
+                }
+                res.append(item)
+                self.usernames[item['id']] = item['username']
         return res
 
     def get_project_files(self, project_id, path: str = None):
@@ -87,17 +92,18 @@ class Crowdin:
                 res.append(t['id'])
         return res
 
-    def _get_users_counter_last_time(self, project_id: int, func: Callable) -> Counter:
+    def _get_users_counter_last_time(self, project_id: int, func: Callable, *args, **kwargs) -> Counter:
         ts = self.start_ts
         users = Counter()
-        res = func(project_id)
+        res = func(project_id, *args, **kwargs)
         for i in res:
             if i['createdAt'] > ts:
                 users[i['id']] += 1
         return users
 
-    def get_translators_last_time(self, project_id: int) -> Counter:
-        return self._get_users_counter_last_time(project_id, self.get_all_translations)
+    def get_translators_last_time(self, project_id: int, path: str) -> Counter:
+        strings_ids = self.get_strings_ids_by_folder(project_id, path) if path else None
+        return self._get_users_counter_last_time(project_id, self.get_all_translations, strings_ids)
 
     def get_commenters_last_time(self, project_id: int) -> Counter:
         return self._get_users_counter_last_time(project_id, self.get_all_comments)
@@ -106,14 +112,14 @@ class Crowdin:
         return self._get_users_counter_last_time(project_id, self.get_all_approves)
 
     @staticmethod
-    def _get_total_by_projects(list_projects: List[int], func: Callable) -> Counter:
+    def _get_total_by_projects(list_projects: List[int], func: Callable, *args, **kwargs) -> Counter:
         res = Counter()
         for jid in list_projects:
-            res += func(jid)
+            res += func(jid, *args, **kwargs)
         return res
 
-    def get_total_translators(self, list_projects: List[int]) -> Counter:
-        return self._get_total_by_projects(list_projects, self.get_translators_last_time)
+    def get_total_translators(self, list_projects: List[int], path) -> Counter:
+        return self._get_total_by_projects(list_projects, self.get_translators_last_time, path)
 
     def get_total_approvers(self, list_projects: List[int]) -> Counter:
         return self._get_total_by_projects(list_projects, self.get_approvers_last_time)
@@ -121,9 +127,9 @@ class Crowdin:
     def get_total_commenters(self, list_projects: List[int]) -> Counter:
         return self._get_total_by_projects(list_projects, self.get_commenters_last_time)
 
-    def get_top_contributors_last_time(self, list_projects: List[int]) -> Counter:
+    def get_top_contributors_last_time(self, list_projects: List[int], path: str) -> Counter:
         return (
-            self.get_total_translators(list_projects)
+            self.get_total_translators(list_projects, path)
             # self.get_total_approvers(list_projects) +
             # self.get_total_commenters(list_projects)
         )
@@ -143,10 +149,11 @@ class Crowdin:
                 break
         return info
 
-    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST.values()) -> List[dict]:
-        users = self.get_top_contributors_last_time(list_projects)
+    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST.values(), path: str = None) -> List[dict]:
+        users = self.get_top_contributors_last_time(list_projects, path)
         info = self.get_users_info(list(users), list_projects)
-        return [{'name': info[u]['name'], 'count': cnt, 'url': info[u]['avatar']} for u, cnt in users.most_common()]
+        return [{'name': self.usernames.get(u) or info[u]['name'], 'count': cnt, 'url': None if u not in info else info[u]['avatar']}
+                for u, cnt in users.most_common()]
 
     def _get_last_build_id(self, project_id: int) -> int:
         return self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']['id']
