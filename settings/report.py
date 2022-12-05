@@ -1,3 +1,5 @@
+import json
+
 BLUE = (89, 180, 222)
 GREEN = (74, 186, 74)
 GREY = (220, 222, 220)
@@ -20,13 +22,13 @@ GRID = {
 }
 GAMES = {
     'q3': {'name': 'Жартлист 3'},
-    'q2': {'name': 'Жартлист 2', 'approved': 78, 'translated': 100},
-    'tmp2': {'name': 'Смертельні\nВечорниці 2', 'approved': 43, 'translated': 99},
-    'tko': {'name': 'Футбол К.О.', 'approved': 100, 'translated': 100, 'actor': 'Pad0n', 'status': '👑'},
-    'd2': {'name': 'Малювач 2', 'approved': 66, 'translated': 99, 'actor': 'Lunar Shadow'},
+    'q2': {'name': 'Жартлист 2'},
+    'tmp2': {'name': 'Смертельні\nВечорниці 2'},
+    'tko': {'name': 'Футбол К.О.', 'actor': 'Pad0n', 'status': '👑'},
+    'd2': {'name': 'Малювач 2', 'actor': 'Lunar Shadow'},
     'poll': {'name': 'Шпигадаш'},
     'tmp1': {'name': 'Смертельні\nВечорниці'},
-    'fakin': {'name': 'Обдурисвіт', 'approved': 7, 'translated': 27}
+    'fakin': {'name': 'Обдурисвіт'}
 }
 TOP_CONTRIBUTORS_TEXT = "Топ контриб'юторів"
 
@@ -45,45 +47,5 @@ AVATARS = {
     'Pad0n': 'https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg',
 }
 
-CONTRIBUTORS = [
-    {
-        "name": "Artem Tsynoborenko",
-        "count": 1681,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15373090/medium/fc84372c61988d23bca06c328bbfaa7a.jpeg"
-    },
-    {
-        "name": "Irinniada",
-        "count": 1603,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15154446/medium/4c7c90ac5336b1f46da392ad9437ee6f.png"
-    },
-    {
-        "name": "easy.sugar",
-        "count": 1374,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15271256/medium/109a081d51c0b02507963f58320e63ef.jpeg"
-    },
-    {
-        "name": "Timonn",
-        "count": 416,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15254186/medium/2945d8546ba2af1a3a9cddff0fe81280_default.png"
-    },
-    {
-        "name": "h-hh-hhh",
-        "count": 176,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15433330/medium/4cbe28eaad008cd7988aeb39a932b876.png"
-    },
-    {
-        "name": "fozerion",
-        "count": 14,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15476814/medium/5f3c7ae3f81b0b7a7d5c82e2a48dea96.png"
-    },
-    {
-        "name": "viktor_kozachok",
-        "count": 5,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15424414/medium/cd0facc897f92f62ac663f26ab71feda.png"
-    },
-    {
-        "name": "ilyamaximencko",
-        "count": 1,
-        "url": "https://crowdin-static.downloads.crowdin.com/avatar/15433512/medium/e8a29581bced70d99520dc75d173ad25.png"
-    }
-]
+CONTRIBUTORS = json.load(open('contributors.json'))
+PROGRESS = json.load(open('progress.json'))

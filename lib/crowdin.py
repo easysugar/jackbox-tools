@@ -1,7 +1,7 @@
 import zipfile
 from collections import Counter
 from datetime import datetime, timedelta
-from typing import Callable, List, Dict
+from typing import Callable, List, Dict, Set
 
 import pytz
 import requests
@@ -20,8 +20,9 @@ class Crowdin:
 
         self.client = Client()
         self.start_ts = (start_ts or datetime.now() - timedelta(days=7)).replace(tzinfo=utc)
+        self.usernames = {}
 
-    def get_all_translations(self, project_id: int):
+    def get_all_translations(self, project_id: int, strings_ids: Set[int] = None):
         res = []
         offset = 0
         while True:
@@ -32,7 +33,16 @@ class Crowdin:
             offset += 500
             for t in data:
                 t = t['data']
-                res.append({'id': t['user']['id'], 'createdAt': t['createdAt'].replace(tzinfo=utc)})
+                if strings_ids is not None and t['stringId'] not in strings_ids:
+                    continue
+                item = {
+                    'id': t['user']['id'],
+                    'username': t['user'].get('username') or t['user'].get('fullName'),
+                    'createdAt': t['createdAt'].replace(tzinfo=utc),
+                    'string_id': t['stringId'],
+                }
+                res.append(item)
+                self.usernames[item['id']] = item['username']
         return res
 
     def get_project_files(self, project_id, path: str = None):
@@ -82,17 +92,18 @@ class Crowdin:
                 res.append(t['id'])
         return res
 
-    def _get_users_counter_last_time(self, project_id: int, func: Callable) -> Counter:
+    def _get_users_counter_last_time(self, project_id: int, func: Callable, *args, **kwargs) -> Counter:
         ts = self.start_ts
         users = Counter()
-        res = func(project_id)
+        res = func(project_id, *args, **kwargs)
         for i in res:
             if i['createdAt'] > ts:
                 users[i['id']] += 1
         return users
 
-    def get_translators_last_time(self, project_id: int) -> Counter:
-        return self._get_users_counter_last_time(project_id, self.get_all_translations)
+    def get_translators_last_time(self, project_id: int, path: str) -> Counter:
+        strings_ids = self.get_strings_ids_by_folder(project_id, path) if path else None
+        return self._get_users_counter_last_time(project_id, self.get_all_translations, strings_ids)
 
     def get_commenters_last_time(self, project_id: int) -> Counter:
         return self._get_users_counter_last_time(project_id, self.get_all_comments)
@@ -101,14 +112,14 @@ class Crowdin:
         return self._get_users_counter_last_time(project_id, self.get_all_approves)
 
     @staticmethod
-    def _get_total_by_projects(list_projects: List[int], func: Callable) -> Counter:
+    def _get_total_by_projects(list_projects: List[int], func: Callable, *args, **kwargs) -> Counter:
         res = Counter()
         for jid in list_projects:
-            res += func(jid)
+            res += func(jid, *args, **kwargs)
         return res
 
-    def get_total_translators(self, list_projects: List[int]) -> Counter:
-        return self._get_total_by_projects(list_projects, self.get_translators_last_time)
+    def get_total_translators(self, list_projects: List[int], path) -> Counter:
+        return self._get_total_by_projects(list_projects, self.get_translators_last_time, path)
 
     def get_total_approvers(self, list_projects: List[int]) -> Counter:
         return self._get_total_by_projects(list_projects, self.get_approvers_last_time)
@@ -116,11 +127,11 @@ class Crowdin:
     def get_total_commenters(self, list_projects: List[int]) -> Counter:
         return self._get_total_by_projects(list_projects, self.get_commenters_last_time)
 
-    def get_top_contributors_last_time(self, list_projects: List[int]) -> Counter:
+    def get_top_contributors_last_time(self, list_projects: List[int], path: str) -> Counter:
         return (
-            self.get_total_translators(list_projects) +
-            self.get_total_approvers(list_projects) +
-            self.get_total_commenters(list_projects)
+            self.get_total_translators(list_projects, path)
+            # self.get_total_approvers(list_projects) +
+            # self.get_total_commenters(list_projects)
         )
 
     def get_users_info(self, users: List[int], list_projects: List[int]) -> dict:
@@ -138,10 +149,11 @@ class Crowdin:
                 break
         return info
 
-    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST) -> List[dict]:
-        users = self.get_top_contributors_last_time(list_projects)
+    def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST.values(), path: str = None) -> List[dict]:
+        users = self.get_top_contributors_last_time(list_projects, path)
         info = self.get_users_info(list(users), list_projects)
-        return [{'name': info[u]['name'], 'count': cnt, 'url': info[u]['avatar']} for u, cnt in users.most_common()]
+        return [{'name': self.usernames.get(u) or info[u]['name'], 'count': cnt, 'url': None if u not in info else info[u]['avatar']}
+                for u, cnt in users.most_common()]
 
     def _get_last_build_id(self, project_id: int) -> int:
         return self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']['id']
@@ -163,7 +175,9 @@ class Crowdin:
         with zipfile.ZipFile(path_build, 'r') as zip_ref:
             zip_ref.extractall(path_folder)
 
-    def get_strings_ids(self, project_id: int, file_id: int) -> Dict[str, int]:
+    def get_strings_ids_map(self, project_id: int, file_id: int = None, file_path: str = None) -> Dict[str, int]:
+        if file_id:
+            file_id = [f['data']['id'] for f in self.client.source_files.list_files(project_id)['data'] if f['data']['path'] == file_path][0]
         result = {}
         offset = 0
         while True:
@@ -177,10 +191,29 @@ class Crowdin:
                 result[_id] = s['data']['id']
             offset += 500
 
+    def get_string_ids(self, project_id: int, file_id: int) -> Set[int]:
+        result = set()
+        offset = 0
+        while True:
+            batch = self.client.source_strings.list_strings(project_id, file_id, limit=500, offset=offset)
+            if not batch or not batch['data']:
+                return result
+            for s in batch['data']:
+                result.add(s['data']['id'])
+            offset += 500
+
+    def get_strings_ids_by_folder(self, project_id: int, path: str) -> Set[int]:
+        all_files = self.client.source_files.list_files(project_id)['data']
+        string_ids = set()
+        for f in all_files:
+            if f['data']['path'].startswith(path):
+                string_ids |= self.get_string_ids(project_id, f['data']['id'])
+        return string_ids
+
     def publish_audio_links(self, project_id: int, links: dict, crowdin_audio_path: str):
         list_files = self.client.source_files.list_files(project_id, limit=500)
         file_id = [f['data']['id'] for f in list_files['data'] if f['data']['path'] == crowdin_audio_path][0]
-        strings = self.get_strings_ids(project_id, file_id)
+        strings = self.get_strings_ids_map(project_id, file_id)
         for audio_id in tqdm.tqdm(list(strings)):
             self.publish_comment(project_id, strings[audio_id], links[audio_id])
 
@@ -196,3 +229,29 @@ class Crowdin:
                 "issueType": None,
             },
         )
+
+    def get_strings_texts(self, project_id: int, string_ids: List[int]):
+        return {x: self.client.source_strings.get_string(project_id, x)['data']['text'] for x in string_ids}
+
+    def get_approved_translations(self, project_id: int, string_ids: List[int]):
+        return {
+            sid: self.client.string_translations.get_translation(project_id, translationId=x['data']['translationId'])['data']['text']
+            for sid in string_ids
+            for x in self.client.string_translations.list_translation_approvals(project_id, stringId=sid, languageId='uk')['data']
+        }
+
+    def get_directories_ids(self, project_id: int) -> Dict[str, int]:
+        directories = self.client.source_files.list_directories(project_id, limit=500)
+        paths = {}
+        for d in directories['data']:
+            d = d['data']
+            dir_id = d['id']
+            if d['directoryId'] is None:
+                paths[dir_id] = '/' + d['name']
+            else:
+                paths[dir_id] = paths[d['directoryId']] + '/' + d['name']
+        return {v: k for k, v in paths.items()}
+
+    def get_directory_progress(self, project_id: int, directory_id: int):
+        data = self.client.translation_status.get_directory_progress(project_id, directory_id)['data'][0]['data']
+        return {'translated': data['translationProgress'], 'approved': data['approvalProgress']}
