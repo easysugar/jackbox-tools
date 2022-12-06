@@ -11,6 +11,15 @@ This repository contains tools for translating Jackbox games, including:
 * document generation of translations with original audio for voice actors
 * preparation of games releases
 
+## Pre-setup
+
+Install Python 3.7+.  
+Install Python libraries:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Settings
 
 All tools settings are stored at `settings/` directory.  
