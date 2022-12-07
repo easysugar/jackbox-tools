@@ -176,7 +176,7 @@ class Crowdin:
             zip_ref.extractall(path_folder)
 
     def get_strings_ids_map(self, project_id: int, file_id: int = None, file_path: str = None) -> Dict[str, int]:
-        if file_id:
+        if file_id is None:
             file_id = [f['data']['id'] for f in self.client.source_files.list_files(project_id)['data'] if f['data']['path'] == file_path][0]
         result = {}
         offset = 0
