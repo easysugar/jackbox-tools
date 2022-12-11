@@ -78,16 +78,23 @@ class Game:
     def _encode_subtitles(obj: dict, _type='A') -> Dict[str, str]:
         return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == _type and v['tags'] == 'en'}
 
+    def _update_media_dict(self, source: str, translation: Dict[str, str], editable: str):
+        return self._update_media_dict_template(source, translation, editable, r'^\$\[(\d+)]\[en].*$')
+
+    def _update_old_media_dict(self, source: str, translation: Dict[str, str], editable: str):
+        return self._update_media_dict_template(source, translation, editable, r'^[\$#]\[(\d+)].*$')
+
     @staticmethod
-    def _update_media_dict(source: str, translation: Dict[str, str], editable: str):
+    def _update_media_dict_template(source, translation, editable, match_pattern):
         lines = editable.split('\n')
         mids = set()
         processed = set()
         for i, l in enumerate(lines):
-            match = re.search(r'^\$\[(\d+)]\[en].*$', l)
+            match = re.search(match_pattern, l)
             if match:
                 mid = match.group(1)
                 if mid not in translation:
+                    print('mid not in translation', mid)
                     continue
                 assert int(mid)
                 assert mid not in mids
