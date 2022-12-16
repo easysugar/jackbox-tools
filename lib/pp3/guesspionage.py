@@ -39,3 +39,24 @@ class Guesspionage(Game):
             }}
             result[cid] = body
         return result
+
+    @decode_mapping(PATH_QUESTIONS, folder + 'questions.json')
+    def encode_questions(self, obj):
+        result = {}
+        unique_fields = {}
+        for c in obj['content']:
+            cid = str(c['id'])
+            x = read_from_folder(cid, PATH_QUESTIONS_DIR)
+            body = {x['QText']['v']: {
+                "question": x['PollQ']['v'],
+                'text': x['QText']['v'],
+                'data_mode': x['DataMode']['v'],
+                'exp_results': x['ExpResults']['v'],
+                'answer': x['A']['v'],
+                'choices': [x[i]['v'] for i in sorted(x) if i.startswith('Choice')],
+                'target': x['Target']['v'],
+            }}
+            result[cid] = body
+            unique_fields.update({k: x[k]['v'] for k in x if 'v' in x[k]})
+        print('unique fields:', unique_fields)
+        return result
