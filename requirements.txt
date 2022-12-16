@@ -1,0 +1,2 @@
+pydrive
+crowdin-api-client
