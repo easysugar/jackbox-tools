@@ -1,5 +1,5 @@
 TOKEN = "changeme"
-PROJECT_LIST = {'Jackbox UA': 528690, 'Jackbox Starter Pack': 528716}
+PROJECT_LIST = {'general': 528690, 'starter': 528716}
 
 GAME_PATHS = {
     'd2': '/Drawful2',

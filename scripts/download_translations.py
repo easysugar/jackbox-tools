@@ -2,8 +2,8 @@ import time
 
 from lib.crowdin import Crowdin, PROJECT_LIST
 
-# PROJECT = 'Jackbox Starter Pack UA'
-PROJECT = 'Jackbox UA'
+PROJECT = 'starter'
+# PROJECT = 'general'
 PATH_BUILD = '../build.zip'
 PATH_FOLDER = '../build'
 
