@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from lib import OldTeeKO
 from lib.game import Game
+from .old_teeko import OldTeeKO
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3'
 PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\jpp3\jackbox-pack-3'
