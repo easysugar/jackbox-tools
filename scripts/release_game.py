@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from lib import TMP2, TeeKO, Drawful2
+from lib import *
+from lib.pp3.jpp3 import JPP3
 
-START_TIME = datetime(2022, 11, 25)
+START_TIME = datetime(2022, 12, 5)
 
 
 def release_drawful2():
@@ -33,5 +34,9 @@ def release_starter_pack():
     t.copy_to_release(PATH_GAME, PATH_RELEASE, START_TIME)
 
 
+def release_pack_3():
+    JPP3().release(START_TIME)
+
+
 if __name__ == '__main__':
-    release_starter_pack()
+    release_pack_3()
