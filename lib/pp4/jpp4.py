@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from lib.game import Game
+from .internet import Internet
 from .monster import Monster
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4'
@@ -14,6 +15,7 @@ class JPP4(Game):
         self._encode_localization(rf'{PATH_GAME}\games\MonsterMingle\Localization.json', '../data/pp4/monster/localization.json')
         self._encode_localization(rf'{PATH_GAME}\games\SurviveTheInternet\Localization.json', '../data/pp4/internet/localization.json')
         Monster().encode_all()
+        Internet().encode_all()
 
     def decode_all(self):
         self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/JPP3/localization.json')

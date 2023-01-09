@@ -46,7 +46,8 @@ class Game:
     #     self._write(dst, media)
 
     def encode_all(self):
-        for f in dir(self):
+        print('Encoding', self.__class__.__name__)
+        for f in tqdm.tqdm(dir(self)):
             if f.startswith('encode_') and f != 'encode_all' and callable(getattr(self, f)):
                 getattr(self, f)()
 
@@ -75,8 +76,8 @@ class Game:
                     copy_file(fpath, fpath.replace(src, dst))
 
     @staticmethod
-    def _encode_subtitles(obj: dict, _type='A') -> Dict[str, str]:
-        return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == _type and v['tags'] == 'en'}
+    def _encode_subtitles(obj: dict, _type='A', tags='en') -> Dict[str, str]:
+        return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == _type and v['tags'] == tags}
 
     def _update_media_dict(self, source: str, translation: Dict[str, str], editable: str):
         return self._update_media_dict_template(source, translation, editable, r'^\$\[(\d+)]\[en].*$')
