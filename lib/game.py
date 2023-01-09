@@ -61,7 +61,7 @@ class Game:
         trans = self._read_json(translation)
         if 'en' not in trans:
             trans = {'en': trans}
-        assert list(obj['table']['en']) == list(trans['en'])
+        assert set(obj['table']['en']) <= set(trans['en'])
         obj['table']['en'] = trans['en']
         self._write_json(src, obj)
 
@@ -84,6 +84,14 @@ class Game:
     def _update_old_media_dict(self, source: str, translation: Dict[str, str], editable: str):
         return self._update_media_dict_template(source, translation, editable, r'^[\$#]\[(\d+)].*$')
 
+    def _encode_localization(self, source: str, destination: str):
+        obj = self._read_json(source)
+        try:
+            obj = obj['table']['en']
+        except KeyError:
+            obj = obj['table']
+        self._write_json(destination, obj)
+
     @staticmethod
     def _update_media_dict_template(source, translation, editable, match_pattern):
         lines = editable.split('\n')
@@ -94,7 +102,7 @@ class Game:
             if match:
                 mid = match.group(1)
                 if mid not in translation:
-                    print('mid not in translation', mid)
+                    # print('mid not in translation', mid)
                     continue
                 assert int(mid)
                 assert mid not in mids

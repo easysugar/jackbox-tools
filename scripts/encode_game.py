@@ -1,5 +1,4 @@
-from lib import Guesspionage
+from lib import JPP4
 
 if __name__ == '__main__':
-    p = Guesspionage()
-    p.encode_all()
+    JPP4().encode_all()
