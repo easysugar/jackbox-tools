@@ -16,8 +16,16 @@ PATH_QUESTION_KNIFE = PATH_EN + r'\TDQuestionKnife.jet'
 PATH_QUESTION_BOMB = PATH_EN + r'\TDQuestionBomb.jet'
 PATH_FINAL_ROUND = PATH_EN + r'\TDFinalRound.jet'
 PATH_WORDLIST_RULES = PATH + r'\wordlistRules_en.txt'
+
 # dirs
 PATH_QUESTION_DIR = PATH_EN + r'\TDQuestion'
+PATH_QUESTION_BOMB_DIR = PATH_EN + r'\TDQuestionBomb'
+PATH_QUESTION_GHOST_DIR = PATH_EN + r'\TDQuestionGhost'
+PATH_QUESTION_HAT_DIR = PATH_EN + r'\TDQuestionHat'
+PATH_QUESTION_KNIFE_DIR = PATH_EN + r'\TDQuestionKnife'
+PATH_QUESTION_MADNESS_DIR = PATH_EN + r'\TDQuestionMadness'
+PATH_QUESTION_WIG_DIR = PATH_EN + r'\TDQuestionWig'
+PATH_QUIPLASH_DIR = PATH_EN + r'\QuiplashContent'
 PATH_FINAL_ROUND_DIR = PATH_EN + r'\TDFinalRound'
 
 # encoded
