@@ -11,15 +11,8 @@ random.seed(34)
 
 
 class TMP2(Game):
-    @encode_mapping(PATH_QUIPLASH, PATH_ENCODED_QUIPLASH)
-    def encode_quiplash(self, obj: dict):
-        return {c['id']: c['prompt'].replace('[EventName=HOST/AltHost]', '') for c in obj['content']}
 
-    @decode_mapping(PATH_QUIPLASH, PATH_BUILD_QUIPLASH, PATH_QUIPLASH)
-    def decode_quiplash(self, obj, translations):
-        for c in obj['content']:
-            c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']]
-        return obj
+    # DICTATION
 
     @encode_mapping(PATH_DICTATION, PATH_ENCODED_DICTATION)
     def encode_dictation(self, obj: dict):
@@ -95,21 +88,19 @@ class TMP2(Game):
                 f['s'] = text
         self._write_json(path, obj)
 
-    def unpack_question(self):
-        obj = self._read_json(PATH_QUESTION)
-        translations = {int(i['id']): i['text'] for i in obj['content']}
-        dirs = os.listdir(PATH_QUESTION_DIR)
+    def _unpack_template(self, file, directory, callback, field='text'):
+        obj = self._read_json(file)
+        translations = {int(i['id']): i[field] for i in obj['content']}
+        dirs = os.listdir(directory)
         for folder in dirs:
             if folder.isdigit():
-                self._rewrite_question(translations, int(folder), os.path.join(PATH_QUESTION_DIR, folder, 'data.jet'))
+                callback(translations, int(folder), os.path.join(directory, folder, 'data.jet'))
+
+    def unpack_question(self):
+        return self._unpack_template(PATH_QUESTION, PATH_QUESTION_DIR, self._rewrite_question)
 
     def unpack_final_round(self):
-        obj = self._read_json(PATH_FINAL_ROUND)
-        translations = {int(i['id']): i['text'] for i in obj['content']}
-        dirs = os.listdir(PATH_FINAL_ROUND_DIR)
-        for folder in dirs:
-            if folder.isdigit():
-                self._rewrite_final_question(translations, int(folder), os.path.join(PATH_FINAL_ROUND_DIR, folder, 'data.jet'))
+        return self._unpack_template(PATH_FINAL_ROUND, PATH_FINAL_ROUND_DIR, self._rewrite_final_question)
 
     @encode_mapping('data/tmp2/encoded/expanded.json', 'data/tmp2/encoded/text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
@@ -209,6 +200,8 @@ class TMP2(Game):
                 c['choices'][i]['correct'] = i + 1 == answer
         return obj
 
+    # HAT
+
     @encode_mapping(PATH_QUESTION_HAT, 'data/tmp2/EncodedQuestionHat.json')
     def encode_question_hat(self, obj):
         return self._encode_question_template(obj)
@@ -216,6 +209,11 @@ class TMP2(Game):
     @decode_mapping(PATH_QUESTION_HAT, PATH_BUILD_QUESTION_HAT, PATH_QUESTION_HAT)
     def decode_question_hat(self, obj, trans):
         return self._decode_question_template(obj, trans)
+
+    def unpack_question_hat(self):
+        return self._unpack_template(PATH_QUESTION_HAT, PATH_QUESTION_HAT_DIR, self._rewrite_question)
+
+    # WIG
 
     @encode_mapping(PATH_QUESTION_WIG, 'data/tmp2/EncodedQuestionWig.json')
     def encode_question_wig(self, obj):
@@ -225,6 +223,11 @@ class TMP2(Game):
     def decode_question_wig(self, obj, trans):
         return self._decode_question_template(obj, trans)
 
+    def unpack_question_wig(self):
+        return self._unpack_template(PATH_QUESTION_WIG, PATH_QUESTION_WIG_DIR, self._rewrite_question)
+
+    # GHOST
+
     @encode_mapping(PATH_QUESTION_GHOST, 'data/tmp2/encoded/question_ghost.json')
     def encode_question_ghost(self, obj):
         return self._encode_question_template(obj, True)
@@ -232,6 +235,11 @@ class TMP2(Game):
     @decode_mapping(PATH_QUESTION_GHOST, PATH_BUILD_QUESTION_GHOST, PATH_QUESTION_GHOST)
     def decode_question_ghost(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
+
+    def unpack_question_ghost(self):
+        return self._unpack_template(PATH_QUESTION_GHOST, PATH_QUESTION_GHOST_DIR, self._rewrite_question)
+
+    # BOMB
 
     @encode_mapping(PATH_QUESTION_BOMB, 'data/tmp2/encoded/question_bomb.json')
     def encode_question_bomb(self, obj):
@@ -241,6 +249,11 @@ class TMP2(Game):
     def decode_question_bomb(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
 
+    def unpack_question_bomb(self):
+        return self._unpack_template(PATH_QUESTION_BOMB, PATH_QUESTION_BOMB_DIR, self._rewrite_question)
+
+    # KNIFE
+
     @encode_mapping(PATH_QUESTION_KNIFE, 'data/tmp2/encoded/question_knife.json')
     def encode_question_knife(self, obj):
         return self._encode_question_template(obj, True)
@@ -249,6 +262,11 @@ class TMP2(Game):
     def decode_question_knife(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
 
+    def unpack_question_knife(self):
+        return self._unpack_template(PATH_QUESTION_KNIFE, PATH_QUESTION_KNIFE_DIR, self._rewrite_question)
+
+    # MADNESS
+
     @encode_mapping(PATH_QUESTION_MADNESS, 'data/tmp2/encoded/question_madness.json')
     def encode_question_madness(self, obj):
         return self._encode_question_template(obj, True)
@@ -256,6 +274,41 @@ class TMP2(Game):
     @decode_mapping(PATH_QUESTION_MADNESS, PATH_BUILD_QUESTION_MADNESS, PATH_QUESTION_MADNESS)
     def decode_question_madness(self, obj, trans):
         return self._decode_question_template(obj, trans, True)
+
+    def unpack_question_madness(self):
+        return self._unpack_template(PATH_QUESTION_MADNESS, PATH_QUESTION_MADNESS_DIR, self._rewrite_question)
+
+    # QUIPLASH
+
+    @encode_mapping(PATH_QUIPLASH, PATH_ENCODED_QUIPLASH)
+    def encode_quiplash(self, obj: dict):
+        return {c['id']: c['prompt'].replace('[EventName=HOST/AltHost]', '') for c in obj['content']}
+
+    @decode_mapping(PATH_QUIPLASH, PATH_BUILD_QUIPLASH, PATH_QUIPLASH)
+    def decode_quiplash(self, obj, translations):
+        for c in obj['content']:
+            c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']]
+        return obj
+
+    def _rewrite_quiplash(self, translations: dict, oid: int, path: str):
+        obj = self._read_json(path)
+        text = '[EventName=HOST/AltHost]' + translations[oid]
+        text = text.replace('ʼ', "'")
+        fields = obj['fields']
+        assert len([f for f in fields if f['n'] == 'PromptAudio']) == 1
+        assert len([f for f in fields if f['n'] == 'PromptText']) == 1
+        assert [f for f in fields if f['n'] == 'PromptAudio'][0]['s'] == [f for f in fields if f['n'] == 'PromptText'][0]['v']
+        for f in fields:
+            if f['n'] == 'PromptAudio':
+                f['s'] = text
+            if f['n'] == 'PromptText':
+                f['v'] = text
+        self._write_json(path, obj)
+
+    def unpack_quiplash(self):
+        return self._unpack_template(PATH_QUIPLASH, PATH_QUIPLASH_DIR, self._rewrite_quiplash, field='prompt')
+
+    # MIRROR
 
     @encode_mapping(PATH_MIRROR_TUTORIAL, 'data/tmp2/encoded/mirror_tutorial.json')
     def encode_mirror_tutorial(self, obj):
@@ -276,6 +329,8 @@ class TMP2(Game):
         for c in obj['content']:
             c['password'] = translations[c['id']]
         return obj
+
+    # MIND MELD
 
     @encode_mapping(PATH_MIND_MELD, 'data/tmp2/encoded/mind_meld.json')
     def encode_mind_meld(self, obj):
