@@ -1,5 +1,6 @@
 import functools
 import re
+import zipfile
 from datetime import datetime
 from typing import Dict
 
@@ -54,6 +55,7 @@ class Game:
     def decode_all(self):
         print('Decoding', self.__class__.__name__)
         to_call = [f for f in dir(self) if (f.startswith('decode_') or f.startswith('unpack_')) and f != 'decode_all' and callable(getattr(self, f))]
+        to_call.sort()  # decode first, unpack second
         for f in tqdm.tqdm(to_call):
             getattr(self, f)()
 
@@ -74,6 +76,20 @@ class Game:
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
                 if ts >= start_ts:
                     copy_file(fpath, fpath.replace(src, dst))
+
+    @staticmethod
+    def make_archive(src: str):
+        zip_path = os.path.join(src, '.releases', 'release.zip')
+        zip_process = zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED)
+        for folder_path, _, filenames in os.walk(src):
+            if any([f.startswith('.') for f in folder_path.split(os.sep)]):
+                continue
+            for filename in filenames:
+                filepath = os.path.join(src, folder_path, filename)
+                if not filename.startswith('.'):
+                    zip_process.write(filepath, os.path.relpath(filepath, src))
+        zip_process.close()
+        print("Created archive")
 
     @staticmethod
     def _encode_subtitles(obj: dict, _type='A', tags='en') -> Dict[str, str]:
