@@ -1,7 +1,8 @@
 import json
 
 from lib.crowdin import Crowdin
-from settings.crowdin import PROJECT_LIST, GAME_PATHS
+from settings.crowdin import PROJECT_LIST
+from settings.report import GAMES
 
 SAVE_PATH = 'progress.json'
 
@@ -10,7 +11,8 @@ if __name__ == '__main__':
     progress = {}
     for project_id in PROJECT_LIST.values():
         directories = c.get_directories_ids(project_id)
-        for game, path in GAME_PATHS.items():
+        for game in GAMES:
+            path = GAMES[game].get('path')
             if path not in directories:
                 continue
             progress[game] = c.get_directory_progress(project_id, directories[path])

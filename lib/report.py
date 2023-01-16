@@ -1,3 +1,4 @@
+from collections import defaultdict
 from io import BytesIO
 from typing import Union
 
@@ -145,14 +146,14 @@ def draw_text_vertically(img: Image, text: str, x: int, y: int, width: int, heig
 
 
 def draw_voice_actor(img: Image, game: str, width: int, height: int):
-    actor: str = GAMES[game].get('actor')
+    actor: dict = GAMES[game].get('actor')
     if not actor:
         return
     font = ImageFont.truetype(*FONT_VOICE)
     # text = f'🔊 {actor}'
-    text = f'{actor}'
+    text = actor['name']
     draw_text(img, font, text, width, height, drawer=Pilmoji(img), margin_up=-0.1, margin_left=0.05, align='left bottom',
-              icon=AVATARS[actor])
+              icon=actor['img'])
 
 
 def draw_status_icon(img: Image, game: str, width: int, height: int):
@@ -174,7 +175,7 @@ def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
 
 
 def create_game_icon(game: str, width: int, height: int):
-    url = IMAGES[game]
+    url = GAMES[game]['img']
     img = load_img_from_url(url)
     filtered = img.filter(ImageFilter.GaussianBlur(radius=5))
     #     filtered.putalpha(128)
@@ -242,6 +243,10 @@ def new_bar(img, x, y, width, height, translate_progress, approve_progress,
 
 
 def create_report():
-    img = create_games_grid(GRID, WIDTH, HEIGHT, 3)
+    grid = defaultdict(list)
+    for game in GAMES:
+        grid[GAMES[game]['pack']].append(game)
+
+    img = create_games_grid(grid, WIDTH, HEIGHT, 3)
     img.save("report.png", "PNG")
     img.show()
