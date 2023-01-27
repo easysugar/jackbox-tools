@@ -6,15 +6,18 @@ GAME = 'drawful2-prompts'
 PROJECT = 'general'
 PATH = '/Drawful2/in-game/prompt.json'
 PATH_IN_BUILD = '../build/uk' + PATH
+PATH_LINKS_MAP = '../data/standalone/drawful2/audio_links.json'
 
 
 def get_prompts_from_file():
     obj = read_json(PATH_IN_BUILD)
+    links = read_json(PATH_LINKS_MAP)
     data = [
         {
             'id': sid,
             'prompt': value.split('\n', 1)[0],
             'comment': value.split('\n', 1)[1],
+            'link': links.get(str(sid)) or '',
         }
         for sid, value in obj.items()
         if '\n' in value
