@@ -142,8 +142,15 @@ class Crowdin:
                     u = self.client.users.get_member_info(jid, uid)
                 except:
                     continue
+                if u['data'].get('username') and u['data'].get('fullName'):
+                    try:
+                        name = '{0} "{2}" {1}'.format(*u['data'].get('fullName').split(' ', 1), u['data'].get('username'))
+                    except IndexError:
+                        name = '{0} "{1}"'.format(u['data'].get('fullName'), u['data'].get('username'))
+                else:
+                    name = u['data'].get('username') or u['data'].get('fullName')
                 info[uid] = {
-                    'name': u['data'].get('username') or u['data'].get('fullName'),
+                    'name': name,
                     'avatar': u['data'].get('avatarUrl'),
                 }
                 break
@@ -152,13 +159,13 @@ class Crowdin:
     def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST.values(), path: str = None) -> List[dict]:
         users = self.get_top_contributors_last_time(list_projects, path)
         info = self.get_users_info(list(users), list_projects)
-        return [{'name': self.usernames.get(u) or info[u]['name'], 'count': cnt, 'url': None if u not in info else info[u]['avatar']}
+        return [{'name': info[u]['name'] or self.usernames.get(u), 'count': cnt, 'url': None if u not in info else info[u]['avatar']}
                 for u, cnt in users.most_common()]
 
     def _get_last_build_id(self, project_id: int) -> int:
         build = self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']
         assert build['status'] == 'finished'
-        assert build['createdAt'] >= datetime.now() - timedelta(seconds=30)
+        assert build['createdAt'].timestamp() >= (datetime.now() - timedelta(seconds=30)).timestamp()
         return build['id']
 
     def _download_build(self, project_id: int, build_id, path_build: str):
