@@ -80,6 +80,7 @@ class Game:
     @staticmethod
     def make_archive(src: str):
         zip_path = os.path.join(src, '.releases', 'release.zip')
+        os.makedirs(os.path.dirname(zip_path), exist_ok=True)
         zip_process = zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED)
         for folder_path, _, filenames in os.walk(src):
             if any([f.startswith('.') for f in folder_path.split(os.sep)]):
