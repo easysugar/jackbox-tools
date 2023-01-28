@@ -1,5 +1,6 @@
 import os
 
+from lib.common import copy_file
 from lib.game import Game, encode_mapping, read_json, decode_mapping, read_from_folder, write_to_folder
 from settings.drawful2 import *
 
@@ -65,6 +66,7 @@ class Drawful2(Game):
             assert trans[cid].strip().count('\n') <= 1
             text, *comment = trans[cid].strip().split('\n')
             text = text.strip().replace('ʼ', "'")
+            assert bool('JokeAudio' in obj) == bool(len(comment)), f'Mismatch joke: {cid} with comment: {comment} and joke: {obj.get("JokeAudio")}'
             obj['QuestionText']['v'] = text
             if 'AlternateSpellings' in obj:
                 obj['AlternateSpellings']['v'] = text
@@ -82,12 +84,17 @@ class Drawful2(Game):
         translations = {**audio}
         return self._update_media_dict(source, translations, editable)
 
+    @staticmethod
+    def decode_translated_audio():
+        translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
+        original = set(os.listdir(PATH_AUDIO))
+        for file in translated:
+            if file in original:
+                copy_file(os.path.join(PATH_TRANSLATED_AUDIO, file), os.path.join(PATH_AUDIO, file))
+
     def release(self, start_time):
         PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\Drawful 2'
         PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\drawful2\jackbox-drawful-2-ua'
-        self.decode_localization()
-        self.decode_decoy()
-        self.decode_prompt()
-        self.unpack_question()
+        self.decode_all()
         self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
         self.make_archive(PATH_RELEASE)

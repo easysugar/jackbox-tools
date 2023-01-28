@@ -4,6 +4,7 @@ PATH_LOCALIZATION = PATH + r'\Localization.json'
 PATH_DECOY = PATH + r'\content\Drawful2Decoy.jet'
 PATH_PROMPT = PATH + r'\content\en\Drawful2Prompt.jet'
 PATH_PROMPT_DIR = PATH + r'\content\en\Drawful2Prompt'
+PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # data
 PATH_DATA = '../data/standalone/drawful2/'
@@ -18,3 +19,5 @@ PATH_BUILD_LOCALIZATION = PATH_BUILD + 'localization.json'
 PATH_BUILD_DECOY = PATH_BUILD_GAME + 'decoy.json'
 PATH_BUILD_PROMPT = PATH_BUILD_GAME + 'prompt.json'
 PATH_BUILD_SUBTITLES = PATH_BUILD + 'audio_subtitles.json'
+
+PATH_TRANSLATED_AUDIO = r'C:\Users\админ\Desktop\Jackbox\drawful2\translated-audio'
