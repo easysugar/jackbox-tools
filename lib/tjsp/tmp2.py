@@ -247,7 +247,22 @@ class TMP2(Game):
 
     @decode_mapping(PATH_QUESTION_BOMB, PATH_BUILD_QUESTION_BOMB, PATH_QUESTION_BOMB)
     def decode_question_bomb(self, obj, trans):
-        return self._decode_question_template(obj, trans, True)
+        res = self._decode_question_template(obj, trans, True)
+        colors = {
+            'жовтий': 'yellow',
+            'синій': 'blue',
+            'зелений': 'green',
+            'білий': 'white',
+            'червоний': 'red',
+            'оранжевий': 'orange',
+            'фіолетовий': 'purple',
+            'чорний': 'black',
+            'блакитний': 'blue',
+        }
+        for i in res['content']:
+            for c in i['choices']:
+                c['controllerClass'] = colors[c['text']]
+        return res
 
     def unpack_question_bomb(self):
         return self._unpack_template(PATH_QUESTION_BOMB, PATH_QUESTION_BOMB_DIR, self._rewrite_question)
