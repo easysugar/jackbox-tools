@@ -1,4 +1,6 @@
-from lib import JPP4
+from lib import *
+
+GAME = Quiplash3
 
 if __name__ == '__main__':
-    JPP4().encode_all()
+    GAME().encode_all()
