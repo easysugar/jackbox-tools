@@ -1,16 +1,18 @@
 # encoded
 PATH = r'C:\Program Files (x86)\Steam\steamapps\common\Quiplash 2 InterLASHional'
-# PATH = r'C:\Program Files (x86)\Steam\steamapps\common\Quiplash 2 InterLASHional — копия'
+PATH_LOCALIZATION = PATH + r'\Localization.json'
 PATH_QUESTIONS = PATH + r'\content\QuiplashQuestion'
 PATH_QUESTIONS_JSON = PATH + r'\content\QuiplashQuestion.jet'
 PATH_AUDIENCE_JSON = PATH + r'\content\AudienceQuestion.jet'
 
-# release
-PATH_RELEASE = r'~\Desktop\Jackbox\Quiplash 2\jackbox-quiplash2-ua'
+# build
+PATH_BUILD = '../build/uk/Quiplash2'
+PATH_BUILD_LOCALIZATION = PATH_BUILD + '/Localisationshort.json'
+PATH_BUILD_QUESTIONS = PATH_BUILD + '/EncodedOriginalQuiplashQuestions.json'
+PATH_BUILD_AUDIENCE = PATH_BUILD + '/EncodedOriginalAudienceQuestions.json'
 
-# encoded
-PATH_MEDIA = 'data/quiplash2/swf/Quiplash2_International_GameMain_Expanded.json'
-PATH_ENCODED_QUESTIONS = 'data/quiplash2/EncodedOriginalQuiplashQuestions.json'
+# release
+PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\Quiplash 2\jackbox-quiplash2-ua'
 
 # backup
 PATH_BACKUP = r'~\Desktop\Jackbox\Quiplash 2\backup'

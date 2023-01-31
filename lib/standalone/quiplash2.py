@@ -1,8 +1,7 @@
 import os
-import shutil
 
-from lib.game import Game, encode_mapping
-from settings.quiplash import *
+from lib.game import Game, encode_mapping, decode_mapping
+from settings.quiplash2 import *
 
 
 class NotFoundPromptTextException(Exception):
@@ -14,16 +13,10 @@ class NotFoundPromptAudioException(Exception):
 
 
 class Quiplash2(Game):
-    def __init__(self):
-        self.translations = {}
-        self._read_questions_json()
+    folder = '../data/standalone/quiplash2/'
 
-    def _read_questions_json(self):
-        obj = self._read_json(PATH_QUESTIONS_JSON)
-        self.translations = {i['id']: i['prompt'] for i in obj['content']}
-
-    def _update_question_obj(self, oid: int, obj: dict):
-        text = self.translations[oid]
+    @staticmethod
+    def _update_question_obj(obj: dict, text: str):
         text = text.replace('ʼ', "'")
         fields = obj['fields']
         for f in fields:
@@ -36,39 +29,49 @@ class Quiplash2(Game):
         if 'PromptAudio' not in {f['n'] for f in fields}:
             raise NotFoundPromptAudioException
 
-    def _rewrite_question(self, oid: int, path: str):
+    def _rewrite_question(self, oid: str, translation: str):
+        path = os.path.join(PATH_QUESTIONS, oid, 'data.jet')
         obj = self._read_json(path)
-        self._update_question_obj(oid, obj)
+        self._update_question_obj(obj, translation)
         self._write_json(path, obj)
 
-    def unpack(self):
+    def unpack_questions(self):
         dirs = os.listdir(PATH_QUESTIONS)
-        for folder in dirs:
-            if folder.isdigit():
-                self._rewrite_question(int(folder), os.path.join(PATH_QUESTIONS, folder, 'data.jet'))
+        translations = self._read_json(PATH_BUILD_QUESTIONS)
+        for oid in dirs:
+            if oid.isdigit():
+                self._rewrite_question(oid, translations[oid])
 
-    def copy_to_release(self):
-        dirs = os.listdir(PATH_QUESTIONS)
-        for folder in dirs:
-            if not folder.isdigit():
-                continue
-            dst_folder = os.path.join(PATH_RELEASE, 'content', 'QuiplashQuestion', folder)
-            if not os.path.isdir(dst_folder):
-                os.mkdir(dst_folder)
-            shutil.copyfile(os.path.join(PATH_QUESTIONS, folder, 'data.jet'), os.path.join(dst_folder, 'data.jet'))
-
-    @encode_mapping(PATH_QUESTIONS_JSON, 'data/quiplash2/EncodedOriginalQuiplashQuestions.json')
+    @encode_mapping(PATH_QUESTIONS_JSON, folder + 'EncodedOriginalQuiplashQuestions.json')
     def encode_quiplash_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
 
-    @encode_mapping(PATH_AUDIENCE_JSON, 'data/quiplash2/translated/TranslatedAudienceQuestions.json')
+    @encode_mapping(PATH_AUDIENCE_JSON, folder + 'TranslatedAudienceQuestions.json')
     def encode_audience_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
 
-    @encode_mapping(PATH_MEDIA, 'data/quiplash2/encoded/audio_subtitles.json')
+    @decode_mapping(PATH_QUESTIONS_JSON, PATH_BUILD_QUESTIONS, PATH_QUESTIONS_JSON)
+    def decode_quiplash_questions(self, obj: dict, trans: dict):
+        for c in obj['content']:
+            c['prompt'] = trans[str(c['id'])]
+        return obj
+
+    @decode_mapping(PATH_AUDIENCE_JSON, PATH_BUILD_AUDIENCE, PATH_AUDIENCE_JSON)
+    def decode_audience_questions(self, obj: dict, trans: dict):
+        for c in obj['content']:
+            c['prompt'] = trans[str(c['id'])]
+        return obj
+
+    @encode_mapping(folder + 'swf/Quiplash2_International_GameMain_Expanded.json', folder + 'encoded/audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
         return self._encode_subtitles(obj, 'A')
 
-    @encode_mapping(PATH_MEDIA, 'data/quiplash2/encoded/text_subtitles.json')
+    @encode_mapping(folder + 'swf/Quiplash2_International_GameMain_Expanded.json', folder + 'encoded/text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
         return self._encode_subtitles(obj, 'T')
+
+    def release(self, start_time):
+        self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
+        self.decode_all()
+        self.copy_to_release(PATH, PATH_RELEASE, start_time)
+        # self.make_archive(PATH_RELEASE)
