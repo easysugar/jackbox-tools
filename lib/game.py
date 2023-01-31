@@ -62,6 +62,8 @@ class Game:
     def update_localization(self, src: str, translation: str):
         obj = self._read_json(src)
         trans = self._read_json(translation)
+        if 'table' in trans:
+            trans = trans['table']
         if 'en' not in trans:
             trans = {'en': trans}
         assert set(obj['table']['en']) <= set(trans['en'])
