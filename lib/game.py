@@ -143,6 +143,30 @@ class Game:
                 source = source.replace(old, new, 1)
         return source
 
+    def _decode_swf_media(self, path_media: str, path_expanded: str, trans: dict, path_save: str):
+        media = self._read(path_media)
+        cnt_sep = media.count('^')
+        expanded = self._read_json(path_expanded)
+        orig = {v['id']: v['text'] for c in expanded for v in c['versions'] if 'text' in v}
+        mapp = {}
+        for oid in trans:
+            old = '^' + orig[oid] + '^'
+            suffix = re.search(orig[oid], r'(\[.+\])*$')
+            assert '^' not in trans[oid]
+            new = '^' + trans[oid] + ('' if not suffix else suffix.groups()) + '^'
+            old, new = media_encoder(old), media_encoder(new)
+            mapp[old] = new
+        for old, new in mapp.items():
+            # print(old + ' ----> ' + new)
+            assert media.count(old) == 1
+            media = media.replace(old, new)
+        assert media.count('^') == cnt_sep
+        self._write(path_save, media)
+
+
+def media_encoder(s: str):
+    return s.replace('\n', r'\n').replace("'", r"\'").replace('"', r'\"')
+
 
 def read_from_folder(cid: str, path_folder: str):
     path = os.path.join(path_folder, cid, 'data.jet')

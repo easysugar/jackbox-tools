@@ -384,10 +384,14 @@ class TMP2(Game):
     def decode_rules_wordlist():
         copy_file(PATH_BUILD_WORDLIST_RULES, PATH_WORDLIST_RULES)
 
-    @decode_mapping(PATH_BUILD_AUDIO, PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, out_json=False)
-    def decode_media_dict(self, audio, text):
-        source = self._read(PATH_SOURCE_DICT)
-        editable = self._read(PATH_EDITABLE_DICT)
+    def decode_media(self):
+        audio = self._read_json(PATH_BUILD_AUDIO)
+        text = self._read_json(PATH_BUILD_SUBTITLES)
         text = {k: text for v in text.values() for k, text in v.items()}
         translations = {**audio, **text}
-        return self._update_media_dict(source, translations, editable)
+        self._decode_swf_media(
+            path_media=PATH_SOURCE_DICT,
+            path_expanded=PATH_EXPANDED,
+            trans=translations,
+            path_save=PATH_TRANSLATED_DICT,
+        )

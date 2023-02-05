@@ -70,8 +70,16 @@ class Quiplash2(Game):
     def encode_text_subtitles(self, obj: dict):
         return self._encode_subtitles(obj, 'T')
 
+    def decode_media(self):
+        self._decode_swf_media(
+            path_media=self.folder + 'swf/dict.txt',
+            path_expanded=self.folder + 'swf/Quiplash2_International_GameMain_Expanded.json',
+            trans=self._read_json(PATH_BUILD_AUDIO_SUBTITLES) | self._read_json(PATH_BUILD_TEXT_SUBTITLES),
+            path_save=self.folder + 'swf/translated_dict.txt',
+        )
+
     def release(self, start_time):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
         self.decode_all()
         self.copy_to_release(PATH, PATH_RELEASE, start_time)
-        # self.make_archive(PATH_RELEASE)
+        self.make_archive(PATH_RELEASE)
