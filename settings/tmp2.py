@@ -37,6 +37,7 @@ PATH_ENCODED_QUESTION = PATH_DATA + r'encoded/EncodedQuestion.json'
 PATH_TRANSLATED_DICT = PATH_DATA + r'swf/translated_dict.txt'
 PATH_SOURCE_DICT = PATH_DATA + r'swf/dict.txt'
 PATH_EDITABLE_DICT = PATH_DATA + r'swf/editable.txt'
+PATH_EXPANDED = PATH_DATA + 'encoded/expanded.json'
 
 # release
 PATH_RELEASE = r'~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua'
