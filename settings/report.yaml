@@ -1,28 +1,28 @@
 # Pack 3
 tmp1:
     name: "Смертельні\nВечорниці"
-    img: https://static.wikia.nocookie.net/jackboxgames/images/9/96/TMPBanner.png/revision/latest?cb=20210811072615
+    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_TMP.jpg
     path: /JPP3/TMP
     pack: Пак 3
 poll:
     name: Шпигадаш
-    img: https://static.wikia.nocookie.net/jackboxgames/images/0/04/GuesspionageBanner.png/revision/latest?cb=20210811072840
+    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_Guess.jpg
     path: /JPP3/Guesspionage
     pack: Пак 3
 fakin:
     name: Обдурисвіт
-    img: https://static.wikia.nocookie.net/jackboxgames/images/7/7f/Fakin-It.png/revision/latest?cb=20210811072948
+    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_FakinIt.jpg
     path: /JPP3/FakinIt
     pack: Пак 3
 # Pack 4
 monster:
     name: "Монстр шукає\nмонстра"
-    img: https://static.wikia.nocookie.net/jackboxgames/images/3/35/Monster_Seeking_Monster_Banner.png/revision/latest?cb=20210811073303
+    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/MonsterSeekingMonster.jpg
     path: /JPP4/MSM
     pack: Пак 4
 internet:
     name: "Вижити в\nІнтернеті"
-    img: https://static.wikia.nocookie.net/jackboxgames/images/e/e2/SurviveTheInternet.jpg/revision/latest?cb=20210623192035
+    img: ../assets/internet.jpeg
     path: /JPP4/STI
     pack: Пак 4
 fibbage3:
@@ -37,7 +37,7 @@ tmp2:
     pack: Стартер пак
 teeko:
     name: Футбол К.О.
-    img: https://static.wikia.nocookie.net/jackboxgames/images/0/07/TeeKO-logo.png/revision/latest?cb=20210811073109
+    img: ../assets/teeko.jpeg
     status: 👑
     path: /TeeKO
     pack: Стартер пак
@@ -45,20 +45,25 @@ teeko:
         name: Pad0n
         img: https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg
 quiplash3:
-    name: Жартлист 3
+    name: Сміхрясь 3
     img: https://jackboxgames.b-cdn.net/wp-content/uploads/2020/09/q3_websiteTile_v1.jpg
     pack: Стартер пак
+    path: /Quiplash3
 # Standalone games
 drawful2:
     name: Малювач 2
     img: https://images.greenmangaming.com/bdefabab026045ec8b1171728c051ea3/25ea8336263d4cc8b80126e7e15fd937.jpg
     path: /Drawful2
+    status: 👑
     actor:
         name: Lunar Shadow
         img: https://avatars.akamai.steamstatic.com/377c64e345750b516ff048186d96ec79fdd90df5_full.jpg
     pack: Окремі ігри
 quiplash2:
-    name: Жартлист 2
+    name: Сміхрясь 2
     img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
     path: /Quiplash2
     pack: Окремі ігри
+    actor:
+        name: Lost Human
+        img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
