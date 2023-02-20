@@ -6,7 +6,8 @@ from settings.drawful2 import *
 
 
 class Drawful2(Game):
-    folder = 'data/standalone/drawful2/encoded/'
+    folder = '../data/standalone/drawful2/encoded/'
+    folder_swf = '../data/standalone/drawful2/swf/'
 
     @encode_mapping(folder + 'expanded.json', folder + 'audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
@@ -77,12 +78,13 @@ class Drawful2(Game):
     def decode_localization(self):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
 
-    @decode_mapping(PATH_BUILD_SUBTITLES, PATH_TRANSLATED_DICT, out_json=False)
-    def decode_media_dict(self, audio):
-        source = self._read(PATH_SOURCE_DICT)
-        editable = self._read(PATH_EDITABLE_DICT)
-        translations = {**audio}
-        return self._update_media_dict(source, translations, editable)
+    def decode_media(self):
+        self._decode_swf_media(
+            path_media=self.folder_swf + 'dict.txt',
+            path_expanded=self.folder + 'expanded.json',
+            trans=self._read_json(PATH_BUILD_SUBTITLES),
+            path_save=self.folder_swf + 'translated_dict.txt',
+        )
 
     @staticmethod
     def decode_translated_audio():
