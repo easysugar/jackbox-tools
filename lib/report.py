@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import Union
 
 import requests
+import tqdm
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageChops
 from pilmoji import Pilmoji
 
@@ -15,8 +16,10 @@ approve_color = GREEN
 
 
 def load_img_from_url(url):
-    response = requests.get(url)
-    return Image.open(BytesIO(response.content))
+    if url.startswith('http'):
+        response = requests.get(url)
+        return Image.open(BytesIO(response.content))
+    return Image.open(open(url, 'rb'))
 
 
 def center_image(img, ratio=1.0):
@@ -152,7 +155,7 @@ def draw_voice_actor(img: Image, game: str, width: int, height: int):
     font = ImageFont.truetype(*FONT_VOICE)
     # text = f'🔊 {actor}'
     text = actor['name']
-    draw_text(img, font, text, width, height, drawer=Pilmoji(img), margin_up=-0.1, margin_left=0.05, align='left bottom',
+    draw_text(img, font, text, width, height, drawer=Pilmoji(img), margin_up=-0.05, margin_left=0.05, align='left bottom',
               icon=actor['img'])
 
 
@@ -161,14 +164,14 @@ def draw_status_icon(img: Image, game: str, width: int, height: int):
     if not status:
         return
     font = ImageFont.truetype(*FONT_VOICE)
-    draw_text(img, font, status, width, height, drawer=Pilmoji(img), margin_up=-0.1, margin_left=-0.05, align='right bottom')
+    draw_text(img, font, status, width, height, drawer=Pilmoji(img), margin_up=-0.05, margin_left=-0.05, align='right bottom')
 
 
 def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
     font = ImageFont.truetype(*FONT_CONTRIBUTORS)
     # font = None
     for i, user in enumerate(CONTRIBUTORS, 1):
-        draw_text(img, font, user['name'], width, height, margin_left=0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
+        draw_text(img, font, user['username'], width, height, margin_left=0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
                   align='none', icon=user['url'], icon_size=FONT_CONTRIBUTORS[1])
         draw_text(img, font, str(user['count']), width, height, margin_left=-0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
                   align='right', fill=BLUE)
@@ -207,7 +210,7 @@ def create_top_contributors_icon(width: int, height: int):
 def create_games_grid(grid, width, height, max_cnt=2, head_margin=50) -> Image:
     n, m = head_margin + max_cnt * width, len(grid) * height
     canvas = Image.new("RGBA", (n, m), 'black')
-    for i, (name, row) in enumerate(grid.items()):
+    for i, (name, row) in tqdm.tqdm(list(enumerate(grid.items()))):
         draw_text_vertically(canvas, name, 0, i * height, height, head_margin)
         for j, game in enumerate(row):
             img = create_game_icon(game, width, height)
