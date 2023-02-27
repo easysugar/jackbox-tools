@@ -1,0 +1,41 @@
+name: drawful2
+path:
+    game: C:\Program Files (x86)\Steam\steamapps\common\Drawful 2
+    data: ../data/standalone/drawful2/
+    build: ../build/uk/Drawful2/
+    release: C:\Users\админ\Desktop\Jackbox\drawful2\jackbox-drawful-2-ua
+files:
+    localization:
+        path:
+            game: Localization.json
+            data: localization.json
+            build: localization.json
+        encode: _encode_localization
+        decode: update_localization
+    decoy:
+        path:
+            game: \content\Drawful2Decoy.jet
+            data: encoded/decoy.json
+            build: in-game/decoy.json
+        encode: encode_decoy
+        decode: decode_decoy
+    prompts:
+        path:
+            game: \content\en\Drawful2Prompt.jet
+            data: encoded/prompt.json
+            build: in-game/prompt.json
+            dir: \content\en\Drawful2Prompt
+        encode: encode_drawful_prompt
+        decode: decode_drawful_prompt
+    audio:
+        path:
+            read: encoded/expanded.json
+            save: encoded/audio_subtitles.json
+        encode: encode_audio_subtitles
+    media:
+        path:
+            expanded: encoded/expanded.json
+            build: audio_subtitles.json
+            read: swf/dict.txt
+            save: swf/translated_dict.txt
+        decode: _decode_swf_media
