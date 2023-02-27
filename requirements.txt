@@ -1,2 +1,4 @@
 pydrive
 crowdin-api-client
+pytz
+tqdm
