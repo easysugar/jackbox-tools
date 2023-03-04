@@ -5,8 +5,10 @@ from datetime import datetime
 from typing import Dict
 
 import tqdm
+import yaml
 
 from .common import *
+from lib import encoder
 
 
 class Game:
@@ -162,6 +164,30 @@ class Game:
             media = media.replace(old, new)
         assert media.count('^') == cnt_sep
         self._write(path_save, media)
+
+    @staticmethod
+    def _load_game_yml(game: str):
+        with open(f'../settings/{game}.yml', 'r') as f:
+            return yaml.full_load(f)
+
+    def game_encode(self, game: str):
+        config = self._load_game_yml(game)
+        for name, f in tqdm.tqdm(list(config['files'].items())):
+            if 'encode' in f:
+                func = getattr(encoder, f['encode'])
+                obj = self._read_json(os.path.join(config['path']['game'], f['path'].get('game')))
+                res = func(obj)
+                self._write_json(os.path.join(config['path']['data'], f['path'].get('data')), res)
+
+    def game_decode(self, game: str):
+        config = self._load_game_yml(game)
+        for name, f in tqdm.tqdm(list(config['files'].items())):
+            if 'decode' in f:
+                func = getattr(encoder, f['decode'])
+                obj = self._read_json(os.path.join(config['path']['game'], f['path'].get('game')))
+                build = self._read_json(os.path.join(config['path']['build'], f['path'].get('build')))
+                res = func(obj, build)
+                self._write_json(os.path.join(config['path']['game'], f['path'].get('game')), res)
 
 
 def media_encoder(s: str):
