@@ -1,0 +1,61 @@
+name: teeko
+path:
+    game: C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\
+    data: ../data/tjsp/teeko/
+    build: ../build/uk/TeeKO/
+    release: ~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua
+files:
+    suggestion:
+        path:
+            game: content/en/AwShirtDrawingSuggestions.jet
+            build: in-game/suggestions.json
+            data: data/teeko/encoded/suggestions.json
+        encode: encode_suggestions
+        decode: decode_suggestions
+    moderated_slogans:
+        path:
+            game: content/en/AwShirtModeratedSlogans.jet
+            build: in-game/moderated_slogans.json
+            data: data/teeko/encoded/moderated_slogans.json
+        encode: encode_moderated_slogans
+        decode: decode_moderated_slogans
+    slogans:
+        path:
+            game: content/en/AwShirtSlogans.jet'
+            build: in-game/slogans.json
+            data: data/teeko/encoded/slogans.json
+        encode: encode_slogans
+        decode: decode_slogans
+    slogan_suggestions:
+        path:
+            game: content/en/AwShirtSloganSuggestions.jet'
+            build: in-game/slogan_suggestions.json
+            data: data/teeko/encoded/slogan_suggestions.json
+        encode: encode_slogan_suggestions
+        decode: decode_slogan_suggestions
+    audio:
+        path:
+            expanded: data/teeko/encoded/expanded.json
+            data: data/teeko/encoded/audio_subtitles.json
+            build: audio_subtitles.json
+        encode: encode_audio_subtitles
+    text_subtitles:
+        path:
+            expanded: data/teeko/encoded/expanded.json
+            data: data/teeko/encoded/text_subtitles.json
+            build: text_subtitles.json
+        encode: encode_text_subtitles
+    localization:
+        path:
+            game: Localization.json
+            data: localization.json
+            build: LocalizationShirts.json
+        encode: _encode_localization
+        decode: update_localization
+#    media:
+#        path:
+#            expanded: encoded/expanded.json
+#            build: audio_subtitles.json
+#            read: swf/dict.txt
+#            save: swf/translated_dict.txt
+#        decode: _decode_swf_media
