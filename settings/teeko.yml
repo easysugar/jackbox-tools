@@ -1,6 +1,7 @@
 name: teeko
 path:
-    game: C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\
+#    game: C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\
+    game: /Users/vladyslav/Library/Application Support/Steam/steamapps/common/The Jackbox Party Starter/The Jackbox Party Starter.app/Contents/Resources/macos/games/AwShirt/
     data: ../data/tjsp/teeko/
     build: ../build/uk/TeeKO/
     release: ~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua
@@ -21,30 +22,30 @@ files:
         decode: decode_moderated_slogans
     slogans:
         path:
-            game: content/en/AwShirtSlogans.jet'
+            game: content/en/AwShirtSlogans.jet
             build: in-game/slogans.json
             data: data/teeko/encoded/slogans.json
         encode: encode_slogans
         decode: decode_slogans
     slogan_suggestions:
         path:
-            game: content/en/AwShirtSloganSuggestions.jet'
+            game: content/en/AwShirtSloganSuggestions.jet
             build: in-game/slogan_suggestions.json
             data: data/teeko/encoded/slogan_suggestions.json
         encode: encode_slogan_suggestions
         decode: decode_slogan_suggestions
-    audio:
-        path:
-            expanded: data/teeko/encoded/expanded.json
-            data: data/teeko/encoded/audio_subtitles.json
-            build: audio_subtitles.json
-        encode: encode_audio_subtitles
-    text_subtitles:
-        path:
-            expanded: data/teeko/encoded/expanded.json
-            data: data/teeko/encoded/text_subtitles.json
-            build: text_subtitles.json
-        encode: encode_text_subtitles
+#    audio:
+#        path:
+#            expanded: data/teeko/encoded/expanded.json
+#            data: data/teeko/encoded/audio_subtitles.json
+#            build: audio_subtitles.json
+#        encode: encode_audio_subtitles
+#    text_subtitles:
+#        path:
+#            expanded: data/teeko/encoded/expanded.json
+#            data: data/teeko/encoded/text_subtitles.json
+#            build: text_subtitles.json
+#        encode: encode_text_subtitles
     localization:
         path:
             game: Localization.json
