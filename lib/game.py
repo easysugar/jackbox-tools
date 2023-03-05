@@ -188,22 +188,15 @@ class Game:
                 build = self._read_json(os.path.join(config['path']['build'], f['path'].get('build')))
                 res = func(obj, build)
                 self._write_json(os.path.join(config['path']['game'], f['path'].get('game')), res)
+            if 'unpack' in f:
+                func = getattr(encoder, f['unpack'])
+                build = self._read_json(os.path.join(config['path']['build'], f['path'].get('build')))
+                dir_path = os.path.join(config['path']['game'], f['path'].get('dir'))
+                func(build, dir_=dir_path)
 
 
 def media_encoder(s: str):
     return s.replace('\n', r'\n').replace("'", r"\'").replace('"', r'\"')
-
-
-def read_from_folder(cid: str, path_folder: str):
-    path = os.path.join(path_folder, cid, 'data.jet')
-    x = read_json(path)
-    return {_['n']: _ for _ in x['fields']}
-
-
-def write_to_folder(cid: str, path_folder: str, value: dict):
-    path = os.path.join(path_folder, cid, 'data.jet')
-    x = {'fields': list(value.values())}
-    write_json(path, x)
 
 
 def decode_mapping(*files, out_json=True):
