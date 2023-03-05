@@ -1,0 +1,141 @@
+name: tmp2
+path:
+#    game: C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\triviadeath2\
+    game: /Users/vladyslav/Library/Application Support/Steam/steamapps/common/The Jackbox Party Starter/The Jackbox Party Starter.app/Contents/Resources/macos/games/triviadeath2/
+    data: ../data/tjsp/tmp2/
+    build: ../build/uk/TMP2/
+    release: ~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua
+files:
+    quiplash:
+        path:
+            game: content/en/QuiplashContent.jet
+            dir: content/en/QuiplashContent
+            data: encoded/EncodedTMP2QuiplashContent.json
+            build: in-game/EncodedTMP2QuiplashContent.json
+        encode: encode_quiplash
+        decode: decode_quiplash
+    dictation:
+        path:
+            game: content/en/TDDictation.jet
+            data: encoded/EncodedTMP2Dictation.json
+            build: in-game/EncodedTMP2Dictation.json
+    sequel:
+        path:
+            game: content/en/TDSequel.jet
+            data: encoded/EncodedTDSequel.json
+            build: in-game/EncodedTDSequel.json
+    mirror_tutorial:
+        path:
+            game: content/en/TDMirrorTutorial.jet
+            data: encoded/mirror_tutorial.json
+            build: in-game/mirror_tutorial.json
+        encode: encode_mirror
+        decode: decode_mirror
+    mirror:
+        path:
+            game: content/en/TDMirror.jet
+            data: encoded/mirror.json
+            build: in-game/mirror.json
+        encode: encode_mirror
+        decode: decode_mirror
+    mind_meld:
+        path:
+            game: content/en/TDMindMeld.jet
+            data: encoded/mind_meld.json
+            build: in-game/mind_meld.json
+        encode: encode_mind_meld
+        decode: decode_mind_meld
+    question:
+        path:
+            game: content/en/TDQuestion.jet
+            dir: content/en/TDQuestion
+            data: encoded/EncodedQuestion.json
+            build: in-game/EncodedQuestion.json
+        encode: encode_tmp_question
+        decode: decode_tmp_question
+    question_hat:
+        path:
+            game: content/en/TDQuestionHat.jet
+            dir: content/en/TDQuestionHat
+            data: encoded/EncodedQuestionHat.json
+            build: in-game/EncodedQuestionHat.json
+        encode: encode_tmp_question
+        decode: decode_tmp_question
+    question_wig:
+        path:
+            game: content/en/TDQuestionWig.jet
+            dir: content/en/TDQuestionWig
+            data: encoded/EncodedQuestionWig.json
+            build: in-game/EncodedQuestionWig.json
+        encode: encode_tmp_question
+        decode: decode_tmp_question
+    question_ghost:
+        path:
+            game: content/en/TDQuestionGhost.jet
+            dir: content/en/TDQuestionGhost
+            data: encoded/question_ghost.json
+            build: in-game/question_ghost.json
+        encode: encode_tmp_question_host
+        decode: decode_tmp_question_host
+    question_madness:
+        path:
+            game: content/en/TDQuestionMadness.jet
+            dir: content/en/TDQuestionMadness
+            data: encoded/question_madness.json
+            build: in-game/question_madness.json
+        encode: encode_tmp_question_host
+        decode: decode_tmp_question_host
+    question_knife:
+        path:
+            game: content/en/TDQuestionKnife.jet
+            dir: content/en/TDQuestionKnife
+            data: encoded/question_knife.json
+            build: in-game/question_knife.json
+        encode: encode_tmp_question_host
+        decode: decode_tmp_question_host
+    question_bomb:
+        path:
+            game: content/en/TDQuestionBomb.jet
+            dir: content/enTDQuestionBomb
+            data: encoded/question_bomb.json
+            build: in-game/question_bomb.json
+        encode: encode_tmp_question_host
+        decode: decode_question_bomb
+    final_round:
+        path:
+            game: content/en/TDFinalRound.jet
+            dir: content/en/TDFinalRound
+            data: data/tmp2/encoded/final_questions.json
+            build: in-game/final_questions.json
+    wordlist_rules:
+        path:
+            game: wordlistRules_en.txt
+            build: in-game/wordlistRules_en.txt
+        decode: copy
+
+#    audio:
+#        path:
+#            expanded: data/teeko/encoded/expanded.json
+#            data: data/teeko/encoded/audio_subtitles.json
+#            build: audio_subtitles.json
+#        encode: encode_audio_subtitles
+#    text_subtitles:
+#        path:
+#            expanded: data/teeko/encoded/expanded.json
+#            data: data/teeko/encoded/text_subtitles.json
+#            build: text_subtitles.json
+#        encode: encode_text_subtitles
+    localization:
+        path:
+            game: Localization.json
+            data: localization.json
+            build: LocalizationEN.json
+        encode: encode_localization
+        decode: decode_localization
+#    media:
+#        path:
+#            expanded: encoded/expanded.json
+#            build: audio_subtitles.json
+#            read: swf/dict.txt
+#            save: swf/translated_dict.txt
+#        decode: _decode_swf_media
