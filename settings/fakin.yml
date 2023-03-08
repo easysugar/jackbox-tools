@@ -1,0 +1,49 @@
+name: fakin
+path:
+#    game: C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\FakinIt
+    game: /Users/vladyslav/Library/Application Support/Steam/steamapps/common/Drawful 2/Drawful 2.app/Contents/Resources/macos/
+    data: ../data/pp3/fakin/
+    build: ../build/uk/JPP3/FakinIt/
+files:
+    menu:
+        path:
+            game: menu.jet
+            data: encoded/menu.json
+            build: menu.json
+        encode: encode_menu
+        decode: decode_menu
+    leaderboards:
+        path:
+            game: leaderboards.jet
+            data: encoded/leaderboards.json
+            build: leaderboards.json
+        encode: encode_leaderboards
+        decode: decode_leaderboards
+    settings:
+        path:
+            game: settings.jet
+            data: encoded/settings.json
+            build: settings.json
+        encode: encode_settings
+        decode: decode_settings
+    input:
+        path:
+            game: content/FakinItInput.jet
+            data: encoded/input.json
+            build: in-game/input.json
+        encode: encode_input
+        decode: decode_input
+    categories:
+        path:
+            game: content/FakinItCategories.jet
+            data: encoded/categories.json
+            build: in-game/categories.json
+        encode: encode_categories
+        decode: decode_categories
+    tasks:
+        path:
+            game: content/FakinItTasks.jet
+            data: encoded/tasks.json
+            build: in-game/tasks.json
+        encode: encode_tasks
+        decode: decode_tasks

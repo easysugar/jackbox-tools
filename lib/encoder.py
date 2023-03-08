@@ -285,3 +285,74 @@ def unpack_drawful_question(trans: dict, dir_: str):
         if 'JokeAudio' in obj and comment and comment[0]:
             obj['JokeAudio']['s'] = comment[0].strip()
         write_to_folder(cid, dir_, obj)
+
+
+def encode_menu(obj):
+    return {i: {'title': x['title'], 'description': x['description']} for i, x in enumerate(obj)}
+
+
+def decode_menu(obj, trans):
+    for i, x in enumerate(obj['content']):
+        x['title'] = trans[str(i)]['title']
+        x['description'] = trans[str(i)]['description']
+    return obj
+
+
+def encode_leaderboards(obj):
+    return {
+        'columns': {i['id']: i['name'] for i in obj['columns']},
+        'views': {i['id']: {'name': i['name'], 'description': i['description']} for i in obj['views']},
+    }
+
+
+def decode_leaderboards(obj, trans):
+    for i in obj['columns']:
+        i['name'] = trans['columns'][i['id']]
+    for i in obj['views']:
+        i['name'] = trans['views'][i['id']]['name']
+        i['description'] = trans['views'][i['id']]['description']
+    return obj
+
+
+def encode_settings(obj):
+    return {i['source']: {'title': i['title'], 'description': i['description']} for i in obj['items']}
+
+
+def decode_settings(obj, trans):
+    for i in obj['items']:
+        i['title'] = trans[i['source']]['title']
+        i['description'] = trans[i['source']]['description']
+    return obj
+
+
+def encode_tasks(obj: dict):
+    return {i['id']: {i['type']: i['category']} for i in obj['content']}
+
+
+def decode_tasks(obj, trans):
+    for i in obj['content']:
+        i['name'] = trans[i['id']][i['type']]
+    return obj
+
+
+def encode_categories(obj: dict):
+    return {i['id']: {i['type']: i['name']} for i in obj['content']}
+
+
+def decode_categories(obj, trans):
+    for i in obj['content']:
+        i['name'] = trans[i['id']][i['type']]
+    return obj
+
+
+def encode_input(obj: dict):
+    return {i['id']: '\n'.join([i['category'], *[j['v'] for j in i['tasks']]]) for i in obj['content']}
+
+
+def decode_input(obj, trans):
+    for i in obj['content']:
+        category, *tasks = trans[i['id']]
+        i['category'] = category
+        for j, task in zip(i['tasks'], tasks):
+            j['v'] = task
+    return obj
