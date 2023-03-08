@@ -1,4 +1,7 @@
+import os
 from collections import defaultdict
+
+from lib.common import read_from_folder, write_to_folder
 
 
 def encode_localization(obj: dict):
@@ -246,3 +249,39 @@ def decode_mind_meld(obj, trans):
                 'alt': [''] if not alt else list(alt),
             })
     return obj
+
+
+def encode_decoy(obj: dict):
+    return {c['id']: c['text'].strip() for c in obj['content']}
+
+
+def decode_decoy(obj, trans):
+    for c in obj['content']:
+        c['text'] = trans[str(c['id'])]
+    return obj
+
+
+def decode_drawful_prompt(obj, trans):
+    for c in obj['content']:
+        cid = str(c['id'])
+        assert trans[cid].count('\n') <= 1, f"Incorrect cid: {cid}"
+        c['category'] = trans[cid].split('\n')[0].strip()
+    return obj
+
+
+def unpack_drawful_question(trans: dict, dir_: str):
+    dirs = os.listdir(dir_)
+    for cid in dirs:
+        if not cid.isdigit():
+            continue
+        obj = read_from_folder(cid, dir_)
+        assert trans[cid].strip().count('\n') <= 1
+        text, *comment = trans[cid].strip().split('\n')
+        text = text.strip().replace('ʼ', "'")
+        assert bool('JokeAudio' in obj) == bool(len(comment)), f'Mismatch joke: {cid} with comment: {comment} and joke: {obj.get("JokeAudio")}'
+        obj['QuestionText']['v'] = text
+        if 'AlternateSpellings' in obj:
+            obj['AlternateSpellings']['v'] = text
+        if 'JokeAudio' in obj and comment and comment[0]:
+            obj['JokeAudio']['s'] = comment[0].strip()
+        write_to_folder(cid, dir_, obj)
