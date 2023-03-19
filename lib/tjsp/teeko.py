@@ -1,3 +1,6 @@
+import os
+
+from lib.common import copy_file
 from lib.game import Game, encode_mapping, decode_mapping
 from settings.teeko import *
 
@@ -58,3 +61,11 @@ class TeeKO(Game):
         editable = self._read(PATH_EDITABLE_DICT)
         translations = {**audio, **text}
         return self._update_media_dict(source, translations, editable)
+
+    @staticmethod
+    def decode_translated_audio():
+        translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
+        original = set(os.listdir(PATH_AUDIO))
+        for file in translated:
+            if file in original:
+                copy_file(os.path.join(PATH_TRANSLATED_AUDIO, file), os.path.join(PATH_AUDIO, file))

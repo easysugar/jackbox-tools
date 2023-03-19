@@ -4,6 +4,7 @@ PATH_SUGGESTIONS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox P
 PATH_MODERATED_SLOGANS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtModeratedSlogans.jet'
 PATH_SLOGANS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtSlogans.jet'
 PATH_SLOGAN_SUGGESTIONS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtSloganSuggestions.jet'
+PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # encoded
 PATH_DATA = '../data/tjsp/teeko/'
@@ -23,3 +24,5 @@ PATH_BUILD_MODERATED_SLOGANS = PATH_BUILD_GAME + 'moderated_slogans.json'
 PATH_BUILD_SLOGAN_SUGGESTIONS = PATH_BUILD_GAME + 'slogan_suggestions.json'
 PATH_BUILD_AUDIO = PATH_BUILD + r'audio_subtitles.json'
 PATH_BUILD_SUBTITLES = PATH_BUILD + r'text_subtitles.json'
+
+PATH_TRANSLATED_AUDIO = r'C:\Users\админ\Desktop\Jackbox\starter-pack\shirts\audio-edited'
