@@ -1,2 +1,3 @@
 pydrive
 crowdin-api-client
+levenshtein
