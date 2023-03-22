@@ -96,7 +96,6 @@ class OldTeeKO(Game):
     def decode_media_dict(self, translations):
         source = self._read(PATH_SOURCE_DICT)
         editable = self._read(PATH_EDITABLE_DICT)
-        print(translations)
         return self._update_old_media_dict(source, translations, editable)
 
     @decode_mapping(PATH_EXPANDED, '../data/tjsp/teeko/encoded/audio_subtitles.json', folder + 'audio_mapping.json')

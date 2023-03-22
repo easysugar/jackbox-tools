@@ -19,4 +19,4 @@ PATH_EDITABLE_DICT = PATH_DATA + 'swf/editable.txt'
 PATH_TRANSLATED_DICT = PATH_DATA + r'swf/translated_dict.txt'
 
 # build
-PATH_BUILD = '../build/uk/JPP3/Tee KO/'
+PATH_BUILD = '../build/uk/JPP3/TeeKO/'
