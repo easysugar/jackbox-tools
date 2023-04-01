@@ -38,7 +38,7 @@ tmp2:
 teeko:
     name: Футбол К.О.
     img: ../assets/teeko.jpeg
-    status: 👑
+    status: 💯
     path: /TeeKO
     pack: Стартер пак
     actor:
