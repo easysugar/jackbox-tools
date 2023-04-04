@@ -3,6 +3,7 @@ import random
 import re
 from collections import defaultdict
 
+from lib.common import read_json
 from lib.game import Game, encode_mapping, decode_mapping, copy_file
 from settings.tmp2 import *
 
@@ -53,13 +54,22 @@ class TMP2(Game):
             assert c['text'] is not None
             assert len(c['choices']) == 4
             corrects = [i['correct'] for i in c['choices']]
+            cid = str(c['id'])
+            path = os.path.join(PATH_QUESTION_DIR, cid, 'data.jet')
+            x = read_json(path)
+            x = {_['n']: _ for _ in x['fields']}
+            intro = None
+            if x.get('HasIntro', {}).get('v') == 'true' and x['Intro'].get('s'):
+                intro = x['Intro']['s'].strip()
             assert corrects.count(True) == 1
             answer = corrects.index(True) + 1
             result[c['id']] = '{}\n{}\n{}'.format(
                 c['text'],
                 '\n'.join([i['text'] for i in c['choices']]),
-                answer
+                answer,
             )
+            if intro:
+                result[c['id']] = intro + '\n' + result[c['id']]
         return result
 
     @decode_mapping(PATH_QUESTION, PATH_BUILD_QUESTION, PATH_QUESTION)
@@ -376,7 +386,7 @@ class TMP2(Game):
                 atext, *alt = a.strip().split(separator)
                 c['answers'].append({
                     'answer': atext,
-                    'alt': [''] if not alt else list(alt),
+                    'alt': [atext] if not alt else list(alt),
                 })
         return obj
 
