@@ -8,6 +8,7 @@ from settings.fakin import *
 
 class Fakin(Game):
     folder = '../data/pp3/fakin/encoded/'
+    folder_swf = '../data/pp3/fakin/swf/'
     build = '../build/uk/JPP3/FakinIt/'
 
     @decode_mapping(PATH_EXPANDED, PATH_AUDIO_SUBTITLES)
@@ -21,6 +22,10 @@ class Fakin(Game):
             for v in c['versions']
             if c['type'] == 'A' and not sfx.search(v['text'])
         }
+
+    @decode_mapping(folder_swf + 'FakinIt_Expanded.json', folder_swf + 'text_subtitles.json')
+    def encode_text_subtitles(self, obj: dict):
+        return self._encode_subtitles(obj, 'T', tags='')
 
     @decode_mapping(PATH_MENU, folder + 'menu.json')
     def encode_menu(self, obj):
