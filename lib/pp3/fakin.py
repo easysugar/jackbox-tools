@@ -131,3 +131,13 @@ class Fakin(Game):
                 assert obj['TextTaskText%d' % task['id']]['v']
                 obj['TextTaskText%d' % task['id']]['v'] = task['v']
             write_to_folder(cid, PATH_INPUT_DIR, obj)
+
+    def decode_media(self):
+        audio = {k: v['text'] for k, v in self._read_json(self.build + 'audio_subtitles.json').items()}
+        text = self._read_json(self.build + 'text_subtitles.json')
+        self._decode_swf_media(
+            path_media=self.folder_swf + 'dict.txt',
+            path_expanded=self.folder_swf + 'FakinIt_Expanded.json',
+            trans=audio | text,
+            path_save=self.folder_swf + 'translated_dict.txt',
+        )
