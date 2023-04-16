@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+from typing import Dict
 
 from lib.common import read_from_folder, write_to_folder
 
@@ -198,11 +199,11 @@ def decode_question_bomb(obj, trans):
     return res
 
 
-def encode_quiplash(obj: dict):
+def encode_prompts(obj: dict):
     return {c['id']: c['prompt'].replace('[EventName=HOST/AltHost]', '') for c in obj['content']}
 
 
-def decode_quiplash(obj, translations):
+def decode_prompts(obj, translations):
     for c in obj['content']:
         c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']]
     return obj
@@ -356,3 +357,15 @@ def decode_input(obj, trans):
         for j, task in zip(i['tasks'], tasks):
             j['v'] = task
     return obj
+
+
+def _encode_subtitles(obj: dict, _type='A', tags='en') -> Dict[str, str]:
+    return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == _type and v['tags'] == tags}
+
+
+def encode_audio_subtitles(obj: dict):
+    return _encode_subtitles(obj, 'A')
+
+
+def encode_text_subtitles(obj: dict):
+    return _encode_subtitles(obj, 'T')

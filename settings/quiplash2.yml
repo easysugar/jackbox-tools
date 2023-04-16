@@ -1,0 +1,48 @@
+name: quiplash2
+path:
+    game: C:\Program Files (x86)\Steam\steamapps\common\Quiplash 2 InterLASHional\
+    data: ../data/standalone/quiplash2/
+    build: ../build/uk/Quiplash2/
+    release: C:\Users\админ\Desktop\Jackbox\Quiplash 2\jackbox-quiplash2-ua
+files:
+    localization:
+        path:
+            game: Localization.json
+            data: localization.json
+            build: Localisationshort.json
+        encode: encode_localization
+        decode: decode_localization
+    questions:
+        path:
+            game: content/QuiplashQuestion.jet
+            data: encoded/EncodedOriginalQuiplashQuestions.json
+            build: EncodedOriginalQuiplashQuestions.json
+            dir: content/QuiplashQuestion
+        encode: encode_prompts
+        decode: decode_prompts
+        unpack:
+    audience:
+        path:
+            game: content/AudienceQuestion.jet
+            data: encoded/EncodedOriginalAudienceQuestions.json
+            build: EncodedOriginalAudienceQuestions.json
+            dir: content/en/Drawful2Prompt
+        encode: encode_prompts
+        decode: decode_prompts
+    audio:
+        path:
+            read: swf/Quiplash2_International_GameMain_Expanded.json
+            data: encoded/audio_subtitles.json
+        encode: encode_audio_subtitles
+    text:
+        path:
+            read: swf/Quiplash2_International_GameMain_Expanded.json
+            data: encoded/text_subtitles.json
+        encode: encode_text_subtitles
+#    media:
+#        path:
+#            expanded: encoded/expanded.json
+#            build: audio_subtitles.json
+#            read: swf/dict.txt
+#            save: swf/translated_dict.txt
+#        decode: _decode_swf_media

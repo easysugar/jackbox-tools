@@ -20,3 +20,15 @@ def write_json(dst: str, obj: dict):
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     with open(dst, 'w', encoding='utf8', newline='\n') as f:
         return json.dump(obj, f, indent=2, ensure_ascii=False)
+
+
+def read_from_folder(cid: str, path_folder: str):
+    path = os.path.join(path_folder, cid, 'data.jet')
+    x = read_json(path)
+    return {_['n']: _ for _ in x['fields']}
+
+
+def write_to_folder(cid: str, path_folder: str, value: dict):
+    path = os.path.join(path_folder, cid, 'data.jet')
+    x = {'fields': list(value.values())}
+    write_json(path, x)
