@@ -1,6 +1,6 @@
 import re
 
-from lib.game import Game, decode_mapping, read_from_folder
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings.guesspionage import *
 
 
@@ -51,6 +51,25 @@ class Guesspionage(Game):
             result[cid] = body
         return result
 
+    @decode_mapping(PATH_BONUS_QUESTIONS, build + 'in-game/bonus_questions.json', PATH_BONUS_QUESTIONS)
+    def decode_bonus_questions(self, obj, trans):
+        for c in obj['content']:
+            cid = str(c['id'])
+            x = list(trans[cid].values())[0]
+            c['category'] = x['category']
+            o = read_from_folder(cid, PATH_BONUS_QUESTIONS_DIR)
+            o['PollQ']['v'] = x['question']
+            o['QText']['v'] = x['text']
+            o['DataMode']['v'] = x['data_mode']
+            o['ExpResults']['v'] = x['exp_results']
+
+            for f in sorted(o):
+                if f.startswith('Choice'):
+                    o[f]['v'] = x['choices'][int(f.replace('Choice', ''))]
+
+            write_to_folder(cid, PATH_BONUS_QUESTIONS_DIR, o)
+        return obj
+
     @decode_mapping(PATH_QUESTIONS, folder + 'questions.json')
     def encode_questions(self, obj):
         result = {}
@@ -75,32 +94,24 @@ class Guesspionage(Game):
 
     @decode_mapping(PATH_QUESTIONS, build + 'in-game/questions.json', PATH_QUESTIONS)
     def decode_questions(self, obj, trans):
-        for i in obj['content']:
-            category, *tasks = trans[str(i['id'])].strip().split('\n')
-            assert len(i['tasks']) == len(tasks)
-            i['category'] = category
-            for j, task in zip(i['tasks'], tasks):
-                j['v'] = task
-        return obj
-
-        result = {}
-        unique_fields = {}
         for c in obj['content']:
             cid = str(c['id'])
-            x = read_from_folder(cid, PATH_QUESTIONS_DIR)
-            body = {x['QText']['v']: {
-                "question": x['PollQ']['v'],
-                'text': x['QText']['v'],
-                'data_mode': x['DataMode']['v'],
-                'exp_results': x['ExpResults']['v'],
-                'answer': x['A']['v'],
-                'choices': [x[i]['v'] for i in sorted(x) if i.startswith('Choice')],
-                'target': x['Target']['v'],
-            }}
-            result[cid] = body
-            unique_fields.update({k: x[k]['v'] for k in x if 'v' in x[k]})
-        print('unique fields:', unique_fields)
-        return result
+            x = list(trans[cid].values())[0]
+            c['category'] = x['category']
+            o = read_from_folder(cid, PATH_QUESTIONS_DIR)
+            o['PollQ']['v'] = x['question']
+            o['QText']['v'] = x['text']
+            o['DataMode']['v'] = x['data_mode']
+            o['ExpResults']['v'] = x['exp_results']
+            o['A']['v'] = x['answer']
+            o['Target']['v'] = x['target']
+
+            for f in sorted(o):
+                if f.startswith('Choice'):
+                    o[f]['v'] = x['choices'][int(f.replace('Choice', ''))]
+
+            write_to_folder(cid, PATH_QUESTIONS_DIR, o)
+        return obj
 
     def decode_localization(self):
         self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
