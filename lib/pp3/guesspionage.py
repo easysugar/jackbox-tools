@@ -6,6 +6,7 @@ from settings.guesspionage import *
 
 class Guesspionage(Game):
     folder = '../data/pp3/pollposition/encoded/'
+    folder_swf = '../data/pp3/pollposition/swf/'
     build = '../build/uk/JPP3/Guesspionage/'
 
     @decode_mapping(PATH_EXPANDED, folder + 'audio_subtitles.json')
@@ -17,6 +18,29 @@ class Guesspionage(Game):
             for v in c['versions']
             if c['type'] == 'A' and not sfx.search(v['text'])
         }
+
+    @decode_mapping(PATH_EXPANDED, folder + 'audio_lobby.json')
+    def encode_audio_subtitles(self, obj: dict):
+        return {
+            v['id']: v['text']
+            for c in obj
+            for v in c['versions']
+            if c['type'] == 'A' and 'Radio' in v['text']
+        }
+
+    @decode_mapping(PATH_EXPANDED, folder + 'text_subtitles.json')
+    def encode_text_subtitles(self, obj: dict):
+        return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'}
+
+    def decode_media(self):
+        audio = {}
+        text = self._read_json(self.build + 'text_subtitles.json')
+        self._decode_swf_media(
+            path_media=self.folder_swf + 'dict.txt',
+            path_expanded=PATH_EXPANDED,
+            trans=audio | text,
+            path_save=self.folder_swf + 'translated_dict.txt',
+        )
 
     @decode_mapping(PATH_LEADERBOARDS, folder + 'leaderboards.json')
     def encode_leaderboards(self, obj):
@@ -44,6 +68,7 @@ class Guesspionage(Game):
                 "question": x['PollQ']['v'],
                 'text': x['QText']['v'],
                 'choices': [x['Choice%d' % i]['v'] for i in range(9)],
+                'answers': [x['Val%d' % i]['v'] for i in range(9)],
                 'data_mode': x['DataMode']['v'],
                 'exp_results': x['ExpResults']['v'],
                 'category': c['category'],
@@ -66,6 +91,8 @@ class Guesspionage(Game):
             for f in sorted(o):
                 if f.startswith('Choice'):
                     o[f]['v'] = x['choices'][int(f.replace('Choice', ''))]
+                if f.startswith('Val'):
+                    o[f]['v'] = x['answers'][int(f.replace('Val', ''))]
 
             write_to_folder(cid, PATH_BONUS_QUESTIONS_DIR, o)
         return obj
