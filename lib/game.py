@@ -158,7 +158,7 @@ class Game:
             mapp[old] = new
         for old, new in mapp.items():
             # print(old + ' ----> ' + new)
-            assert media.count(old) == 1
+            assert media.count(old) == 1, "String {0} has count {1}, but should be 1".format(old, media.count(old))
             media = media.replace(old, new)
         assert media.count('^') == cnt_sep
         self._write(path_save, media)
