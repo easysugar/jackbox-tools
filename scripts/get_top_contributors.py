@@ -3,7 +3,7 @@ from datetime import datetime
 
 from lib.crowdin import Crowdin
 
-DATE = datetime(2023, 2, 1)
+DATE = datetime(2023, 3, 1)
 SAVE_PATH = 'contributors.json'
 
 if __name__ == '__main__':
