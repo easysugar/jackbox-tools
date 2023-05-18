@@ -93,6 +93,7 @@ class Guesspionage(Game):
                     o[f]['v'] = x['choices'][int(f.replace('Choice', ''))]
                 if f.startswith('Val'):
                     o[f]['v'] = x['answers'][int(f.replace('Val', ''))]
+                    assert 0 <= int(o[f]['v']) <= 100
 
             write_to_folder(cid, PATH_BONUS_QUESTIONS_DIR, o)
         return obj
@@ -114,6 +115,7 @@ class Guesspionage(Game):
                 'target': x['Target']['v'],
                 'category': c['category'],
             }}
+            assert 0 <= int(x['A']['v']) <= 100
             result[cid] = body
             unique_fields.update({k: x[k]['v'] for k in x if 'v' in x[k]})
         print('unique fields:', unique_fields)
