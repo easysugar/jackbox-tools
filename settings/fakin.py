@@ -1,8 +1,10 @@
 PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\FakinIt'
 PATH_MENU = PATH + r'\menu.jet'
 PATH_TASKS = PATH + r'\content\FakinItTasks.jet'
+PATH_TASKS_DIR = PATH + r'\content\FakinItTasks'
 PATH_CATEGORIES = PATH + r'\content\FakinItCategories.jet'
 PATH_INPUT = PATH + r'\content\FakinItInput.jet'
+PATH_INPUT_DIR = PATH + r'\content\FakinItInput'
 PATH_LEADERBOARDS = PATH + r'\leaderboards.jet'
 PATH_SETTINGS = PATH + r'\settings.jet'
 
