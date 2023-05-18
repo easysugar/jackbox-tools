@@ -1,4 +1,5 @@
 pydrive
 crowdin-api-client
+levenshtein
 pytz
 tqdm

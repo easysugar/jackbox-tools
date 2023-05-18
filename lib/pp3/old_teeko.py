@@ -1,3 +1,8 @@
+import os
+
+import Levenshtein
+
+from lib.common import copy_file
 from lib.game import Game, decode_mapping
 from settings import teeko
 from settings.old_teeko import *
@@ -51,6 +56,8 @@ class OldTeeKO(Game):
         self.copy_slogans()
         self.copy_slogan_suggestions()
         self.copy_text_subtitles()
+        self.get_games_audio_mapping()
+        self.copy_translated_audio()
 
     @staticmethod
     def _copy_template(old, new):
@@ -89,5 +96,39 @@ class OldTeeKO(Game):
     def decode_media_dict(self, translations):
         source = self._read(PATH_SOURCE_DICT)
         editable = self._read(PATH_EDITABLE_DICT)
-        print(translations)
         return self._update_old_media_dict(source, translations, editable)
+
+    @decode_mapping(PATH_EXPANDED, '../data/tjsp/teeko/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
+    def get_games_audio_mapping(self, obj, ext):
+        audio = {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and v['tags'] == ''}
+        res = {i: None for i in ext}
+        for i, t1 in ext.items():
+            for j, t2 in audio.items():
+                norm1 = t1.lower().replace('.', '').replace(' ', '').replace(',', '').replace(':', '').replace('?', '').replace('!', '')
+                norm2 = t2.lower().replace('.', '').replace(' ', '').replace(',', '').replace(':', '').replace('?', '').replace('!', '')
+                if norm1 == norm2 and j not in res.values():
+                    res[i] = j
+                    break
+        for min_ratio in [.9, .8, .7]:
+            for i in res:
+                if res[i] is not None:
+                    continue
+                t1 = ext[i]
+                for j, t2 in audio.items():
+                    if j in res.values():
+                        continue
+                    if (ratio := Levenshtein.ratio(t1.lower(), t2.lower())) >= min_ratio:
+                        res[i] = j
+        manual = {"490064": "136113", "490065": "136114", "490272": "149278", "490253": "146097", "490254": "146098", "490255": "146099"}
+        res.update(manual)
+        return res
+
+    def copy_translated_audio(self):
+        obj = self._read_json(self.folder + 'audio_mapping.json')
+        tjsp_files = set(os.listdir(teeko.PATH_AUDIO))
+        jpp3_files = set(os.listdir(PATH_AUDIO))
+        for tjsp, jpp3 in obj.items():
+            tjsp = tjsp + '.ogg'
+            jpp3 = jpp3 + '.ogg'
+            if tjsp in tjsp_files and jpp3 in jpp3_files:
+                copy_file(os.path.join(teeko.PATH_AUDIO, tjsp), os.path.join(PATH_AUDIO, jpp3))

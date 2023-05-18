@@ -159,7 +159,7 @@ class Crowdin:
     def get_top_contributors_usernames(self, list_projects: List[int] = PROJECT_LIST.values(), path: str = None) -> List[dict]:
         users = self.get_top_contributors_last_time(list_projects, path)
         info = self.get_users_info(list(users), list_projects)
-        return [{'name': info[u]['name'] or self.usernames.get(u), 'count': cnt, 'url': None if u not in info else info[u]['avatar'],
+        return [{'name': info.get(u, {}).get('name') or self.usernames.get(u), 'count': cnt, 'url': None if u not in info else info[u]['avatar'],
                  'username': self.usernames.get(u)}
                 for u, cnt in users.most_common()]
 

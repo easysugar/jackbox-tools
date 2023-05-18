@@ -3,6 +3,7 @@ from datetime import datetime
 from lib.game import Game
 from .fakin import Fakin
 from .guesspionage import Guesspionage
+from .old_quiplash2 import OldQuiplash2
 from .old_teeko import OldTeeKO
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3'
@@ -12,6 +13,7 @@ PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\jpp3\jackbox-pack-3'
 class JPP3(Game):
     def decode_all(self):
         OldTeeKO().decode_all()
+        OldQuiplash2().decode_all()
         Fakin().decode_all()
         Guesspionage().decode_all()
         self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/JPP3/localization.json')

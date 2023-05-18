@@ -1,12 +1,15 @@
+import os
 import re
 
-from lib.game import Game, decode_mapping
+from lib.common import read_json
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings.fakin import *
 
 
 class Fakin(Game):
     folder = '../data/pp3/fakin/encoded/'
-    build = '../build/JPP3/FakinIt/'
+    folder_swf = '../data/pp3/fakin/swf/'
+    build = '../build/uk/JPP3/FakinIt/'
 
     @decode_mapping(PATH_EXPANDED, PATH_AUDIO_SUBTITLES)
     def encode_audio_subtitles(self, obj: dict):
@@ -20,13 +23,17 @@ class Fakin(Game):
             if c['type'] == 'A' and not sfx.search(v['text'])
         }
 
+    @decode_mapping(folder_swf + 'FakinIt_Expanded.json', folder_swf + 'text_subtitles.json')
+    def encode_text_subtitles(self, obj: dict):
+        return self._encode_subtitles(obj, 'T', tags='')
+
     @decode_mapping(PATH_MENU, folder + 'menu.json')
     def encode_menu(self, obj):
         return {i: {'title': x['title'], 'description': x['description']} for i, x in enumerate(obj)}
 
     @decode_mapping(PATH_MENU, build + 'menu.json', PATH_MENU)
-    def decode_tasks(self, obj, trans):
-        for i, x in enumerate(obj['content']):
+    def decode_menu(self, obj, trans):
+        for i, x in enumerate(obj):
             x['title'] = trans[str(i)]['title']
             x['description'] = trans[str(i)]['description']
         return obj
@@ -38,7 +45,7 @@ class Fakin(Game):
     @decode_mapping(PATH_TASKS, build + 'in-game/tasks.json', PATH_TASKS)
     def decode_tasks(self, obj, trans):
         for i in obj['content']:
-            i['name'] = trans[i['id']][i['type']]
+            i['category'] = trans[str(i['id'])][i['type']]
         return obj
 
     @decode_mapping(PATH_CATEGORIES, folder + 'categories.json')
@@ -48,7 +55,7 @@ class Fakin(Game):
     @decode_mapping(PATH_CATEGORIES, build + 'in-game/categories.json', PATH_CATEGORIES)
     def decode_categories(self, obj, trans):
         for i in obj['content']:
-            i['name'] = trans[i['id']][i['type']]
+            i['name'] = trans[str(i['id'])][i['type']]
         return obj
 
     @decode_mapping(PATH_INPUT, folder + 'input.json')
@@ -58,7 +65,8 @@ class Fakin(Game):
     @decode_mapping(PATH_INPUT, build + 'in-game/input.json', PATH_INPUT)
     def decode_input(self, obj, trans):
         for i in obj['content']:
-            category, *tasks = trans[i['id']]
+            category, *tasks = trans[str(i['id'])].strip().split('\n')
+            assert len(i['tasks']) == len(tasks)
             i['category'] = category
             for j, task in zip(i['tasks'], tasks):
                 j['v'] = task
@@ -92,3 +100,44 @@ class Fakin(Game):
             i['title'] = trans[i['source']]['title']
             i['description'] = trans[i['source']]['description']
         return obj
+
+    @staticmethod
+    def unpack_tasks():
+        trans = read_json(PATH_TASKS)
+        trans = {str(x['id']): x['category'] for x in trans['content']}
+        dirs = os.listdir(PATH_TASKS_DIR)
+        for cid in dirs:
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_TASKS_DIR)
+            text = trans[cid].strip().replace('ʼ', "'")
+            assert obj['TaskText']['v']
+            obj['TaskText']['v'] = text
+            write_to_folder(cid, PATH_TASKS_DIR, obj)
+
+    @staticmethod
+    def unpack_input():
+        trans = read_json(PATH_INPUT)
+        trans = {str(x['id']): x for x in trans['content']}
+        dirs = os.listdir(PATH_INPUT_DIR)
+        for cid in dirs:
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_INPUT_DIR)
+            text = trans[cid]['category']
+            assert obj['TaskText']['v']
+            obj['TaskText']['v'] = text
+            for task in trans[cid]['tasks']:
+                assert obj['TextTaskText%d' % task['id']]['v']
+                obj['TextTaskText%d' % task['id']]['v'] = task['v']
+            write_to_folder(cid, PATH_INPUT_DIR, obj)
+
+    def decode_media(self):
+        audio = {k: v['text'] for k, v in self._read_json(self.build + 'audio_subtitles.json').items()}
+        text = self._read_json(self.build + 'text_subtitles.json')
+        self._decode_swf_media(
+            path_media=self.folder_swf + 'dict.txt',
+            path_expanded=self.folder_swf + 'FakinIt_Expanded.json',
+            trans=audio | text,
+            path_save=self.folder_swf + 'translated_dict.txt',
+        )

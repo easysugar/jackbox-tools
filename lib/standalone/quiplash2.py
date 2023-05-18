@@ -1,5 +1,6 @@
 import os
 
+from lib.common import read_json
 from lib.game import Game, encode_mapping, decode_mapping
 from settings.quiplash2 import *
 
@@ -44,7 +45,19 @@ class Quiplash2(Game):
 
     @encode_mapping(PATH_QUESTIONS_JSON, folder + 'EncodedOriginalQuiplashQuestions.json')
     def encode_quiplash_questions(self, obj: dict) -> dict:
-        return {c.pop('id'): c['prompt'] for c in obj['content']}
+        result = {}
+        for c in obj['content']:
+            row = c['prompt']
+            cid = str(c['id'])
+            path = os.path.join(PATH_QUESTIONS, cid, 'data.jet')
+            x = read_json(path)
+            x = {_['n']: _ for _ in x['fields']}
+            response = None if 'KeywordResponseText' not in x else x['KeywordResponseText']['v'].strip()
+            answers = None if 'Keywords' not in x else list(map(str.strip, x['Keywords']['v'].split('|')))
+            if response:
+                row += '\n' + response + '\n' + '\n'.join(answers)
+            result[c.pop('id')] = row
+        return result
 
     @encode_mapping(PATH_AUDIENCE_JSON, folder + 'TranslatedAudienceQuestions.json')
     def encode_audience_questions(self, obj: dict) -> dict:
