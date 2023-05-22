@@ -94,6 +94,25 @@ class Drawful2(Game):
             if file in original:
                 copy_file(os.path.join(PATH_TRANSLATED_AUDIO, file), os.path.join(PATH_AUDIO, file))
 
+    @staticmethod
+    def decode_translated_audio_other():
+        translated = set(os.listdir(PATH_TRANSLATED_AUDIO_OTHER))
+        original = set(os.listdir(PATH_AUDIO))
+        for file in translated:
+            assert file in original, f'File {file} should be in original'
+            copy_file(os.path.join(PATH_TRANSLATED_AUDIO_OTHER, file), os.path.join(PATH_AUDIO, file))
+
+    @staticmethod
+    def decode_translated_audio_comments():
+        dirs = os.listdir(PATH_PROMPT_DIR)
+        for cid in dirs:
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_PROMPT_DIR)
+            if obj['HasJokeAudio']['v'] == 'true':
+                copy_file(os.path.join(PATH_TRANSLATED_AUDIO_COMMENTS, f'{cid}.ogg'),
+                          os.path.join(PATH_PROMPT_DIR, cid, f"{obj['JokeAudio']['v']}.ogg"))
+
     def release(self, start_time):
         PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\Drawful 2'
         PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\drawful2\jackbox-drawful-2-ua'
