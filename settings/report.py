@@ -1,3 +1,5 @@
+import json
+
 import yaml
 
 BLUE = (89, 180, 222)
@@ -17,6 +19,6 @@ FONT_CONTRIBUTORS = '../fonts/Acme-Regular.ttf', 18
 ROW_CONTRIBUTORS = 0.1
 
 GAMES = yaml.full_load(open('../settings/report.yaml'))
-# CONTRIBUTORS = json.load(open('contributors.json'))
-# PROGRESS = json.load(open('progress.json'))
+CONTRIBUTORS = json.load(open('contributors.json'))
+PROGRESS = json.load(open('progress.json'))
 GAMES_PATH = {game: GAMES[game].get('path') for game in GAMES}
