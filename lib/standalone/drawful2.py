@@ -115,7 +115,7 @@ class Drawful2(Game):
 
     def release(self, start_time):
         PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\Drawful 2'
-        PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\drawful2\jackbox-drawful-2-ua'
+        PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\drawful2\jackbox-drawful-2-ua'
         self.decode_all()
         self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
         self.make_archive(PATH_RELEASE)
