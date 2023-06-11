@@ -5,7 +5,7 @@ from .internet import Internet
 from .monster import Monster
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\jpp4\jackbox-pack-4'
+PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp4\jackbox-pack-4'
 
 
 class JPP4(Game):
