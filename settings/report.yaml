@@ -16,7 +16,7 @@ fakin:
     pack: Пак 3
 # Pack 4
 monster:
-    name: "Монстр шукає\nмонстра"
+    name: "Монстр шукає\n    монстра"
     img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/MonsterSeekingMonster.jpg
     path: /JPP4/MSM
     pack: Пак 4
@@ -25,9 +25,14 @@ internet:
     img: ../assets/internet.jpeg
     path: /JPP4/STI
     pack: Пак 4
-fibbage3:
-    name: Маячнюха 3
-    img: https://i.ytimg.com/vi/OWCXwy-GDHE/maxresdefault.jpg
+#fibbage3:
+#    name: Маячнюха 3
+#    img: https://i.ytimg.com/vi/OWCXwy-GDHE/maxresdefault.jpg
+#    pack: Пак 4
+doodle:
+    name: "Громадська\n    мазня"
+    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/CivicDoodle.jpg
+    path: /JPP4/CD
     pack: Пак 4
 # Starter Pack
 tmp2:
