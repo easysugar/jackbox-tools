@@ -1,0 +1,56 @@
+name: guesspionage
+path:
+    game: C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\PollPosition
+    data: ../data/pp3/pollposition/
+    build: ../build/uk/JPP3/Guesspionage/
+files:
+    leaderboards:
+        path:
+            game: leaderboards.jet
+            data: encoded/leaderboards.json
+            build: in-game/leaderboards.json
+        encode: encode_leaderboards
+        decode: decode_leaderboards
+    localization:
+        path:
+            game: Localization.json
+            data: encoded/settings.json
+            build: localization.json
+        encode: encode_localization
+        decode: decode_localization
+    questions:
+        path:
+            game: /content/PollPositionQuestions.jet
+            data: encoded/questions.json
+            build: in-game/questions.json
+            folder: /content/PollPositionQuestions
+        encode: pp3.guesspionage.encode_questions
+        decode: pp3.guesspionage.decode_questions
+    bonus_questions:
+        path:
+            game: /content/PollPositionBonusQuestions.jet
+            data: encoded/bonus_questions.json
+            build: in-game/bonus_questions.json
+            folder: content/PollPositionBonusQuestions
+        encode: pp3.guesspionage.encode_bonus_questions
+        decode: pp3.guesspionage.decode_bonus_questions
+    media:
+        path:
+            game: ../data/pp3/pollposition/swf/PollPosition_GameMain_Expanded.json
+            data: encoded/audio_subtitles.json
+        decode: pp3.guesspionage.decode_media
+    audio_subtitles:
+        path:
+            game: ../data/pp3/pollposition/swf/PollPosition_GameMain_Expanded.json
+            data: encoded/audio_subtitles.json
+        encode: pp3.guesspionage.encode_audio_subtitles
+    audio_lobby:
+        path:
+            game: ../data/pp3/pollposition/swf/PollPosition_GameMain_Expanded.json
+            data: encoded/audio_lobby.json
+        encode: pp3.guesspionage.encode_audio_lobby
+    text_subtitles:
+        path:
+            game: ../data/pp3/pollposition/swf/PollPosition_GameMain_Expanded.json
+            data: encoded/text_subtitles.json
+        encode: pp3.guesspionage.encode_text_subtitles

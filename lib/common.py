@@ -11,9 +11,20 @@ def copy_file(src: str, dst: str):
     shutil.copyfile(src, dst)
 
 
+def read_file(src: str):
+    with open(src, 'r', encoding='utf8') as f:
+        return f.read()
+
+
 def read_json(src: str):
     with open(src, 'rb') as f:
         return json.loads(f.read().decode('utf-8-sig'))
+
+
+def write_file(dst: str, text: str):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, 'w', encoding='utf8') as f:
+        return f.write(text)
 
 
 def write_json(dst: str, obj: dict):

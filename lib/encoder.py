@@ -1,8 +1,10 @@
 import os
+import re
 from collections import defaultdict
 from typing import Dict
 
-from lib.common import read_from_folder, write_to_folder
+from lib.common import read_from_folder, write_to_folder, read_file, write_file
+from lib.game import media_encoder
 
 
 def encode_localization(obj: dict):
@@ -369,3 +371,23 @@ def encode_audio_subtitles(obj: dict):
 
 def encode_text_subtitles(obj: dict):
     return _encode_subtitles(obj, 'T')
+
+
+def decode_swf_media(path_media: str, expanded: dict, trans: dict, path_save: str):
+    media = read_file(path_media)
+    cnt_sep = media.count('^')
+    orig = {v['id']: v['text'] for c in expanded for v in c['versions'] if 'text' in v}
+    mapp = {}
+    for oid in trans:
+        old = '^' + orig[oid] + '^'
+        suffix = re.search(orig[oid], r'(\[.+\])*$')
+        assert '^' not in trans[oid]
+        new = '^' + trans[oid] + ('' if not suffix else suffix.groups()) + '^'
+        old, new = media_encoder(old), media_encoder(new)
+        mapp[old] = new
+    for old, new in mapp.items():
+        # print(old + ' ----> ' + new)
+        assert media.count(old) == 1, "String {0} has count {1}, but should be 1".format(old, media.count(old))
+        media = media.replace(old, new)
+    assert media.count('^') == cnt_sep
+    write_file(path_save, media)
