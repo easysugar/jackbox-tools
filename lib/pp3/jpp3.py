@@ -7,7 +7,7 @@ from .old_quiplash2 import OldQuiplash2
 from .old_teeko import OldTeeKO
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\jpp3\jackbox-pack-3'
+PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\jackbox-pack-3'
 
 
 class JPP3(Game):

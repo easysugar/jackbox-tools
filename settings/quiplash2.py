@@ -14,7 +14,7 @@ PATH_BUILD_AUDIO_SUBTITLES = PATH_BUILD + 'audio_subtitles.json'
 PATH_BUILD_TEXT_SUBTITLES = PATH_BUILD + 'text_subtitles.json'
 
 # release
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\Quiplash 2\jackbox-quiplash2-ua'
+PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\Quiplash 2\jackbox-quiplash2-ua'
 
 # backup
 PATH_BACKUP = r'~\Desktop\Jackbox\Quiplash 2\backup'

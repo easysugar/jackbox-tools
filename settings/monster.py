@@ -6,6 +6,7 @@ PATH_NPC = PATH + r'\content\MMMonsterNpc.jet'
 PATH_NPC_ANSWER = PATH + r'\content\MMMonsterNpcAnswer.jet'
 PATH_SECRET_WORDS = PATH + r'\content\MMSecretWords.jet'
 PATH_SPONSORS = PATH + r'\content\MMSponsors.jet'
+PATH_LOCALIZATION = PATH + r'\Localization.json'
 
 # encoded
 PATH_EXPANDED = r'../data/pp4/monster/swf/expanded.json'
