@@ -20,11 +20,14 @@ class Drive:
         gfile.Upload()
 
     def copy_audio_subtitles_to_drive(self, game: str):
-        subtitles = read_json(SUBTITLES[game])
+        self.upload_audio_to_drive(SUBTITLES[game], MEDIA_FOLDER[game], DRIVE_FOLDER[game])
+
+    def upload_audio_to_drive(self, path: str, path_media: str, path_drive: str):
+        subtitles = read_json(path)
         ids = list(subtitles)
         for _id in tqdm.tqdm(ids):
-            file = os.path.join(MEDIA_FOLDER[game], f'{_id}.ogg')
-            self.copy_to_drive(DRIVE_FOLDER[game], file, f'{_id}.ogg')
+            file = os.path.join(path_media, f'{_id}.ogg')
+            self.copy_to_drive(path_drive, file, f'{_id}.ogg')
 
     def copy_audio_to_drive_by_walk(self, game: str, src: str):
         for root, _, files in tqdm.tqdm(list(os.walk(src))):
@@ -35,6 +38,11 @@ class Drive:
                 filepath = os.path.join(root, name)
                 self.copy_to_drive(DRIVE_FOLDER[game], filepath, f'{folder}.ogg')
 
-    def get_files_links(self, game) -> Dict[str, str]:
-        file_list = self.drive.ListFile({'q': "'{}' in parents and trashed=false".format(DRIVE_FOLDER[game])}).GetList()
+    def get_uploaded_files(self, path_drive):
+        file_list = self.drive.ListFile({'q': "'{}' in parents and trashed=false".format(path_drive)}).GetList()
+        return [file['originalFilename'] for file in file_list]
+
+    def get_files_links(self, game: str = None, path_drive: str = None) -> Dict[str, str]:
+        path_drive = path_drive or DRIVE_FOLDER[game]
+        file_list = self.drive.ListFile({'q': "'{}' in parents and trashed=false".format(path_drive)}).GetList()
         return {file['originalFilename'].split('.')[0]: file['alternateLink'] for file in file_list}
