@@ -1,9 +1,11 @@
 import os
 import re
 
+import pandas as pd
 from tqdm import tqdm
 
 from lib.common import copy_file
+from lib.drive import Drive
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings.guesspionage import *
 
@@ -145,6 +147,29 @@ class Guesspionage(Game):
 
             write_to_folder(cid, PATH_QUESTIONS_DIR, o)
         return obj
+
+    def upload_audio_questions(self):
+        d = Drive()
+        original = self._read_json(self.folder + 'questions.json')
+        dirs = os.listdir(PATH_QUESTIONS_DIR)
+        exists = d.get_uploaded_files(PATH_DRIVE_QUESTIONS)
+        data = []
+        for cid in tqdm(dirs):
+            obj = read_from_folder(cid, PATH_QUESTIONS_DIR)
+            ogg = obj['Q']['v'] + '.ogg'
+            data.append({
+                'id': cid,
+                'ogg': ogg.split('.')[0],
+                'original': list(original[cid].values())[0]['text'],
+                'translation': obj['QText']['v'],
+            })
+            if ogg not in exists:
+                file = os.path.join(PATH_QUESTIONS_DIR, cid, ogg)
+                d.copy_to_drive(PATH_DRIVE_QUESTIONS, file, ogg)
+        links = d.get_files_links(path_drive=PATH_DRIVE_QUESTIONS)
+        for i in data:
+            i['link'] = links[i.pop('ogg')]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_questions.tsv', sep='\t', encoding='utf8', index=False)
 
     def decode_localization(self):
         self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')

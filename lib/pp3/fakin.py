@@ -4,7 +4,7 @@ import re
 import pandas as pd
 import tqdm
 
-from lib.common import read_json
+from lib.common import read_json, copy_file
 from lib.drive import Drive
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings.fakin import *
@@ -168,3 +168,90 @@ class Fakin(Game):
         for i in data:
             i['link'] = links[i.pop('ogg')]
         pd.DataFrame(data).to_csv(self.folder + 'audio_tasks.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_input(self):
+        d = Drive()
+        original = self._read_json(self.folder + 'input.json')
+        dirs = os.listdir(PATH_INPUT_DIR)
+        exists = d.get_uploaded_files(PATH_DRIVE)
+        data = []
+        for cid in tqdm.tqdm(dirs):
+            obj = read_from_folder(cid, PATH_INPUT_DIR)
+            for i, row in enumerate(original[cid].split('\n')):
+                if i == 0:
+                    text = obj['TaskText']['v']
+                    ogg = obj['Task']['v'] + '.ogg'
+                else:
+                    text = obj['TextTaskText%d' % (i - 1)]['v']
+                    ogg = obj['TextTask%d' % (i - 1)]['v'] + '.ogg'
+
+                data.append({
+                    'id': f'{cid}_{i}',
+                    'ogg': ogg.split('.')[0],
+                    'original': row,
+                    'translation': text,
+                })
+                if ogg not in exists:
+                    file = os.path.join(PATH_INPUT_DIR, cid, ogg)
+                    d.copy_to_drive(PATH_DRIVE, file, ogg)
+        links = d.get_files_links(path_drive=PATH_DRIVE)
+        for i in data:
+            i['link'] = links[i.pop('ogg')]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_input.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_sfx(self):
+        d = Drive()
+        exists = d.get_uploaded_files(PATH_DRIVE)
+        subtitles_ids = set(self._read_json(PATH_AUDIO_SUBTITLES).keys())
+        obj = self._read_json(self.folder_swf + 'FakinIt_Expanded.json')
+        data = []
+        for c in obj:
+            if c['type'] == 'A':
+                for v in c['versions']:
+                    if v['id'] not in subtitles_ids:
+                        ogg = v['id'] + '.ogg'
+                        data.append({
+                            'id': v['id'],
+                            'description': v['text']
+                        })
+                        if ogg not in exists:
+                            file = os.path.join(PATH_MEDIA, ogg)
+                            d.copy_to_drive(PATH_DRIVE, file, ogg)
+        links = d.get_files_links(path_drive=PATH_DRIVE)
+        for i in data:
+            i['link'] = links[i['id']]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_sfx.tsv', sep='\t', encoding='utf8', index=False)
+
+    @staticmethod
+    def decode_audio_main():
+        translated = set(os.listdir(PATH_AUDIO_MAIN))
+        original = set(os.listdir(PATH_MEDIA))
+        for file in tqdm.tqdm(translated):
+            if file.endswith('.ogg'):
+                assert file in original, f'File {file} should be in original'
+                copy_file(os.path.join(PATH_AUDIO_MAIN, file), os.path.join(PATH_MEDIA, file))
+
+    @staticmethod
+    def decode_audio_tasks():
+        dirs = os.listdir(PATH_TASKS_DIR)
+        for cid in tqdm.tqdm(dirs):
+            obj = read_from_folder(cid, PATH_TASKS_DIR)
+            ogg = obj['Task']['v'] + '.ogg'
+            copy_file(os.path.join(PATH_AUDIO_TASKS, f"{cid}.ogg"), os.path.join(PATH_TASKS_DIR, cid, ogg))
+
+    @staticmethod
+    def decode_audio_input():
+        dir_path = PATH_INPUT_DIR
+        dirs = os.listdir(dir_path)
+        for cid in tqdm.tqdm(dirs):
+            obj = read_from_folder(cid, dir_path)
+            i = 0
+            while True:
+                if i == 0:
+                    ogg = obj['Task']['v'] + '.ogg'
+                else:
+                    if 'TextTask%d' % (i - 1) not in obj:
+                        break
+                    ogg = obj['TextTask%d' % (i - 1)]['v'] + '.ogg'
+                copy_file(os.path.join(PATH_AUDIO_INPUT, f"{cid}_{i}.ogg"), os.path.join(dir_path, cid, ogg))
+                i += 1
