@@ -10,3 +10,6 @@ PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 # local
 PATH_EXPANDED = '../data/pp3/pollposition/swf/PollPosition_GameMain_Expanded.json'
 PATH_TRANSLATED_AUDIO = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\guess\GuessSpionage-20230628T095250Z-001\GuessSpionage'
+
+# G-Drive
+PATH_DRIVE_QUESTIONS = '15jX0jVVWWorbsT20ico5E6eHMQcHLwgX'

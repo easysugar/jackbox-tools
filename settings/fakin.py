@@ -10,13 +10,18 @@ PATH_SETTINGS = PATH + r'\settings.jet'
 PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 # encoded
-PATH_EXPANDED = r'data/pp3/fakin/swf/FakinIt_Expanded.json'
-PATH_AUDIO_SUBTITLES = r'data/pp3/fakin/swf/audio_subtitles.json'
-PATH_TASKS_ENCODED = r'data/pp3/fakin/encoded/tasks.json'
-PATH_CATEGORIES_ENCODED = r'data/pp3/fakin/encoded/categories.json'
-PATH_INPUT_ENCODED = r'data/pp3/fakin/encoded/input.json'
-PATH_LEADERBOARDS_ENCODED = r'data/pp3/fakin/encoded/leaderboards.json'
-PATH_SETTINGS_ENCODED = r'data/pp3/fakin/encoded/settings.json'
+PATH_EXPANDED = r'../data/pp3/fakin/swf/FakinIt_Expanded.json'
+PATH_AUDIO_SUBTITLES = r'../data/pp3/fakin/swf/audio_subtitles.json'
+PATH_TASKS_ENCODED = r'../data/pp3/fakin/encoded/tasks.json'
+PATH_CATEGORIES_ENCODED = r'../data/pp3/fakin/encoded/categories.json'
+PATH_INPUT_ENCODED = r'../data/pp3/fakin/encoded/input.json'
+PATH_LEADERBOARDS_ENCODED = r'../data/pp3/fakin/encoded/leaderboards.json'
+PATH_SETTINGS_ENCODED = r'../data/pp3/fakin/encoded/settings.json'
 
 # G-Drive
 PATH_DRIVE = '1zUoCoZQB83vKeWO3GghCmdr4rPCZJ3UG'
+
+# Audio
+PATH_AUDIO_MAIN = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\fakin\audio\main-vol-up'
+PATH_AUDIO_TASKS = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\fakin\audio\tasks-vol-up'
+PATH_AUDIO_INPUT = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\fakin\audio\input-vol-up'
