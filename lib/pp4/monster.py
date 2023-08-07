@@ -21,18 +21,6 @@ class Monster(Game):
                 self.add_plural234(item)
         return obj
 
-    def _decode_plural234(self, obj, trans):
-        if isinstance(obj, dict):
-            for key in list(obj):
-                if isinstance(obj[key], dict):
-                    self._decode_plural234(obj[key], trans[key])
-                if 'plural234' in key or 'multiple234' in key:
-                    obj.pop(key)
-        if isinstance(obj, list):
-            for i, item in enumerate(obj):
-                self._decode_plural234(item, trans[i])
-        return obj
-
     @decode_mapping(PATH_MONSTER, folder + 'monster.json')
     def encode_monster(self, obj):
         skip = ['id', 'frame', 'role', 'minimumPlayers', 'behaviorClass']
@@ -43,11 +31,6 @@ class Monster(Game):
 
     @decode_mapping(PATH_MONSTER, build + 'monster.json', PATH_MONSTER)
     def decode_monster(self, obj, trans):
-        skip = ['id', 'frame', 'role', 'minimumPlayers', 'behaviorClass']
-        trans = self._decode_plural234({
-            str(c['id']): {k: v for k, v in c.items() if k not in skip}
-            for c in obj['content']
-        }, trans)
         for c in obj['content']:
             c.update(trans[str(c['id'])])
         return obj
@@ -67,7 +50,7 @@ class Monster(Game):
         return {c['id']: c['question'] for c in obj['content']}
 
     @decode_mapping(PATH_AUDIENCE_QUESTION, build + 'audience_question.json', PATH_AUDIENCE_QUESTION)
-    def decode_audience_answer(self, obj, trans):
+    def decode_audience_question(self, obj, trans):
         for c in obj['content']:
             c['question'] = trans[str(c['id'])]
         return obj
@@ -82,11 +65,6 @@ class Monster(Game):
 
     @decode_mapping(PATH_NPC, build + 'npc.json', PATH_NPC)
     def decode_npc(self, obj, trans):
-        skip = ['id', 'frame', 'role', 'minimumPlayers', 'behaviorClass']
-        trans = self._decode_plural234({
-            str(c['id']): {k: v for k, v in c.items() if k not in skip}
-            for c in obj['content']
-        }, trans)
         for c in obj['content']:
             c.update(trans[str(c['id'])])
         return obj
@@ -134,3 +112,6 @@ class Monster(Game):
             trans=audio | text,
             path_save=self.folder_swf + 'translated_dict.txt',
         )
+
+    def decode_localization(self):
+        self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
