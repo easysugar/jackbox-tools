@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from lib.game import Game, encode_mapping
+from lib.game import Game, encode_mapping, decode_mapping
 from settings.quiplash3 import *
 
 
@@ -34,4 +34,23 @@ class Quiplash3(Game):
             for v in c['versions']:
                 if c['type'] == 'T' and v['locale'] == 'en' and not v['text'].startswith('SFX/'):
                     res[c['versions'][0]['text']][v['id']] = v['text']
+        return res
+
+    @decode_mapping(PATH_QUESTIONS_FINAL_ROUND, folder + 'final_round.json')
+    def encode_final_round(self, obj):
+        res = {}
+        for c in obj['content']:
+            row = {}
+            context = c['prompt']
+            if c['us'] or c['x']:
+                context += '\n-------------'
+                if c['us']:
+                    context += '\nUSA'
+                if c['x']:
+                    context += '\n18+'
+            row['prompt'] = {'name': c['prompt'], 'crowdinContext': context}
+            row['safetyQuips'] = [
+                {'quip': sq.replace('|', '\n'), 'crowdinContext': context} for sq in c['safetyQuips']
+            ]
+            res[c['id']] = row
         return res
