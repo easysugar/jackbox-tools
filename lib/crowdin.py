@@ -164,9 +164,9 @@ class Crowdin:
                 for u, cnt in users.most_common()]
 
     def _get_last_build_id(self, project_id: int) -> int:
-        build = self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']
+        build = self.client.translations.list_project_builds(project_id, limit=200)['data'][0]['data']
         assert build['status'] == 'finished'
-        assert build['createdAt'].timestamp() >= (datetime.now() - timedelta(seconds=30)).timestamp()
+        assert build['createdAt'].timestamp() >= (datetime.now() - timedelta(minutes=5)).timestamp(), f'Build is not the last: {build}'
         return build['id']
 
     def _download_build(self, project_id: int, build_id, path_build: str):
