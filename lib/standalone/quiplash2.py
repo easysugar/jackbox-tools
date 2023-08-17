@@ -1,7 +1,11 @@
 import os
 
+import pandas as pd
+import tqdm
+
 from lib.common import read_json
-from lib.game import Game, encode_mapping, decode_mapping
+from lib.drive import Drive
+from lib.game import Game, encode_mapping, decode_mapping, write_to_folder, read_from_folder
 from settings.quiplash2 import *
 
 
@@ -36,13 +40,6 @@ class Quiplash2(Game):
         self._update_question_obj(obj, translation)
         self._write_json(path, obj)
 
-    def unpack_questions(self):
-        dirs = os.listdir(PATH_QUESTIONS)
-        translations = self._read_json(PATH_BUILD_QUESTIONS)
-        for oid in dirs:
-            if oid.isdigit():
-                self._rewrite_question(oid, translations[oid])
-
     @encode_mapping(PATH_QUESTIONS_JSON, folder + 'EncodedOriginalQuiplashQuestions.json')
     def encode_quiplash_questions(self, obj: dict) -> dict:
         result = {}
@@ -59,15 +56,33 @@ class Quiplash2(Game):
             result[c.pop('id')] = row
         return result
 
-    @encode_mapping(PATH_AUDIENCE_JSON, folder + 'TranslatedAudienceQuestions.json')
-    def encode_audience_questions(self, obj: dict) -> dict:
-        return {c.pop('id'): c['prompt'] for c in obj['content']}
-
     @decode_mapping(PATH_QUESTIONS_JSON, PATH_BUILD_QUESTIONS, PATH_QUESTIONS_JSON)
     def decode_quiplash_questions(self, obj: dict, trans: dict):
         for c in obj['content']:
-            c['prompt'] = trans[str(c['id'])]
+            cid = str(c['id'])
+            text = trans[cid].strip()
+            if '\n' in text:
+                text, response, *answers = text.split('\n')
+            else:
+                response, answers = None, []
+
+            o = read_from_folder(cid, PATH_QUESTIONS)
+            if o.get('KeywordResponseText', {}).get('v'):
+                assert response is not None, f"Prompt {cid} should have a response: {o['KeywordResponseText']}"
+                o['KeywordResponseText']['v'] = response.strip()
+                o['Keywords']['v'] = '|'.join([x.strip() for x in answers])
+                o['KeywordResponseAudio']['s'] = response.strip()
+            else:
+                assert response is None, f"Prompt {cid} shouldn't have a response: {response}"
+            o['PromptText']['v'] = text
+            o['PromptAudio']['s'] = text
+            write_to_folder(cid, PATH_QUESTIONS, o)
+            c['prompt'] = text
         return obj
+
+    @encode_mapping(PATH_AUDIENCE_JSON, folder + 'TranslatedAudienceQuestions.json')
+    def encode_audience_questions(self, obj: dict) -> dict:
+        return {c.pop('id'): c['prompt'] for c in obj['content']}
 
     @decode_mapping(PATH_AUDIENCE_JSON, PATH_BUILD_AUDIENCE, PATH_AUDIENCE_JSON)
     def decode_audience_questions(self, obj: dict, trans: dict):
@@ -90,6 +105,31 @@ class Quiplash2(Game):
             trans=self._read_json(PATH_BUILD_AUDIO_SUBTITLES) | self._read_json(PATH_BUILD_TEXT_SUBTITLES),
             path_save=self.folder + 'swf/translated_dict.txt',
         )
+
+    def upload_audio_prompts(self):
+        d = Drive()
+        original = self._read_json(self.folder + 'EncodedOriginalQuiplashQuestions.json')
+        dirs = os.listdir(PATH_QUESTIONS)
+        exists = d.get_uploaded_files(PATH_DRIVE_PROMPTS)
+        data = []
+        for cid in tqdm.tqdm(dirs):
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_QUESTIONS)
+            ogg = obj['PromptAudio']['v'] + '.ogg'
+            data.append({
+                'id': f'{cid}',
+                'ogg': ogg.split('.')[0],
+                'original': original[cid].strip().split('\n')[0],
+                'translation': obj['PromptAudio']['s'],
+            })
+            if ogg not in exists:
+                file = os.path.join(PATH_QUESTIONS, cid, ogg)
+                d.copy_to_drive(PATH_DRIVE_PROMPTS, file, ogg)
+        links = d.get_files_links(path_drive=PATH_DRIVE_PROMPTS)
+        for i in data:
+            i['link'] = links[i['ogg']]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_prompts.tsv', sep='\t', encoding='utf8', index=False)
 
     def release(self, start_time):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)

@@ -4,6 +4,7 @@ PATH_LOCALIZATION = PATH + r'\Localization.json'
 PATH_QUESTIONS = PATH + r'\content\QuiplashQuestion'
 PATH_QUESTIONS_JSON = PATH + r'\content\QuiplashQuestion.jet'
 PATH_AUDIENCE_JSON = PATH + r'\content\AudienceQuestion.jet'
+PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # build
 PATH_BUILD = '../build/uk/Quiplash2/'
@@ -19,3 +20,6 @@ PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\Quiplash 2\jackbox-qu
 # backup
 PATH_BACKUP = r'~\Desktop\Jackbox\Quiplash 2\backup'
 PATH_BACKUP_QUESTIONS_JSON = PATH_BACKUP + r'\content\QuiplashQuestion.jet'
+
+# drive
+PATH_DRIVE_PROMPTS = '1v68wSKXSZb2jHQTGsfl4Nzza6O7-dwka'
