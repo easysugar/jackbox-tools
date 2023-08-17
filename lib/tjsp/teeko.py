@@ -66,7 +66,7 @@ class TeeKO(Game):
         self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TeeKO/LocalizationShirts.json')
 
     @staticmethod
-    def decode_translated_audio():
+    def copy_translated_audio():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
         original = set(os.listdir(PATH_AUDIO))
         for file in translated:
