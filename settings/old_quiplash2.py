@@ -17,6 +17,7 @@ PATH_WORD_LASH = PATH + r'\content\WordLash.jet'
 PATH_WORD_LASH_WORD = PATH + r'\content\WordLashWord.jet'
 PATH_ACRO_LASH = PATH + r'\content\AcroLash.jet'
 PATH_COMIC_LASH = PATH + r'\content\ComicLash.jet'
+PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # encoded
 PATH_DATA = '../data/pp3/quiplash2/'

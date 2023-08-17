@@ -1,5 +1,8 @@
 import os
 
+import Levenshtein
+
+from lib.common import copy_file
 from lib.game import Game, decode_mapping
 from settings import quiplash2
 from settings.old_quiplash2 import *
@@ -176,3 +179,52 @@ class OldQuiplash2(Game):
             trans=self._read_json(PATH_DATA + 'translated/text_subtitles.json'),
             path_save=self.folder_swf + 'translated_dict.txt',
         )
+
+    @decode_mapping(folder_swf + 'expanded.json', '../data/standalone/quiplash2/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
+    def get_games_audio_mapping(self, obj, ext):
+        audio = {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and 'sfx' not in v['text'].lower()}
+        assert None not in audio
+        res = {i: None for i in ext}
+        maps = {" is": "'s", '.': '', ' ': '', ',': '', ':': '', '?': '', '!': '', '-': '', "’": '', "'": '', "'": '',
+                '1': 'one', '2': 'two', '3': 'three', '\n': '', 'okay': 'ok'}
+
+        def use_maps(string):
+            for m in maps:
+                string = string.replace(m, maps[m])
+            return string
+
+        for i, t1 in ext.items():
+            for j, t2 in audio.items():
+                norm1 = use_maps(t1.lower())
+                norm2 = use_maps(t2.lower())
+                if norm1 == norm2 and j not in res.values():
+                    res[i] = j
+                    # print(t1)
+                    # print(t2)
+                    # print('100%')
+                    # print('-'*30)
+                    break
+
+        for min_ratio in [.9, .8, .7]:
+            for i in res:
+                if res[i] is not None:
+                    continue
+                t1 = ext[i]
+                for j, t2 in audio.items():
+                    if j in res.values():
+                        continue
+                    if (ratio := Levenshtein.ratio(t1.lower(), t2.lower())) >= min_ratio:
+                        res[i] = j
+        del res["341812"]
+        res["342067"] = "113594"
+        return res
+
+    def copy_translated_audio(self):
+        obj = self._read_json(self.folder + 'audio_mapping.json')
+        standalone_files = set(os.listdir(quiplash2.PATH_AUDIO))
+        jpp3_files = set(os.listdir(PATH_AUDIO))
+        for stnd, jpp3 in obj.items():
+            stnd = stnd + '.ogg'
+            jpp3 = jpp3 + '.ogg'
+            if stnd in standalone_files and jpp3 in jpp3_files:
+                copy_file(os.path.join(quiplash2.PATH_AUDIO, stnd), os.path.join(PATH_AUDIO, jpp3))
