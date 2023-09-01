@@ -1,3 +1,5 @@
+import json
+import time
 import zipfile
 from collections import Counter
 from datetime import datetime, timedelta
@@ -163,6 +165,29 @@ class Crowdin:
                  'username': self.usernames.get(u)}
                 for u, cnt in users.most_common()]
 
+    def get_top_members_report(self, date_from: datetime = None, date_to: datetime = None, list_projects: List[int] = PROJECT_LIST.values()):
+        date_from = date_from or datetime.today().replace(day=1)
+        date_to = date_to or datetime.today()
+        members = []
+        for project_id in tqdm.tqdm(list_projects):
+            request = {'name': 'top-members', 'schema': {'unit': 'strings', 'languageId': 'uk', 'format': 'json',
+                                                         'dateFrom': date_from.astimezone().replace(microsecond=0).isoformat(),
+                                                         'dateTo': date_to.astimezone().replace(microsecond=0).isoformat()}}
+            response = self.client.reports.generate_report(project_id, request)
+            report_id = response['data']['identifier']
+            time.sleep(2)
+            response = self.client.reports.download_report(project_id, report_id)
+            body = requests.get(response['data']['url'])
+            members += json.loads(body.text)['data']
+        counter = Counter()
+        info = {}
+        for m in members:
+            if m['user']['username'] == 'widget_anonymous_user':
+                continue
+            counter[m['user']['id']] += m['translated']
+            info[m['user']['id']] = m['user']
+        return [{**info[uid], 'count': cnt} for uid, cnt in counter.most_common()]
+
     def _get_last_build_id(self, project_id: int) -> int:
         build = self.client.translations.list_project_builds(project_id, limit=100)['data'][0]['data']
         assert build['status'] == 'finished'
@@ -214,7 +239,7 @@ class Crowdin:
             offset += 500
 
     def get_strings_ids_by_folder(self, project_id: int, path: str) -> Set[int]:
-        all_files = self.client.source_files.list_files(project_id)['data']
+        all_files = self.client.source_files.list_files(project_id, limit=500)['data']
         string_ids = set()
         for f in all_files:
             if f['data']['path'].startswith(path):
