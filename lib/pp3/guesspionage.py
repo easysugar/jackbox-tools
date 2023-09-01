@@ -1,5 +1,9 @@
+import os
 import re
 
+from tqdm import tqdm
+
+from lib.common import copy_file
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings.guesspionage import *
 
@@ -144,3 +148,11 @@ class Guesspionage(Game):
 
     def decode_localization(self):
         self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+
+    @staticmethod
+    def decode_translated_audio():
+        translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
+        original = set(os.listdir(PATH_AUDIO))
+        for file in tqdm(translated):
+            assert file in original, f'file {file} should be in original audio folder'
+            copy_file(os.path.join(PATH_TRANSLATED_AUDIO, file), os.path.join(PATH_AUDIO, file))

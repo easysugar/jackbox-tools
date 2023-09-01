@@ -7,7 +7,7 @@ from .old_quiplash2 import OldQuiplash2
 from .old_teeko import OldTeeKO
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\jpp3\jackbox-pack-3'
+PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\jackbox-pack-3'
 
 
 class JPP3(Game):
@@ -22,3 +22,4 @@ class JPP3(Game):
     def release(self, start_time: datetime):
         self.decode_all()
         self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
+        self.make_archive(PATH_RELEASE)

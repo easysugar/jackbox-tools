@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 
 from lib.common import read_json
-from lib.game import Game, encode_mapping, decode_mapping, copy_file
+from lib.game import Game, encode_mapping, decode_mapping, copy_file, read_from_folder, write_to_folder
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
@@ -73,8 +73,34 @@ class TMP2(Game):
         return result
 
     @decode_mapping(PATH_QUESTION, PATH_BUILD_QUESTION, PATH_QUESTION)
-    def decode_question(self, obj, trans):
-        return self._decode_question_template(obj, trans)
+    def decode_question(self, obj: dict, trans: dict):
+        for c in obj['content']:
+            cid = str(c['id'])
+            if len(trans[c['id']].strip().split('\n')) == 7:
+                intro, text, *choices, answer = trans[c['id']].strip().split('\n')
+            else:
+                text, *choices, answer = trans[c['id']].strip().split('\n')
+                intro = None
+            answer = int(answer)
+            assert answer in (1, 2, 3, 4)
+            assert len(choices) == 4, f'there are should be 4 choices, not {len(choices)}. Context: {text}'
+            c['text'] = text.strip()
+            for i in range(4):
+                c['choices'][i]['text'] = choices[i].strip()
+                c['choices'][i]['correct'] = i + 1 == answer
+            # write question intro
+            o = read_from_folder(cid, PATH_QUESTION_DIR)
+            if o.get('HasIntro', {}).get('v') == 'true' and o['Intro'].get('s'):
+                assert intro is not None, f'Intro should be here: {o["Intro"]["s"]} ({cid})'
+                o['Intro']['s'] = intro
+            else:
+                assert intro is None, f'Intro is not supposed to be here: {intro} {cid}'
+            write_to_folder(cid, PATH_QUESTION_DIR, o)
+        return obj
+
+    # @decode_mapping(PATH_QUESTION, PATH_BUILD_QUESTION, PATH_QUESTION)
+    # def decode_question(self, obj, trans):
+    #     return self._decode_question_template(obj, trans)
 
     def _rewrite_question(self, translations: dict, oid: int, path: str):
         obj = self._read_json(path)
@@ -405,3 +431,6 @@ class TMP2(Game):
             trans=translations,
             path_save=PATH_TRANSLATED_DICT,
         )
+
+    def decode_localization(self):
+        self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TMP2/LocalizationEN.json')

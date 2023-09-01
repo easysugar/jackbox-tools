@@ -62,6 +62,9 @@ class TeeKO(Game):
         translations = {**audio, **text}
         return self._update_media_dict(source, translations, editable)
 
+    def decode_localization(self):
+        self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TeeKO/LocalizationShirts.json')
+
     @staticmethod
     def decode_translated_audio():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO))

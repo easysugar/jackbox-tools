@@ -1,7 +1,11 @@
 import os
 import re
 
+import pandas as pd
+import tqdm
+
 from lib.common import read_json
+from lib.drive import Drive
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings.fakin import *
 
@@ -141,3 +145,26 @@ class Fakin(Game):
             trans=audio | text,
             path_save=self.folder_swf + 'translated_dict.txt',
         )
+
+    def upload_audio_tasks(self):
+        d = Drive()
+        original = self._read_json(self.folder + 'tasks.json')
+        dirs = os.listdir(PATH_TASKS_DIR)
+        exists = d.get_uploaded_files(PATH_DRIVE)
+        data = []
+        for cid in tqdm.tqdm(dirs):
+            obj = read_from_folder(cid, PATH_TASKS_DIR)
+            ogg = obj['Task']['v'] + '.ogg'
+            data.append({
+                'id': cid,
+                'ogg': ogg.split('.')[0],
+                'original': list(original[cid].values())[0],
+                'translation': obj['TaskText']['v'],
+            })
+            if ogg not in exists:
+                file = os.path.join(PATH_TASKS_DIR, cid, ogg)
+                d.copy_to_drive(PATH_DRIVE, file, ogg)
+        links = d.get_files_links(path_drive=PATH_DRIVE)
+        for i in data:
+            i['link'] = links[i.pop('ogg')]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_tasks.tsv', sep='\t', encoding='utf8', index=False)

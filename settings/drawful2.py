@@ -20,4 +20,6 @@ PATH_BUILD_DECOY = PATH_BUILD_GAME + 'decoy.json'
 PATH_BUILD_PROMPT = PATH_BUILD_GAME + 'prompt.json'
 PATH_BUILD_SUBTITLES = PATH_BUILD + 'audio_subtitles.json'
 
-PATH_TRANSLATED_AUDIO = r'C:\Users\админ\Desktop\Jackbox\drawful2\translated-audio'
+PATH_TRANSLATED_AUDIO = r'C:\Users\админ\Desktop\Jackbox\games\drawful2\translated-audio'
+PATH_TRANSLATED_AUDIO_OTHER = r'C:\Users\админ\Desktop\Jackbox\games\drawful2\translated-audio-other'
+PATH_TRANSLATED_AUDIO_COMMENTS = r'C:\Users\админ\Desktop\Jackbox\games\drawful2\translated-audio-comments'
