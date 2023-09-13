@@ -1,3 +1,4 @@
+from .bracket import Bracketeering
 from .doodle import Doodle
 from .fibbage3 import Fibbage3
 from .internet import Internet
