@@ -33,14 +33,12 @@ class Quiplash3(Game):
     def decode_quiplash_questions_round2(self, obj: dict, trans: dict) -> dict:
         for c in obj['content']:
             prompt, *quips = trans[c['id']].strip().split('\n')
+            assert len(quips) > 0
             o = read_from_folder(c['id'], PATH_QUESTIONS_ROUND2_DIR)
             assert o['PromptAudio']['s'] and o['PromptText']['v'] and o['SafetyQuips']['v']
             c['prompt'] = o['PromptAudio']['s'] = o['PromptText']['v'] = prompt
-            # assert len(quips) > 0
-            # TODO: add assert back
-            if len(quips) > 0:
-                c['safetyQuips'] = quips
-                o['SafetyQuips']['v'] = '|'.join(quips)
+            c['safetyQuips'] = quips
+            o['SafetyQuips']['v'] = '|'.join(quips)
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND2_DIR, o)
         return obj
 
