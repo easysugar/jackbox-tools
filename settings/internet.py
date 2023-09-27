@@ -1,4 +1,5 @@
 PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4\games\SurviveTheInternet'
+PATH_LOCALIZATION = PATH + r'\Localization.json'
 PATH_TWIST = PATH + r'\content\STITwist.jet'
 PATH_DESKTOP_FOLDER = PATH + r'\content\STIDesktopFolderName.jet'
 PATH_WARNING = PATH + r'\content\STIWarningGag.jet'
