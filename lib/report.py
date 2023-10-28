@@ -172,9 +172,16 @@ def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
     # font = None
     for i, user in enumerate(CONTRIBUTORS, 1):
         draw_text(img, font, user['username'], width, height, margin_left=0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
-                  align='none', icon=user['url'], icon_size=FONT_CONTRIBUTORS[1])
+                  align='none', icon=user['avatarUrl'], icon_size=FONT_CONTRIBUTORS[1])
         draw_text(img, font, str(user['count']), width, height, margin_left=-0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
                   align='right', fill=BLUE)
+
+
+def draw_top_patrons(img: Image, width: int, height: int, margin_up: int):
+    font = ImageFont.truetype(*FONT_CONTRIBUTORS)
+    for i, user in enumerate(PATRONS, 1):
+        draw_text(img, font, user['name'], width, height, margin_left=0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
+                  align='none', icon=user['url'], icon_size=FONT_CONTRIBUTORS[1])
 
 
 def create_game_icon(game: str, width: int, height: int):
@@ -199,11 +206,30 @@ def create_game_icon(game: str, width: int, height: int):
     return img
 
 
+def create_logo(width, height):
+    bg = Image.new("RGBA", (width, height), 'black')
+    img = load_img_from_url(LOGO_IMAGE)
+    scale = min(width / img.width, height / img.height)
+    img = img.resize((round(img.width * scale), round(img.height * scale)))
+    bg.paste(img, (bg.size[0] // 2 - img.size[0] // 2, bg.size[1] // 2 - img.size[1] // 2), img)
+    f = ImageFont.truetype(*FONT_HEAD)
+    draw_text(bg, f, LOGO_TEXT, width, height, align='right bottom', margin_up=-height // 10, margin_left=-width // 10, fill='yellow')
+    return bg
+
+
 def create_top_contributors_icon(width: int, height: int):
     img = Image.new("RGBA", (width, height), 'black')
     font = ImageFont.truetype(*FONT_HEAD)
     draw_text(img, font, TOP_CONTRIBUTORS_TEXT, width, height, align='top', margin_up=0.1, fill='yellow')
     draw_top_contributors(img, width, height, int(0.1 * height))
+    return img
+
+
+def create_top_patrons_icon(width: int, height: int):
+    img = Image.new("RGBA", (width, height), 'black')
+    font = ImageFont.truetype(*FONT_HEAD)
+    draw_text(img, font, TOP_PATRONS_TEXT, width, height, align='top', margin_up=0.1, fill='yellow')
+    draw_top_patrons(img, width, height, int(0.1 * height))
     return img
 
 
@@ -214,12 +240,22 @@ def create_games_grid(grid, width, height, max_cnt=2, head_margin=50) -> Image:
         draw_text_vertically(canvas, name, 0, i * height, height, head_margin)
         for j, game in enumerate(row):
             img = create_game_icon(game, width, height)
-
             x, y = head_margin + j * width, i * height
             canvas.paste(img, (x, y))
     if CONTRIBUTORS:
-        img = create_top_contributors_icon(width, height)
-        x, y = n - width, m - height
+        img = create_top_contributors_icon(width, height * 2)
+        i, j = CONTRIBUTORS_POSITION
+        x, y = head_margin + j * width, i * height
+        canvas.paste(img, (x, y))
+    if PATRONS:
+        img = create_top_patrons_icon(width, height * 2)
+        i, j = PATRONS_POSITION
+        x, y = head_margin + j * width, i * height
+        canvas.paste(img, (x, y))
+    if LOGO_IMAGE:
+        img = create_logo(width, height)
+        i, j = LOGO_POSITION
+        x, y = head_margin + j * width, i * height
         canvas.paste(img, (x, y))
     return canvas
 
@@ -250,6 +286,6 @@ def create_report():
     for game in GAMES:
         grid[GAMES[game]['pack']].append(game)
 
-    img = create_games_grid(grid, WIDTH, HEIGHT, 3)
+    img = create_games_grid(grid, WIDTH, HEIGHT, COLUMNS_COUNT)
     img.save("report.png", "PNG")
     img.show()

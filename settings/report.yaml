@@ -1,74 +1,89 @@
 # Pack 3
-tmp1:
-    name: "Смертельні\nВечорниці"
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_TMP.jpg
-    path: /JPP3/TMP
-    pack: Пак 3
-poll:
-    name: Шпигадаш
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_Guess.jpg
-    path: /JPP3/Guesspionage
-    pack: Пак 3
-fakin:
-    name: Надурисвіт
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_FakinIt.jpg
-    path: /JPP3/FakinIt
-    pack: Пак 3
-# Pack 4
-monster:
-    name: "Монстр шукає\n    монстра"
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/MonsterSeekingMonster.jpg
-    path: /JPP4/MSM
-    pack: Пак 4
-internet:
-    name: "Вижити в\nІнтернеті"
-    img: ../assets/internet.jpeg
-    path: /JPP4/STI
-    pack: Пак 4
-#fibbage3:
-#    name: Маячнюха 3
-#    img: https://i.ytimg.com/vi/OWCXwy-GDHE/maxresdefault.jpg
-#    pack: Пак 4
-doodle:
-    name: "Громадська\n    мазня"
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/CivicDoodle.jpg
-    path: /JPP4/CD
-    pack: Пак 4
-# Starter Pack
-tmp2:
-    name: "Смертельні\nВечорниці 2"
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/08/TMP2_tile.jpg
-    path: /TMP2
-    pack: Стартер пак
-teeko:
-    name: Футбол К.О.
-    img: ../assets/teeko.jpeg
-    status: 💯
-    path: /TeeKO
-    pack: Стартер пак
-    actor:
-        name: Pad0n
-        img: https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg
-quiplash3:
-    name: Сміхрясь 3
-    img: https://jackboxgames.b-cdn.net/wp-content/uploads/2020/09/q3_websiteTile_v1.jpg
-    pack: Стартер пак
-    path: /Quiplash3
-# Standalone games
-drawful2:
-    name: Малювач 2
-    img: https://images.greenmangaming.com/bdefabab026045ec8b1171728c051ea3/25ea8336263d4cc8b80126e7e15fd937.jpg
-    path: /Drawful2
-    status: 👑
-    actor:
-        name: Lunar Shadow
-        img: https://avatars.akamai.steamstatic.com/377c64e345750b516ff048186d96ec79fdd90df5_full.jpg
-    pack: Окремі ігри
-quiplash2:
-    name: Сміхрясь 2
-    img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
-    path: /Quiplash2
-    pack: Окремі ігри
-    actor:
-        name: Lost Human
-        img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
+Пак 3:
+    old_teeko:
+        name: Футбол К.О.
+        img: ../assets/teeko.jpeg
+        status: ⭐
+        path: /JPP3/TeeKO
+        actor:
+            name: Pad0n
+            img: https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg
+    old_quiplash2:
+        name: Сміхрясь 2
+        img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
+        path: /JPP3/Quiplash2
+        actor:
+            name: Lost Human
+            img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
+    fakin:
+        name: Надурисвіт
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_FakinIt.jpg
+        path: /JPP3/FakinIt
+        status: ⭐
+        actor:
+            name: Jorest
+            img: https://github.com/easysugar/jackbox-tools/assets/38401622/c985df8d-474d-4398-8db4-41b443ce63ed
+    poll:
+        name: Шпигадаш
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_Guess.jpg
+        path: /JPP3/Guesspionage
+        actor:
+            name: Slidan
+            img: https://c10.patreonusercontent.com/4/patreon-media/p/campaign/9157433/242b948cc3624a9ba62aad5e7573abd9/eyJ3IjoyMDB9/2.png?token-time=2145916800&token-hash=_BrAmccwJUqsf0vfAqjOzcc3rX1YTNJO2b74jVS447s%3D
+    tmp1:
+        name: "Смертельні\nВечорниці"
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_TMP.jpg
+        path: /JPP3/TMP
+Пак 4:
+    monster:
+        name: "Монстр шукає\n    монстра"
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/MonsterSeekingMonster.jpg
+        path: /JPP4/MSM
+    internet:
+        name: "Вижити в\nІнтернеті"
+        img: ../assets/internet.jpeg
+        path: /JPP4/STI
+    fibbage3:
+        name: Брехалище 3
+        img: https://i.ytimg.com/vi/OWCXwy-GDHE/maxresdefault.jpg
+        path: /JPP4/Fibbage3
+    doodle:
+        name: "Громадська\n    мазня"
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/CivicDoodle.jpg
+        path: /JPP4/CD
+    bracket:
+        name: "Жартурнір"
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/Bracketeering.jpg
+Стартер:
+    teeko:
+        name: Футбол К.О.
+        img: ../assets/teeko.jpeg
+        status: ⭐
+        path: /TeeKO
+        actor:
+            name: Pad0n
+            img: https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg
+    tmp2:
+        name: "Смертельні\nВечорниці 2"
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/08/TMP2_tile.jpg
+        path: /TMP2
+    quiplash3:
+        name: Сміхрясь 3
+        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2020/09/q3_websiteTile_v1.jpg
+        path: /Quiplash3
+Окремі ігри:
+    drawful2:
+        name: Малювач 2
+        img: https://images.greenmangaming.com/bdefabab026045ec8b1171728c051ea3/25ea8336263d4cc8b80126e7e15fd937.jpg
+        path: /Drawful2
+        status: ⭐
+        actor:
+            name: Lunar Shadow
+            img: https://avatars.akamai.steamstatic.com/377c64e345750b516ff048186d96ec79fdd90df5_full.jpg
+    quiplash2:
+        name: Сміхрясь 2
+        img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
+        path: /Quiplash2
+        actor:
+            name: Lost Human
+            img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
