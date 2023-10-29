@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from lib.game import Game
+from .bracket import Bracketeering
 from .doodle import Doodle
 from .internet import Internet
 from .monster import Monster
@@ -18,13 +19,15 @@ class JPP4(Game):
         Monster().encode_all()
         Internet().encode_all()
         Doodle().encode_all()
+        Bracketeering().encode_all()
 
     def decode_all(self):
-        self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/JPP3/localization.json')
+        self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/JPP4/localization.json')
         self.update_localization(rf'{PATH_GAME}\games\PartyPack\Localization.json', '../build/uk/JPP4/localization_pack.json')
         Monster().decode_all()
         Internet().decode_all()
         Doodle().decode_all()
+        Bracketeering().decode_all()
 
     def release(self, start_time: datetime):
         self.decode_all()
