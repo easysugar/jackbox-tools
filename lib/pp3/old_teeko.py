@@ -56,8 +56,8 @@ class OldTeeKO(Game):
         self.copy_slogans()
         self.copy_slogan_suggestions()
         self.copy_text_subtitles()
-        self.get_games_audio_mapping()
-        self.copy_translated_audio()
+        # self.get_games_audio_mapping()
+        # self.copy_translated_audio()
 
     @staticmethod
     def _copy_template(old, new):
