@@ -146,7 +146,7 @@ class Fakin(Game):
             path_save=self.folder_swf + 'translated_dict.txt',
         )
 
-    def upload_audio_tasks(self):
+    def _upload_audio_tasks(self):
         d = Drive()
         original = self._read_json(self.folder + 'tasks.json')
         dirs = os.listdir(PATH_TASKS_DIR)
@@ -169,7 +169,7 @@ class Fakin(Game):
             i['link'] = links[i.pop('ogg')]
         pd.DataFrame(data).to_csv(self.folder + 'audio_tasks.tsv', sep='\t', encoding='utf8', index=False)
 
-    def upload_audio_input(self):
+    def _upload_audio_input(self):
         d = Drive()
         original = self._read_json(self.folder + 'input.json')
         dirs = os.listdir(PATH_INPUT_DIR)
@@ -199,7 +199,7 @@ class Fakin(Game):
             i['link'] = links[i.pop('ogg')]
         pd.DataFrame(data).to_csv(self.folder + 'audio_input.tsv', sep='\t', encoding='utf8', index=False)
 
-    def upload_audio_sfx(self):
+    def _upload_audio_sfx(self):
         d = Drive()
         exists = d.get_uploaded_files(PATH_DRIVE)
         subtitles_ids = set(self._read_json(PATH_AUDIO_SUBTITLES).keys())
@@ -223,7 +223,7 @@ class Fakin(Game):
         pd.DataFrame(data).to_csv(self.folder + 'audio_sfx.tsv', sep='\t', encoding='utf8', index=False)
 
     @staticmethod
-    def decode_audio_main():
+    def _decode_audio_main():
         translated = set(os.listdir(PATH_AUDIO_MAIN))
         original = set(os.listdir(PATH_MEDIA))
         for file in tqdm.tqdm(translated):
@@ -232,7 +232,7 @@ class Fakin(Game):
                 copy_file(os.path.join(PATH_AUDIO_MAIN, file), os.path.join(PATH_MEDIA, file))
 
     @staticmethod
-    def decode_audio_tasks():
+    def _decode_audio_tasks():
         dirs = os.listdir(PATH_TASKS_DIR)
         for cid in tqdm.tqdm(dirs):
             obj = read_from_folder(cid, PATH_TASKS_DIR)
@@ -240,7 +240,7 @@ class Fakin(Game):
             copy_file(os.path.join(PATH_AUDIO_TASKS, f"{cid}.ogg"), os.path.join(PATH_TASKS_DIR, cid, ogg))
 
     @staticmethod
-    def decode_audio_input():
+    def _decode_audio_input():
         dir_path = PATH_INPUT_DIR
         dirs = os.listdir(dir_path)
         for cid in tqdm.tqdm(dirs):
