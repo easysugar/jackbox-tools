@@ -3,7 +3,11 @@ import random
 import re
 from collections import defaultdict
 
+import pandas as pd
+import tqdm
+
 from lib.common import read_json
+from lib.drive import Drive
 from lib.game import Game, encode_mapping, decode_mapping, copy_file, read_from_folder, write_to_folder
 from settings.tmp2 import *
 
@@ -12,6 +16,7 @@ random.seed(34)
 
 
 class TMP2(Game):
+    folder = '../data/tjsp/tmp2/'
 
     # DICTATION
 
@@ -204,7 +209,7 @@ class TMP2(Game):
         return obj
 
     @staticmethod
-    def _encode_question_template(obj: dict, host=False):
+    def _encode_question_template(obj: dict, host=False, question_folder: str = None):
         assert len({c['id'] for c in obj['content']}) == len(obj['content'])
         result = {}
         for c in obj['content']:
@@ -220,6 +225,10 @@ class TMP2(Game):
                 '\n'.join([i['text'] for i in c['choices']]),
                 answer
             )
+            if question_folder:
+                o = read_from_folder(c['id'], question_folder)
+                if intro := o.get('Intro', {}).get('s'):
+                    result[c['id']] = intro + '\n' + result[c['id']]
         return result
 
     @staticmethod
@@ -305,9 +314,9 @@ class TMP2(Game):
 
     # KNIFE
 
-    @encode_mapping(PATH_QUESTION_KNIFE, 'data/tmp2/encoded/question_knife.json')
+    @encode_mapping(PATH_QUESTION_KNIFE, '../data/tmp2/encoded/question_knife.json')
     def encode_question_knife(self, obj):
-        return self._encode_question_template(obj, True)
+        return self._encode_question_template(obj, True, PATH_QUESTION_KNIFE_DIR)
 
     @decode_mapping(PATH_QUESTION_KNIFE, PATH_BUILD_QUESTION_KNIFE, PATH_QUESTION_KNIFE)
     def decode_question_knife(self, obj, trans):
@@ -434,3 +443,74 @@ class TMP2(Game):
 
     def decode_localization(self):
         self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TMP2/LocalizationEN.json')
+
+    def upload_audio_main(self):
+        d = Drive()
+        original = self._read_json(self.folder + 'encoded/EncodedAudio.json')
+        expanded = self._read_json(self.folder + 'encoded/expanded.json')
+        context = {v['id']: c['crowdinContext'] for c in expanded for v in c['versions'] if c.get('crowdinContext')}
+        skip = {v['id'] for c in expanded for v in c['versions'] if 'AltHost' in v['text']}
+        tags = {v['id']: v['tags'] for c in expanded for v in c['versions']}
+        obj = self._read_json(PATH_BUILD_AUDIO)
+        exists = d.get_uploaded_files(PATH_DRIVE_MAIN)
+        data = []
+        for cid in tqdm.tqdm(sorted(original)):
+            ogg = f'{cid}.ogg'
+            if cid in skip:
+                continue
+            data.append({
+                'id': cid,
+                'tag': tags[cid],
+                'context': context.get(cid),
+                'original': original[cid].strip().replace('\n', ' '),
+                'translation': obj[cid].strip().replace('\n', ' '),
+            })
+            if ogg not in exists:
+                file = os.path.join(PATH_MEDIA, ogg)
+                d.copy_to_drive(PATH_DRIVE_MAIN, file, ogg)
+        links = d.get_files_links(path_drive=PATH_DRIVE_MAIN)
+        for i in data:
+            i['link'] = links[i['id']]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_main.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_madness(self):
+        d = Drive(PATH_DRIVE_MADNESS)
+        expanded = self._read_json(self.folder + 'encoded/expanded.json')
+        cids = {str(v['id']) for c in expanded for v in c['versions'] if 'weird doctor' in v['text'].lower() and v['locale'] == 'en'}
+        data = []
+        obj = self._read_json(PATH_BUILD_AUDIO)
+        for cid in tqdm.tqdm(cids):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+
+        questions = self._read_json(PATH_BUILD_QUESTION_MADNESS)
+        for cid, q in questions.items():
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': q.strip().split('\n')[0]})
+            d.upload(PATH_QUESTION_MADNESS_DIR, cid, 'questionAudio.ogg', name=ogg)
+
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_weird_doctor.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_bomb(self):
+        d = Drive(PATH_DRIVE_BOMB)
+        expanded = self._read_json(self.folder + 'encoded/expanded.json')
+        cids = {str(v['id']) for c in expanded for v in c['versions'] if 'cop:' in v['text'].lower() and v['locale'] == 'en'}
+        data = []
+        obj = self._read_json(PATH_BUILD_AUDIO)
+        for cid in tqdm.tqdm(cids):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+
+        questions = self._read_json(PATH_BUILD_QUESTION_BOMB)
+        for cid, q in questions.items():
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': q.strip().split('\n')[0]})
+            d.upload(PATH_QUESTION_BOMB_DIR, cid, 'questionAudio.ogg', name=ogg)
+
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_cop_bomb.tsv', sep='\t', encoding='utf8', index=False)
