@@ -1,63 +1,77 @@
 # Pack 3
 Пак 3:
     old_teeko:
-        name: Футбол К.О.
-        img: ../assets/teeko.jpeg
+        name: "Футбол К.О."
+        img: https://static.wikia.nocookie.net/jackboxgames/images/0/07/TeeKO-logo.png/revision/latest?cb=20210811073109
         status: ⭐
         path: /JPP3/TeeKO
         actor:
             name: Pad0n
             img: https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg
     old_quiplash2:
-        name: Сміхрясь 2
+        name: "Сміхрясь 2"
         img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
         path: /JPP3/Quiplash2
         actor:
             name: Lost Human
             img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
     fakin:
-        name: Надурисвіт
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_FakinIt.jpg
+        name: "Надурисвіт"
+        img: https://static.wikia.nocookie.net/jackboxgames/images/7/7f/Fakin-It.png/revision/latest?cb=20210811072948
         path: /JPP3/FakinIt
         status: ⭐
         actor:
             name: Jorest
             img: https://github.com/easysugar/jackbox-tools/assets/38401622/c985df8d-474d-4398-8db4-41b443ce63ed
     poll:
-        name: Шпигадаш
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_Guess.jpg
+        name: "Шпигадаш"
+        img: https://static.wikia.nocookie.net/jackboxgames/images/0/04/GuesspionageBanner.png/revision/latest?cb=20210811072840
         path: /JPP3/Guesspionage
         actor:
             name: Slidan
             img: https://c10.patreonusercontent.com/4/patreon-media/p/campaign/9157433/242b948cc3624a9ba62aad5e7573abd9/eyJ3IjoyMDB9/2.png?token-time=2145916800&token-hash=_BrAmccwJUqsf0vfAqjOzcc3rX1YTNJO2b74jVS447s%3D
     tmp1:
         name: "Смертельні\nВечорниці"
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/PP3Tile_TMP.jpg
+        img: https://static.wikia.nocookie.net/smosh/images/5/52/TriviaMurderParty.png/revision/latest?cb=20190709132144
         path: /JPP3/TMP
 Пак 4:
     monster:
         name: "Монстр шукає\n    монстра"
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/MonsterSeekingMonster.jpg
+        img: https://static.wikia.nocookie.net/jackboxgames/images/3/35/Monster_Seeking_Monster_Banner.png/revision/latest?cb=20210811073303
         path: /JPP4/MSM
     internet:
         name: "Вижити в\nІнтернеті"
-        img: ../assets/internet.jpeg
+        img: https://static.wikia.nocookie.net/jackboxgames/images/e/e2/SurviveTheInternet.jpg/revision/latest?cb=20210623192035
         path: /JPP4/STI
     fibbage3:
-        name: Брехалище 3
+        name: "Брехалище 3"
         img: https://i.ytimg.com/vi/OWCXwy-GDHE/maxresdefault.jpg
         path: /JPP4/Fibbage3
     doodle:
         name: "Громадська\n    мазня"
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/CivicDoodle.jpg
+        img: https://static.wikia.nocookie.net/jackboxgames/images/9/90/Civic_Doodle_%282%29.png/revision/latest?cb=20210811073646
         path: /JPP4/CD
     bracket:
         name: "Жартурнір"
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/06/Bracketeering.jpg
+        img: https://static.wikia.nocookie.net/jackboxgames/images/8/88/Bracketeering.png/revision/latest?cb=20210811073411
+        path: /JPP4/Bracketeering
+Пак 5:
+    split:
+        name: "Розділи\n  кімнату"
+        img: https://static.wikia.nocookie.net/jackboxgames/images/1/18/Split-the-room-logo.png/revision/latest?cb=20210811081119
+        path: /JPP5/SplitTheRoom
+    ydkj:
+        img: https://external-preview.redd.it/ZMGXz1fHya06L-632ItKQelJKpahzoIIL_ffb2NLuL8.jpg?auto=webp&s=3c4154787e84f37bc3a9c348cc983e03c53bb349
+    stupid:
+        img: https://cms-assets.jackboxgames.com/large_PS_Logo_BLOG_f07a8068a7.jpg
+    mad:
+        img: https://static.wikia.nocookie.net/jackboxgames/images/c/c4/Mad-verse-city.png/revision/latest?cb=20210811080444
+    zeeple:
+        img: https://static.wikia.nocookie.net/jackboxgames/images/e/e6/Slingshoot_logo_fb-1080x629-ds1-1340x1340.png/revision/latest?cb=20200424043859
 Стартер:
     teeko:
-        name: Футбол К.О.
-        img: ../assets/teeko.jpeg
+        name: "Футбол К.О."
+        img: https://static.wikia.nocookie.net/jackboxgames/images/0/07/TeeKO-logo.png/revision/latest?cb=20210811073109
         status: ⭐
         path: /TeeKO
         actor:
@@ -65,15 +79,15 @@
             img: https://avatars.akamai.steamstatic.com/ddd33361ad9ca81db1e35ea33d348f775cee3a89_full.jpg
     tmp2:
         name: "Смертельні\nВечорниці 2"
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2019/08/TMP2_tile.jpg
+        img: https://pbs.twimg.com/media/D5fjRQBWwAAnIFo.jpg:large
         path: /TMP2
     quiplash3:
-        name: Сміхрясь 3
-        img: https://jackboxgames.b-cdn.net/wp-content/uploads/2020/09/q3_websiteTile_v1.jpg
+        name: "Сміхрясь 3"
+        img: https://images.prom.ua/3956695508_w640_h640_klyuch-aktivatsii-the.jpg
         path: /Quiplash3
 Окремі ігри:
     drawful2:
-        name: Малювач 2
+        name: "Малювач 2"
         img: https://images.greenmangaming.com/bdefabab026045ec8b1171728c051ea3/25ea8336263d4cc8b80126e7e15fd937.jpg
         path: /Drawful2
         status: ⭐
@@ -81,7 +95,7 @@
             name: Lunar Shadow
             img: https://avatars.akamai.steamstatic.com/377c64e345750b516ff048186d96ec79fdd90df5_full.jpg
     quiplash2:
-        name: Сміхрясь 2
+        name: "Сміхрясь 2"
         img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
         path: /Quiplash2
         actor:

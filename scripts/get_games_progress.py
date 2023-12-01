@@ -16,6 +16,5 @@ if __name__ == '__main__':
             if path not in directories:
                 continue
             progress[game] = c.get_directory_progress(project_id, directories[path])
-    print(progress)
-    with open(SAVE_PATH, 'w') as f:
+    with open(SAVE_PATH, 'w', encoding='utf-8') as f:
         json.dump(progress, f, indent=4)
