@@ -58,7 +58,7 @@ def crop_to_circle(img: Image):
     bigsize = (img.size[0] * 3, img.size[1] * 3)
     mask = Image.new('L', bigsize, 0)
     ImageDraw.Draw(mask).ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(img.size, Image.ANTIALIAS)
+    mask = mask.resize(img.size, Image.LANCZOS)
     mask = ImageChops.darker(mask, img.split()[-1])
     img.putalpha(mask)
     return img
@@ -78,10 +78,10 @@ def draw_text(img: Image, font: ImageFont, text: str, width, height, margin_up: 
 
     if drawer is None:
         d = ImageDraw.Draw(img)
-        w, h = d.textsize(text, font=font)
+        w, h = get_text_size(d, font, text)
     else:
         d = drawer
-        w, h = drawer.getsize(text, font=font)
+        w, h = get_text_size(drawer, font, text)
 
     if isinstance(margin_up, float):
         margin_up = int(margin_up * height)
@@ -113,6 +113,8 @@ def draw_text(img: Image, font: ImageFont, text: str, width, height, margin_up: 
 
 
 def draw_game_title(img: Image, game: str, width: int, height: int):
+    if 'name' not in GAMES[game]:
+        return
     text = GAMES[game]['name']
     width, height = width, height * 3 // 4
     f = ImageFont.truetype(*FONT_GAME)
@@ -140,12 +142,25 @@ def draw_text_vertically(img: Image, text: str, x: int, y: int, width: int, heig
     txt = Image.new('L', (width, height))
 
     d = ImageDraw.Draw(txt)
-    w, h = d.textsize(text, font=f)
+    w, h = get_text_size(d, f, text)
     d.text(((width - w) / 2, (height - h) / 2), text, font=f, fill="white")
     # d.text((0, 0), text, font=f, fill=255)
     w = txt.rotate(90, expand=True)
     # img.paste(ImageOps.colorize(w, (0, 0, 0), (255, 255, 84)), (x, y), w)
     img.paste(w, (x, y))
+
+
+def get_text_size(draw, font, text):
+    ascent, descent = font.getmetrics()
+    try:
+        w = max(draw.textlength(t, font=font) for t in text.split('\n'))
+        try:
+            h = sum(font.getmask(t).getbbox()[3] + descent for t in text.split('\n'))
+        except:
+            h = font.size
+    except:
+        w, h = draw.getsize(text, font=font)
+    return w, h
 
 
 def draw_voice_actor(img: Image, game: str, width: int, height: int):
