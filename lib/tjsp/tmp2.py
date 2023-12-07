@@ -232,10 +232,15 @@ class TMP2(Game):
         return result
 
     @staticmethod
-    def _decode_question_template(obj, trans, host=False):
+    def _decode_question_template(obj, trans, host=False, question_folder: str = None):
         prefix = '' if not host else '[EventName=HOST/AltHost]'
         for c in obj['content']:
-            text, *choices, answer = trans[c['id']].strip().split('\n')
+            cid = c['id']
+            if len(trans[c['id']].strip().split('\n')) == 6:
+                text, *choices, answer = trans[c['id']].strip().split('\n')
+                intro = None
+            else:
+                intro, text, *choices, answer = trans[c['id']].strip().split('\n')
             answer = int(answer)
             assert answer in (1, 2, 3, 4)
             assert len(choices) == 4, f'there are should be 4 choices, not {len(choices)}. Context: {text}'
@@ -243,6 +248,16 @@ class TMP2(Game):
             for i in range(4):
                 c['choices'][i]['text'] = choices[i].strip()
                 c['choices'][i]['correct'] = i + 1 == answer
+
+            if intro:
+                assert question_folder is not None, f'Question {cid} has intro "{intro}", but question_folder is not provided.'
+                o = read_from_folder(cid, question_folder)
+                if o.get('HasIntro', {}).get('v') == 'true' and o['Intro'].get('s'):
+                    assert intro is not None, f'Intro should be here: {o["Intro"]["s"]} ({cid})'
+                    o['Intro']['s'] = '[EventName=HOST/AltHost]' + intro
+                else:
+                    assert intro is None, f'Intro is not supposed to be here: {intro} {cid}'
+                write_to_folder(cid, question_folder, o)
         return obj
 
     # HAT
@@ -320,7 +335,7 @@ class TMP2(Game):
 
     @decode_mapping(PATH_QUESTION_KNIFE, PATH_BUILD_QUESTION_KNIFE, PATH_QUESTION_KNIFE)
     def decode_question_knife(self, obj, trans):
-        return self._decode_question_template(obj, trans, True)
+        return self._decode_question_template(obj, trans, True, PATH_QUESTION_KNIFE_DIR)
 
     def unpack_question_knife(self):
         return self._unpack_template(PATH_QUESTION_KNIFE, PATH_QUESTION_KNIFE_DIR, self._rewrite_question)
