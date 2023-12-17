@@ -23,3 +23,7 @@ PATH_BACKUP_QUESTIONS_JSON = PATH_BACKUP + r'\content\QuiplashQuestion.jet'
 
 # drive
 PATH_DRIVE_PROMPTS = '1v68wSKXSZb2jHQTGsfl4Nzza6O7-dwka'
+PATH_DRIVE_TRIGGERS = '112QGKiGAFrBwomfF_ZzOYY7azdnf5Kwy'
+
+PATH_AUDIO_PROMPTS = r'C:\Users\админ\Desktop\Jackbox\games\Quiplash 2\audio\prompts-increased'
+PATH_AUDIO_TRIGGERS = r'C:\Users\админ\Desktop\Jackbox\games\Quiplash 2\audio\triggers-increased'

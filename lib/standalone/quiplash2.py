@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import tqdm
 
-from lib.common import read_json
+from lib.common import read_json, copy_file
 from lib.drive import Drive
 from lib.game import Game, encode_mapping, decode_mapping, write_to_folder, read_from_folder
 from settings.quiplash2 import *
@@ -80,6 +80,29 @@ class Quiplash2(Game):
             c['prompt'] = text
         return obj
 
+    @decode_mapping(PATH_QUESTIONS_JSON, PATH_BUILD_QUESTIONS, PATH_QUESTIONS_JSON)
+    def _decode_quiplash_questions_only_with_triggers(self, obj: dict, trans: dict):
+        with_triggers = set()
+        for c in obj['content']:
+            cid = str(c['id'])
+            text = trans[cid].strip()
+            if '\n' in text:
+                text, response, *answers = text.split('\n')
+            else:
+                response, answers = None, []
+
+            o = read_from_folder(cid, PATH_QUESTIONS)
+            if o.get('KeywordResponseText', {}).get('v'):
+                assert response is not None, f"Prompt {cid} should have a response: {o['KeywordResponseText']}"
+                o['KeywordResponseText']['v'] = response.strip()
+                o['Keywords']['v'] = '|'.join([x.strip() for x in answers])
+                o['KeywordResponseAudio']['s'] = response.strip()
+            else:
+                continue
+            with_triggers.add(cid)
+        obj['content'] = [c for c in obj['content'] if str(c['id']) in with_triggers]
+        return obj
+
     @encode_mapping(PATH_AUDIENCE_JSON, folder + 'TranslatedAudienceQuestions.json')
     def encode_audience_questions(self, obj: dict) -> dict:
         return {c.pop('id'): c['prompt'] for c in obj['content']}
@@ -130,6 +153,56 @@ class Quiplash2(Game):
         for i in data:
             i['link'] = links[i['ogg']]
         pd.DataFrame(data).to_csv(self.folder + 'audio_prompts.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_triggers(self):
+        d = Drive()
+        original = self._read_json(self.folder + 'EncodedOriginalQuiplashQuestions.json')
+        dirs = os.listdir(PATH_QUESTIONS)
+        exists = d.get_uploaded_files(PATH_DRIVE_TRIGGERS)
+        data = []
+        for cid in tqdm.tqdm(dirs):
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_QUESTIONS)
+            if obj['HasJokeAudio']['v'] == 'true':
+                ogg = obj['KeywordResponseAudio']['v'] + '.ogg'
+                if ogg not in exists:
+                    file = os.path.join(PATH_QUESTIONS, cid, ogg)
+                    d.copy_to_drive(PATH_DRIVE_TRIGGERS, file, ogg)
+                data.append({
+                    'id': f'{cid}',
+                    'ogg': ogg.split('.')[0],
+                    'original': original[cid].strip().split('\n')[1],
+                    'translation': obj['KeywordResponseAudio']['s'],
+                    'prompt': obj['PromptText']['v'],
+                    'trigger': obj['Keywords']['v'].split('|')[0],
+                })
+        links = d.get_files_links(path_drive=PATH_DRIVE_TRIGGERS)
+        for i in data:
+            i['link'] = links[i['ogg']]
+        pd.DataFrame(data).to_csv(self.folder + 'audio_triggers.tsv', sep='\t', encoding='utf8', index=False)
+
+    @staticmethod
+    def _decode_audio_tasks():
+        dirs = os.listdir(PATH_QUESTIONS)
+        for cid in tqdm.tqdm(dirs):
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_QUESTIONS)
+            ogg = obj['PromptAudio']['v'] + '.ogg'
+            copy_file(os.path.join(PATH_AUDIO_PROMPTS, ogg), os.path.join(PATH_QUESTIONS, cid, ogg))
+
+    @staticmethod
+    def _decode_audio_triggers():
+        dirs = os.listdir(PATH_QUESTIONS)
+        for cid in tqdm.tqdm(dirs):
+            if not cid.isdigit():
+                continue
+            obj = read_from_folder(cid, PATH_QUESTIONS)
+            if obj['HasJokeAudio']['v'] == 'true':
+                ogg = obj['KeywordResponseAudio']['v'] + '.ogg'
+                print('ogg', ogg)
+                copy_file(os.path.join(PATH_AUDIO_TRIGGERS, ogg), os.path.join(PATH_QUESTIONS, cid, ogg))
 
     def release(self, start_time):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)

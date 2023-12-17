@@ -3,7 +3,7 @@ import os
 import Levenshtein
 
 from lib.common import copy_file
-from lib.game import Game, decode_mapping
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 from settings import quiplash2
 from settings.old_quiplash2 import *
 
@@ -63,7 +63,6 @@ class OldQuiplash2(Game):
 
     def decode_from_standalone_quiplash2(self):
         self.copy_questions()
-        self._unpack_questions()
         self.copy_audience()
         self.copy_safety_quips()
         self.copy_word_lash()
@@ -73,6 +72,7 @@ class OldQuiplash2(Game):
         # media
         self.copy_text_subtitles()
         self.decode_media()
+        self.copy_translated_audio()
 
     @staticmethod
     def _copy_template(old, new):
@@ -83,12 +83,6 @@ class OldQuiplash2(Game):
                 # continue
             c['prompt'] = mapp[str(c['id'])]
         return old
-
-    @decode_mapping(PATH_QUESTIONS_JSON, PATH_BUILD_EXTRA_QUESTIONS, quiplash2.PATH_QUESTIONS_JSON, PATH_QUESTIONS_JSON)
-    def copy_questions(self, old, extra, new):
-        for cid in extra:
-            new['content'].append({'id': cid, 'prompt': extra[cid]})
-        return self._copy_template(old, new)
 
     @decode_mapping(PATH_AUDIENCE_JSON, quiplash2.PATH_AUDIENCE_JSON, PATH_AUDIENCE_JSON)
     def copy_audience(self, old, new):
@@ -145,18 +139,38 @@ class OldQuiplash2(Game):
         assert 'PromptText' in {f['n'] for f in fields}
         assert 'PromptAudio' in {f['n'] for f in fields}
 
-    def _rewrite_question(self, oid: str, translation: str):
-        path = os.path.join(PATH_QUESTIONS_DIR, oid, 'data.jet')
-        obj = self._read_json(path)
-        self._update_question_obj(obj, translation)
-        self._write_json(path, obj)
-
-    def _unpack_questions(self):
-        dirs = os.listdir(PATH_QUESTIONS_DIR)
-        translations = {str(x['id']): x['prompt'] for x in self._read_json(PATH_QUESTIONS_JSON)['content']}
-        for oid in dirs:
-            if oid.isdigit():
-                self._rewrite_question(oid, translations[oid])
+    @decode_mapping(PATH_QUESTIONS_JSON, PATH_BUILD_EXTRA_QUESTIONS, quiplash2.PATH_QUESTIONS_JSON, PATH_QUESTIONS_JSON)
+    def copy_questions(self, dst, extra, src):
+        prompts = {str(c['id']): c['prompt'] for c in src['content']}
+        prompts.update({str(cid): prompt for cid, prompt in extra.items()})
+        for c in dst['content']:
+            cid = str(c['id'])
+            text = prompts[cid].strip()
+            o = read_from_folder(cid, PATH_QUESTIONS_JSON)
+            o2 = read_from_folder(cid, quiplash2.PATH_QUESTIONS_JSON) if cid not in extra else None
+            if o.get('KeywordResponseText', {}).get('v') and cid not in extra:
+                o['KeywordResponseText']['v'] = o2['KeywordResponseText']['v']
+                o['Keywords']['v'] = o2['Keywords']['v']
+                o['KeywordResponseAudio']['s'] = o2['KeywordResponseAudio']['s']
+                copy_file(
+                    os.path.join(quiplash2.PATH_QUESTIONS_JSON.removesuffix('.jet'), cid, o2['KeywordResponseAudio']['v'] + '.ogg'),
+                    os.path.join(PATH_QUESTIONS_JSON.removesuffix('.jet'), cid, o['KeywordResponseAudio']['v'] + '.ogg'),
+                )
+            o['PromptText']['v'] = text
+            o['PromptAudio']['s'] = text
+            if cid in extra:
+                copy_file(
+                    os.path.join(quiplash2.PATH_AUDIO_PROMPTS, o['PromptAudio']['v'] + '.ogg'),
+                    os.path.join(PATH_QUESTIONS_JSON.removesuffix('.jet'), cid, o['PromptAudio']['v'] + '.ogg'),
+                )
+            else:
+                copy_file(
+                    os.path.join(quiplash2.PATH_QUESTIONS_JSON.removesuffix('.jet'), cid, o2['PromptAudio']['v'] + '.ogg'),
+                    os.path.join(PATH_QUESTIONS_JSON.removesuffix('.jet'), cid, o['PromptAudio']['v'] + '.ogg'),
+                )
+            write_to_folder(cid, PATH_QUESTIONS_JSON, o)
+            c['prompt'] = text
+        return dst
 
     @decode_mapping(folder_swf + 'expanded.json', folder + 'text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
@@ -185,7 +199,7 @@ class OldQuiplash2(Game):
         audio = {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and 'sfx' not in v['text'].lower()}
         assert None not in audio
         res = {i: None for i in ext}
-        maps = {" is": "'s", '.': '', ' ': '', ',': '', ':': '', '?': '', '!': '', '-': '', "’": '', "'": '', "'": '',
+        maps = {" is": "'s", '.': '', ' ': '', ',': '', ':': '', '?': '', '!': '', '-': '', "’": '', "'": '',
                 '1': 'one', '2': 'two', '3': 'three', '\n': '', 'okay': 'ok'}
 
         def use_maps(string):
@@ -199,10 +213,6 @@ class OldQuiplash2(Game):
                 norm2 = use_maps(t2.lower())
                 if norm1 == norm2 and j not in res.values():
                     res[i] = j
-                    # print(t1)
-                    # print(t2)
-                    # print('100%')
-                    # print('-'*30)
                     break
 
         for min_ratio in [.9, .8, .7]:
