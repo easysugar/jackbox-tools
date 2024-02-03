@@ -72,7 +72,7 @@ class OldQuiplash2(Game):
         # media
         self.copy_text_subtitles()
         self.decode_media()
-        self.copy_translated_audio()
+        # self.copy_translated_audio()
 
     @staticmethod
     def _copy_template(old, new):
