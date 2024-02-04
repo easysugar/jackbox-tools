@@ -75,6 +75,8 @@ class Game:
         for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
             for f in files:
                 fpath = os.path.join(root, f)
+                if 'копія' in fpath:
+                    continue
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
                 if ts >= start_ts:
                     copy_file(fpath, fpath.replace(src, dst))
@@ -143,21 +145,22 @@ class Game:
                 source = source.replace(old, new, 1)
         return source
 
-    def _decode_swf_media(self, path_media: str, path_expanded: str, trans: dict, path_save: str):
+    def _decode_swf_media(self, path_media: str, path_expanded: str, trans: dict, path_save: str, ignore_suffix=False):
         media = self._read(path_media)
         cnt_sep = media.count('^')
         expanded = self._read_json(path_expanded)
         orig = {v['id']: v['text'] for c in expanded for v in c['versions'] if 'text' in v}
         mapp = {}
         for oid in trans:
+            if not trans[oid].strip():
+                continue
             old = '^' + orig[oid] + '^'
-            suffix = re.search(orig[oid], r'(\[.+\])*$')
+            suffix = '' if ignore_suffix else re.search(r'(\[.+])*$', orig[oid])
             assert '^' not in trans[oid]
-            new = '^' + trans[oid] + ('' if not suffix else suffix.groups()) + '^'
+            new = '^' + trans[oid] + ('' if not suffix else suffix.group()) + '^'
             old, new = media_encoder(old), media_encoder(new)
             mapp[old] = new
         for old, new in mapp.items():
-            # print(old + ' ----> ' + new)
             assert media.count(old) == 1, "String {0} has count {1}, but should be 1".format(old, media.count(old))
             media = media.replace(old, new)
         assert media.count('^') == cnt_sep
@@ -169,13 +172,14 @@ def media_encoder(s: str):
 
 
 def read_from_folder(cid: str, path_folder: str):
+    path_folder = path_folder.removesuffix('.jet')
     path = os.path.join(path_folder, cid, 'data.jet')
     x = read_json(path)
     return {_['n']: _ for _ in x['fields']}
 
 
 def write_to_folder(cid: str, path_folder: str, value: dict):
-    path = os.path.join(path_folder, cid, 'data.jet')
+    path = os.path.join(path_folder.removesuffix('.jet'), cid, 'data.jet')
     x = {'fields': list(value.values())}
     write_json(path, x)
 
@@ -189,6 +193,7 @@ def decode_mapping(*files, out_json=True):
             dst = files[-1]
             objs = [self._read_json(f) for f in files[:-1]]
             obj = func(self, *objs, *args, **kwargs)
+            obj = transform(obj)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             self._write_json(dst, obj) if out_json else self._write(dst, obj)
 
@@ -198,3 +203,15 @@ def decode_mapping(*files, out_json=True):
 
 
 encode_mapping = decode_mapping
+
+
+def transform(obj):
+    if isinstance(obj, str):
+        return re.sub(r"[ʼ`']", "’", obj)
+    if isinstance(obj, list):
+        return [transform(_) for _ in obj]
+    if isinstance(obj, tuple):
+        return tuple(transform(_) for _ in obj)
+    if isinstance(obj, dict):
+        return {k: transform(v) for k, v in obj.items()}
+    return obj
