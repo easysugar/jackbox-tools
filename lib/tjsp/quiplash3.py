@@ -8,6 +8,27 @@ class Quiplash3(Game):
     folder = '../data/tjsp/quiplash3/encoded/'
     build = '../build/uk/Quiplash3/'
 
+    @encode_mapping(PATH_QUESTIONS_ROUND1, PATH_QUESTIONS_ROUND2, folder + 'triggers.json')
+    def encode_quiplash_questions_triggers(self, obj1: dict, obj2: dict) -> dict:
+        res = {}
+        for c in obj1['content'] + obj2['content']:
+            cid = str(c['id'])
+            try:
+                o = read_from_folder(cid, PATH_QUESTIONS_ROUND1_DIR)
+            except FileNotFoundError:
+                o = read_from_folder(cid, PATH_QUESTIONS_ROUND2_DIR)
+            if o['HasJokeAudio']['v'] == 'true':
+                keywords = []
+                for w in o['Keywords']['v'].split('|'):
+                    w = w.replace('<ARTICLE>', '').replace('<PRONOUN>', '').replace('<VERB>', '').strip()
+                    if w and w not in keywords:
+                        keywords.append(w)
+                res[cid] = {
+                    'keywords': {'text': '\n'.join(keywords), 'crowdinContext': o['PromptText']['v']},
+                    'response': {'text': o['KeywordResponseText']['v'], 'crowdinContext': o['PromptText']['v']},
+                }
+        return res
+
     @encode_mapping(PATH_QUESTIONS_ROUND1, folder + 'round1.json')
     def encode_quiplash_questions_round1(self, obj: dict) -> dict:
         return {c['id']: '\n'.join((c['prompt'], '\n'.join(c['safetyQuips']))) for c in obj['content']}

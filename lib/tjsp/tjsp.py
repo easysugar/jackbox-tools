@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from lib.game import Game
+from .quiplash3 import Quiplash3
 from .teeko import TeeKO
 from .tmp2 import TMP2
 
@@ -12,6 +13,7 @@ class TJSP(Game):
     def decode_all(self):
         TMP2().decode_all()
         TeeKO().decode_all()
+        Quiplash3().decode_all()
         self.update_localization(rf'{PATH_GAME}\localization_manager.json', '../build/uk/localization_managerEN.json')
         self.update_localization(rf'{PATH_GAME}\LocalizationPause.json', '../build/uk/LocalizationPauseEN.json')
         self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/LocalizationEN-MAIN.json')
