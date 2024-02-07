@@ -215,3 +215,15 @@ def transform(obj):
     if isinstance(obj, dict):
         return {k: transform(v) for k, v in obj.items()}
     return obj
+
+
+def remove_suffix(s: str):
+    return s.removesuffix(re.search(r'(\[[\w=/]+])*$', s).group())
+
+
+def remove_prefix(s: str):
+    return s.removeprefix(re.search(r'^(\[[\w=/]+])*', s).group())
+
+
+def normalize_text(s: str):
+    return remove_prefix(remove_suffix(s.strip().lower()).strip()).strip()

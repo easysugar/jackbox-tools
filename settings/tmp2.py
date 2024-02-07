@@ -16,6 +16,7 @@ PATH_QUESTION_KNIFE = PATH_EN + r'\TDQuestionKnife.jet'
 PATH_QUESTION_BOMB = PATH_EN + r'\TDQuestionBomb.jet'
 PATH_FINAL_ROUND = PATH_EN + r'\TDFinalRound.jet'
 PATH_WORDLIST_RULES = PATH + r'\wordlistRules_en.txt'
+PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 # dirs
 PATH_QUESTION_DIR = PATH_EN + r'\TDQuestion'
@@ -62,3 +63,8 @@ PATH_BUILD_FINAL_ROUND = PATH_BUILD_GAME + r'final_questions.json'
 PATH_BUILD_WORDLIST_RULES = PATH_BUILD_GAME + r'wordlistRules_en.txt'
 PATH_BUILD_AUDIO = PATH_BUILD + r'EncodedAudio.json'
 PATH_BUILD_SUBTITLES = PATH_BUILD_GAME + r'text_subtitles.json'
+
+# Drive
+PATH_DRIVE_MAIN = '1wXx6AArodW2x3WxuBfxuoI6fbRvEn69j'
+PATH_DRIVE_MADNESS = '1EJ_2fugPIRL9-LO__RhUUTy6iMyXv5Hq'
+PATH_DRIVE_BOMB = '16fW1O7hIfstyyNoFi2hEedcon80EkFy7'
