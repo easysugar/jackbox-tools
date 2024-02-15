@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 
 from lib.common import write_json
-from lib.game import Game, decode_mapping, remove_suffix, normalize_text
+from lib.game import Game, decode_mapping, remove_suffix, normalize_text, read_from_folder, write_to_folder
 
 PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 6\games\TriviaDeath2'
 OLD_PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\triviadeath2'
@@ -54,6 +54,11 @@ class OldTMP2(Game):
                 c['text'], *choices, answer = add[str(c['id'])].split('\n')
                 c['choices'] = [{'controllerClass': '', 'text': _} for _ in choices]
                 c['choices'][int(answer) - 1]['correct'] = True
+            o = read_from_folder(c['id'], PATH + r'\content\TDQuestion.jet')
+            if o.get('Intro') and o['Intro']['s']:
+                n = read_from_folder(c['id'], OLD_PATH + r'\content\en\TDQuestion.jet')
+                o['Intro']['s'] = n['Intro']['s']
+                write_to_folder(c['id'], PATH + r'\content\TDQuestion.jet', o)
         return obj
 
     @decode_mapping(PATH + r'\content\QuiplashContent.jet', OLD_PATH + r'\content\en\QuiplashContent.jet', PATH + r'\content\QuiplashContent.jet')
