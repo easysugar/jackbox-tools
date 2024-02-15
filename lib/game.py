@@ -82,11 +82,11 @@ class Game:
                     copy_file(fpath, fpath.replace(src, dst))
 
     @staticmethod
-    def make_archive(src: str):
-        zip_path = os.path.join(src, '.releases', 'release.zip')
+    def make_archive(src: str, archive_name: str = 'release.zip'):
+        zip_path = os.path.join(src, '.releases', archive_name)
         os.makedirs(os.path.dirname(zip_path), exist_ok=True)
         zip_process = zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED)
-        for folder_path, _, filenames in os.walk(src):
+        for folder_path, _, filenames in tqdm.tqdm(os.walk(src)):
             if any([f.startswith('.') for f in folder_path.split(os.sep)]):
                 continue
             for filename in filenames:
@@ -173,13 +173,13 @@ def media_encoder(s: str):
 
 def read_from_folder(cid: str, path_folder: str):
     path_folder = path_folder.removesuffix('.jet')
-    path = os.path.join(path_folder, cid, 'data.jet')
+    path = os.path.join(path_folder, str(cid), 'data.jet')
     x = read_json(path)
     return {_['n']: _ for _ in x['fields']}
 
 
 def write_to_folder(cid: str, path_folder: str, value: dict):
-    path = os.path.join(path_folder.removesuffix('.jet'), cid, 'data.jet')
+    path = os.path.join(path_folder.removesuffix('.jet'), str(cid), 'data.jet')
     x = {'fields': list(value.values())}
     write_json(path, x)
 

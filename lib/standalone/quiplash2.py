@@ -208,4 +208,4 @@ class Quiplash2(Game):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
         self.decode_all()
         self.copy_to_release(PATH, PATH_RELEASE, start_time)
-        self.make_archive(PATH_RELEASE)
+        self.make_archive(PATH_RELEASE, 'Quiplash2-UA.zip')

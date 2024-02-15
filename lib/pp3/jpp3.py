@@ -24,4 +24,4 @@ class JPP3(Game):
     def release(self, start_time: datetime):
         self.decode_all()
         self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
-        self.make_archive(PATH_RELEASE)
+        self.make_archive(PATH_RELEASE, 'JPP3-ua.zip')
