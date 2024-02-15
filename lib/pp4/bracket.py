@@ -1,4 +1,4 @@
-from lib.game import Game, decode_mapping, read_from_folder
+from lib.game import Game, decode_mapping, read_from_folder, remove_suffix
 
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4\games\Bracketeering'
 
@@ -42,6 +42,12 @@ class Bracketeering(Game):
     @decode_mapping(folder + 'expanded.json', folder + 'text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
         return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'}
+
+    @decode_mapping(folder + 'expanded.json', folder + 'audio_subtitles.json')
+    def encode_audio_subtitles(self, obj: dict):
+        return {v['id']: {"text": remove_suffix(v['text']), "crowdinContext": c.get('crowdinContext')}
+                for c in obj for v in c['versions']
+                if c['type'] == 'A' and 'category=host' in v['text']}
 
     def decode_media(self):
         text = self._read_json(self.build + 'text_subtitles.json')
