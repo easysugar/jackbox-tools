@@ -1,3 +1,7 @@
+import pandas as pd
+import tqdm
+
+from lib.drive import Drive
 from lib.game import Game, decode_mapping
 from settings.internet import *
 
@@ -12,6 +16,7 @@ class Internet(Game):
     folder = '../data/pp4/internet/encoded/'
     folder_swf = '../data/pp4/internet/swf/'
     build = '../build/uk/JPP4/STI/'
+    drive = '18N-GPGwsbm80DJRMMa7QufsIXBOj_nDs'
 
     @decode_mapping(PATH_TWIST, folder + 'twist.json')
     def encode_twist(self, obj):
@@ -188,3 +193,18 @@ class Internet(Game):
 
     def decode_localization(self):
         self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+
+    def upload_audio(self):
+        d = Drive(self.drive)
+        data = []
+        original = self._read_json(self.folder + 'audio_subtitles.json')
+        obj = self._read_json(self.build + 'audio_subtitles.json')
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid]['name'].strip().replace('\n', ' '),
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['name'].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
