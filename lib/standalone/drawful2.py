@@ -118,4 +118,4 @@ class Drawful2(Game):
         PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\drawful2\jackbox-drawful-2-ua'
         self.decode_all()
         self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
-        self.make_archive(PATH_RELEASE)
+        self.make_archive(PATH_RELEASE, 'Drawful2-UA.zip')
