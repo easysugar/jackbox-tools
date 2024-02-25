@@ -14,6 +14,7 @@ PATH_PHOTO_PROMPT = PATH + r'\content\STIPhotoPrompt.jet'
 PATH_STORE_PROMPT = PATH + r'\content\STIStorePrompt.jet'
 PATH_PROMPT = PATH + r'\content\STIPrompt.jet'
 PATH_STICKY_NOTE = PATH + r'\content\STIStickyNoteGag.jet'
+PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 # encoded
 PATH_EXPANDED = r'data/pp3/fakin/swf/FakinIt_Expanded.json'
