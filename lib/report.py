@@ -188,7 +188,7 @@ def draw_top_contributors(img: Image, width: int, height: int, margin_up: int):
     for i, user in enumerate(CONTRIBUTORS, 1):
         draw_text(img, font, user['username'], width, height, margin_left=0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
                   align='none', icon=user['avatarUrl'], icon_size=FONT_CONTRIBUTORS[1])
-        draw_text(img, font, str(user['count']), width, height, margin_left=-0.1, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
+        draw_text(img, font, str(user['count']), width, height, margin_left=-0.05, margin_up=margin_up + int(ROW_CONTRIBUTORS * i * height),
                   align='right', fill=BLUE)
 
 
