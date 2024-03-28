@@ -1,7 +1,7 @@
 import functools
 import re
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict
 
 import tqdm
@@ -66,7 +66,7 @@ class Game:
             trans = trans['table']
         if 'en' not in trans:
             trans = {'en': trans}
-        assert set(obj['table']['en']) <= set(trans['en'])
+        assert set(obj['table']['en']) <= set(trans['en']), f'Source has untranslated fields: {", ".join(set(obj["table"]["en"])-set(trans["en"]))}'
         obj['table']['en'] = trans['en']
         self._write_json(src, obj)
 
@@ -78,7 +78,7 @@ class Game:
                 if 'копія' in fpath:
                     continue
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
-                if ts >= start_ts:
+                if ts >= start_ts or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
                     copy_file(fpath, fpath.replace(src, dst))
 
     @staticmethod
@@ -184,18 +184,19 @@ def write_to_folder(cid: str, path_folder: str, value: dict):
     write_json(path, x)
 
 
-def decode_mapping(*files, out_json=True):
+def decode_mapping(*files, out_json=True, out=True):
     """Read several JSON files and write result into a new file"""
 
     def decorator(func):
         @functools.wraps(func)
         def wrapped(self, *args, **kwargs):
-            dst = files[-1]
-            objs = [self._read_json(f) for f in files[:-1]]
+            dst = files[-1] if out else None
+            objs = [self._read_json(f) for f in (files[:-1] if out else files)]
             obj = func(self, *objs, *args, **kwargs)
             obj = transform(obj)
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            self._write_json(dst, obj) if out_json else self._write(dst, obj)
+            if dst:
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                self._write_json(dst, obj) if out_json else self._write(dst, obj)
 
         return wrapped
 
@@ -217,13 +218,29 @@ def transform(obj):
     return obj
 
 
+def get_suffix(s: str) -> str:
+    return re.search(r'(\[[\w=/]+] ?)*$', s).group()
+
+
+def get_prefix(s: str) -> str:
+    return re.search(r'^(\[[\w=/]+])*', s).group()
+
+
 def remove_suffix(s: str):
-    return s.removesuffix(re.search(r'(\[[\w=/]+])*$', s).group())
+    return s.removesuffix(get_suffix(s))
 
 
 def remove_prefix(s: str):
-    return s.removeprefix(re.search(r'^(\[[\w=/]+])*', s).group())
+    return s.removeprefix(get_prefix(s))
+
+
+def clean_text(s: str):
+    return remove_prefix(remove_suffix(s.strip()).strip()).strip()
 
 
 def normalize_text(s: str):
     return remove_prefix(remove_suffix(s.strip().lower()).strip()).strip()
+
+
+def replace_suffix(src: str, dst: str) -> str:
+    return remove_suffix(dst) + get_suffix(src)
