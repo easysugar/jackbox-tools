@@ -1,6 +1,6 @@
 import os
 
-from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, remove_suffix, clean_text
 from settings.doodle import *
 
 
@@ -46,8 +46,8 @@ class Doodle(Game):
     def encode_audio_subtitles(self, obj: dict):
         return {
             v['id']: {
-                'name': v['text'].replace('[category=host]', '').strip(),
-                # 'crowdinContext': re.findall('\\[(.*?)]', v['text'].replace('[category=host]', '')),
+                'name': clean_text(v['text']),
+                'crowdinContext': c.get('crowdinContext'),
             }
             for c in obj for v in c['versions'] if c['type'] == 'A' and '[category=host]' in v['text']
         }
