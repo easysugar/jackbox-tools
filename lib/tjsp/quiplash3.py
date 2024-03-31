@@ -33,8 +33,8 @@ class Quiplash3(Game):
     def encode_quiplash_questions_round1(self, obj: dict) -> dict:
         return {c['id']: '\n'.join((c['prompt'], '\n'.join(c['safetyQuips']))) for c in obj['content']}
 
-    @encode_mapping(PATH_QUESTIONS_ROUND1, build + 'round1.json', PATH_QUESTIONS_ROUND1)
-    def decode_quiplash_questions_round1(self, obj: dict, trans: dict) -> dict:
+    @encode_mapping(PATH_QUESTIONS_ROUND1, build + 'round1.json', build + 'triggers.json', PATH_QUESTIONS_ROUND1)
+    def decode_quiplash_questions_round1(self, obj: dict, trans: dict, triggers: dict) -> dict:
         for c in obj['content']:
             prompt, *quips = trans[c['id']].strip().split('\n')
             assert len(quips) > 0
@@ -43,6 +43,10 @@ class Quiplash3(Game):
             c['prompt'] = o['PromptAudio']['s'] = o['PromptText']['v'] = prompt
             c['safetyQuips'] = quips
             o['SafetyQuips']['v'] = '|'.join(quips)
+            if o['HasJokeAudio']['v'] == 'true':
+                o['Keywords']['v'] = '|'.join([t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()])
+                o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
+                o['KeywordResponseAudio']['v'] = o['KeywordResponseText']['v']
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND1_DIR, o)
         return obj
 
@@ -50,8 +54,8 @@ class Quiplash3(Game):
     def encode_quiplash_questions_round2(self, obj: dict) -> dict:
         return {c['id']: '\n'.join((c['prompt'], '\n'.join(c['safetyQuips']))) for c in obj['content']}
 
-    @encode_mapping(PATH_QUESTIONS_ROUND2, build + 'round2.json', PATH_QUESTIONS_ROUND2)
-    def decode_quiplash_questions_round2(self, obj: dict, trans: dict) -> dict:
+    @encode_mapping(PATH_QUESTIONS_ROUND2, build + 'round2.json', build + 'triggers.json', PATH_QUESTIONS_ROUND2)
+    def decode_quiplash_questions_round2(self, obj: dict, trans: dict, triggers: dict) -> dict:
         for c in obj['content']:
             prompt, *quips = trans[c['id']].strip().split('\n')
             assert len(quips) > 0
@@ -60,6 +64,10 @@ class Quiplash3(Game):
             c['prompt'] = o['PromptAudio']['s'] = o['PromptText']['v'] = prompt
             c['safetyQuips'] = quips
             o['SafetyQuips']['v'] = '|'.join(quips)
+            if o['HasJokeAudio']['v'] == 'true':
+                o['Keywords']['v'] = '|'.join([t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()])
+                o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
+                o['KeywordResponseAudio']['v'] = o['KeywordResponseText']['v']
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND2_DIR, o)
         return obj
 
