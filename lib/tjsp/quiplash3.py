@@ -44,9 +44,11 @@ class Quiplash3(Game):
             c['safetyQuips'] = quips
             o['SafetyQuips']['v'] = '|'.join(quips)
             if o['HasJokeAudio']['v'] == 'true':
-                o['Keywords']['v'] = '|'.join([t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()])
-                o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
-                o['KeywordResponseAudio']['v'] = o['KeywordResponseText']['v']
+                keywords = [t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()]
+                keywords += [' ' + k for k in keywords] + [k + ' ' for k in keywords]
+                keywords += ['<ARTICLE> ' + k for k in keywords]
+                o['Keywords']['v'] = '|'.join(keywords)
+                o['KeywordResponseAudio']['s'] = o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND1_DIR, o)
         return obj
 
@@ -65,9 +67,11 @@ class Quiplash3(Game):
             c['safetyQuips'] = quips
             o['SafetyQuips']['v'] = '|'.join(quips)
             if o['HasJokeAudio']['v'] == 'true':
-                o['Keywords']['v'] = '|'.join([t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()])
-                o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
-                o['KeywordResponseAudio']['v'] = o['KeywordResponseText']['v']
+                keywords = [t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()]
+                keywords += [' ' + k for k in keywords] + [k + ' ' for k in keywords]
+                keywords += ['<ARTICLE> ' + k for k in keywords]
+                o['Keywords']['v'] = '|'.join(keywords)
+                o['KeywordResponseAudio']['s'] = o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND2_DIR, o)
         return obj
 
