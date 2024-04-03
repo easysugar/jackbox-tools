@@ -1,12 +1,17 @@
 from collections import defaultdict
 
-from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder
+import pandas as pd
+import tqdm
+
+from lib.drive import Drive
+from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder, remove_suffix, clean_text
 from settings.quiplash3 import *
 
 
 class Quiplash3(Game):
     folder = '../data/tjsp/quiplash3/encoded/'
     build = '../build/uk/Quiplash3/'
+    drive = '14zdrmnUShAr4EFHQw4oL3IIipAoiQ4y8'
 
     @encode_mapping(PATH_QUESTIONS_ROUND1, PATH_QUESTIONS_ROUND2, folder + 'triggers.json')
     def encode_quiplash_questions_triggers(self, obj1: dict, obj2: dict) -> dict:
@@ -142,3 +147,41 @@ class Quiplash3(Game):
             o['SafetyQuips']['v'] = '|'.join(quips)
             write_to_folder(c['id'], PATH_QUESTIONS_FINAL_ROUND_DIR, o)
         return obj
+
+    @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
+    def upload_audio(self, original, obj):
+        d = Drive(self.drive)
+        data = []
+        original = {cid: t for k, v in original.items() for cid, t in v.items()}
+        obj = {cid: t for k, v in obj.items() for cid, t in v.items()}
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid].strip().replace('\n', ' '),
+                         # 'context': obj[cid]['crowdinContext'],
+                         'original': original[cid].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
+
+    @decode_mapping(folder + 'expanded.json', build + 'text_subtitles.json', out=False)
+    def upload_audio_awakening(self, expanded, text):
+        original = {}
+        obj = {}
+        for c in expanded:
+            if c['id'] == '150161':
+                for v in c['versions']:
+                    if v['locale'] == 'en':
+                        original[v['id']] = clean_text(v['text'])
+                        obj[v['id']] = text['Awakenings'][str(int(v['id'])-500875+500350)]
+        data = []
+        d = Drive(self.drive)
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid].strip().replace('\n', ' '),
+                         'original': original[cid].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_awakening.tsv', sep='\t', encoding='utf8', index=False)
+
