@@ -4,8 +4,17 @@ import pandas as pd
 import tqdm
 
 from lib.drive import Drive
-from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder, remove_suffix, clean_text
-from settings.quiplash3 import *
+from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder, clean_text
+
+PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\Quiplash3'
+PATH_QUESTIONS_ROUND1 = PATH + r'\content\en\Quiplash3Round1Question.jet'
+PATH_QUESTIONS_ROUND1_DIR = PATH + r'\content\en\Quiplash3Round1Question'
+PATH_QUESTIONS_ROUND2 = PATH + r'\content\en\Quiplash3Round2Question.jet'
+PATH_QUESTIONS_ROUND2_DIR = PATH + r'\content\en\Quiplash3Round2Question'
+PATH_QUESTIONS_FINAL_ROUND = PATH + r'\content\en\Quiplash3FinalQuestion.jet'
+PATH_QUESTIONS_FINAL_ROUND_DIR = PATH + r'\content\en\Quiplash3FinalQuestion'
+PATH_LOCALIZATION = PATH + r'\Localization.json'
+PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 
 class Quiplash3(Game):
