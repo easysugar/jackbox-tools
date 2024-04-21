@@ -1,13 +1,22 @@
 import os
 
-from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, remove_suffix, clean_text
-from settings.doodle import *
+import pandas as pd
+import tqdm
+
+from lib.drive import Drive
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, clean_text
+
+PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4\games\Overdrawn'
+PATH_MAP = PATH + r'\content\CivicDoodleMapJokes.jet'
+PATH_FINAL = PATH + r'\content\CivicDoodleFinal'
+PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 
 class Doodle(Game):
     folder = '../data/pp4/doodle/encoded/'
     folder_swf = '../data/pp4/doodle/swf/'
     build = '../build/uk/JPP4/CD/'
+    drive = '1pSF8GunDpRRW2DvyQLgv7GfIQezlOhAt'
 
     @decode_mapping(PATH_MAP, folder + 'map.json')
     def encode_map(self, obj):
@@ -63,3 +72,18 @@ class Doodle(Game):
 
     def decode_localization(self):
         self.update_localization(PATH + r'\Localization.json', self.build + 'localization.json')
+
+    @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
+    def upload_audio(self, original, obj):
+        d = Drive(self.drive)
+        data = []
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['name'].strip().replace('\n', ' '),
+                         'text': obj[cid]['name'].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
