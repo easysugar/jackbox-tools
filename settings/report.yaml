@@ -12,6 +12,7 @@
         name: "Сміхрясь 2"
         img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
         path: /JPP3/Quiplash2
+        status: ⭐
         actor:
             name: Lost Human
             img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
@@ -43,6 +44,10 @@
         name: "Вижити в\nІнтернеті"
         img: https://static.wikia.nocookie.net/jackboxgames/images/e/e2/SurviveTheInternet.jpg/revision/latest?cb=20210623192035
         path: /JPP4/STI
+        status: ⭐
+        actor:
+            name: Kvadratnyk
+            img: https://yt3.googleusercontent.com/izHi8GUFrXirpdAb3AP7LBD2Gmp--Mhcm83pIu9qd4xpjbeSFPzYGqAlSn7HSiEEEl-k9UZNOg=s160-c-k-c0x00ffffff-no-rj
     fibbage3:
         name: "Брехалище 3"
         img: https://i.ytimg.com/vi/OWCXwy-GDHE/maxresdefault.jpg
@@ -57,7 +62,7 @@
         path: /JPP4/Bracketeering
 Пак 5:
     split:
-        name: "Розділи\n  кімнату"
+        name: "Розділи\nкімнату"
         img: https://static.wikia.nocookie.net/jackboxgames/images/1/18/Split-the-room-logo.png/revision/latest?cb=20210811081119
         path: /JPP5/SplitTheRoom
     ydkj:
@@ -98,6 +103,7 @@
         name: "Сміхрясь 2"
         img: https://cdn.cloudflare.steamstatic.com/steam/apps/1111940/capsule_616x353.jpg?t=1635966633
         path: /Quiplash2
+        status: ⭐
         actor:
             name: Lost Human
             img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo

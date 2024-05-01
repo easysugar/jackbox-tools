@@ -30,5 +30,5 @@ PROGRESS = json.load(open('progress.json', encoding='utf-8'))
 GAMES_PATH = {game: GAMES[game].get('path') for game in GAMES}
 
 LOGO_IMAGE = '../assets/jb_ua_logo.png'
-LOGO_TEXT = 'Листопад 2023'
+LOGO_TEXT = 'Квітень 2024'
 LOGO_POSITION = 4, 2
