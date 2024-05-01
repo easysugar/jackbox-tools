@@ -1,5 +1,3 @@
-TOKEN = ''
-
 # folder id from google drive
 DRIVE_FOLDER = {
     'teeko': '16uM0K69keNS9ZjltEGAQjwLWdfnhGf2E',
@@ -7,6 +5,7 @@ DRIVE_FOLDER = {
     'quiplash2': '1VGOKQrGlZn8tjliolfDVJfsMk4UQIoeH',
     'guesspionage': '1ejoXJnO1GFMElG7mXVHPc5mZwcRHoIwh',
     'fakin': '1zUoCoZQB83vKeWO3GghCmdr4rPCZJ3UG',
+    'guesspionage-lobby': '1dwAG3ZbMfLZoL_PPsGBA4bu4GYP4LcGP',
 }
 MEDIA_FOLDER = {
     'teeko': r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\TalkshowExport\project\media',
@@ -14,6 +13,7 @@ MEDIA_FOLDER = {
     'quiplash2': r'C:\Program Files (x86)\Steam\steamapps\common\Quiplash 2 InterLASHional\TalkshowExport\project\media',
     'guesspionage': r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\PollPosition\TalkshowExport\project\media',
     'fakin': r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\FakinIt\TalkshowExport\project\media',
+    'guesspionage-lobby': r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\PollPosition\TalkshowExport\project\media'
 }
 SUBTITLES = {
     'teeko': '../data/tjsp/teeko/translated/audio_subtitles.json',
@@ -21,4 +21,8 @@ SUBTITLES = {
     'quiplash2': '../data/standalone/quiplash2/encoded/audio_subtitles.json',
     'guesspionage': '../data/pp3/pollposition/encoded/audio_subtitles.json',
     'fakin': '../data/pp3/fakin/swf/audio_subtitles.json',
+    'guesspionage-lobby': '../data/pp3/pollposition/encoded/audio_lobby.json'
+}
+PATH_LINKS_MAP = {
+    'guesspionage-lobby': '../data/pp3/fakin/audio_links.json'
 }
