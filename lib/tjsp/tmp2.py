@@ -362,7 +362,7 @@ class TMP2(Game):
     @decode_mapping(PATH_QUIPLASH, PATH_BUILD_QUIPLASH, PATH_QUIPLASH)
     def decode_quiplash(self, obj, translations):
         for c in obj['content']:
-            c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']]
+            c['prompt'] = '[EventName=HOST/AltHost]' + translations[c['id']].strip().split('\n')[0].strip()
         return obj
 
     def _rewrite_quiplash(self, translations: dict, oid: int, path: str):
