@@ -1,7 +1,7 @@
 import functools
 import re
 import zipfile
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict
 
 import tqdm
@@ -78,7 +78,7 @@ class Game:
                 if 'копія' in fpath:
                     continue
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
-                if ts >= start_ts or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
+                if ts >= start_ts or os.path.getctime(fpath) - os.path.getmtime(fpath) > 600:  # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
                     copy_file(fpath, fpath.replace(src, dst))
 
     @staticmethod
