@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 
 import pandas as pd
@@ -194,3 +195,18 @@ class Quiplash3(Game):
             i['link'] = d.get_link(i['ogg'])
         pd.DataFrame(data).to_csv(self.folder + 'audio_awakening.tsv', sep='\t', encoding='utf8', index=False)
 
+    def upload_audio_prompts(self):
+        d = Drive(self.drive)
+        data = []
+        for path in [PATH_QUESTIONS_ROUND1, PATH_QUESTIONS_ROUND2, PATH_QUESTIONS_FINAL_ROUND]:
+            content = self._read_json(path)['content']
+            for c in tqdm.tqdm(content):
+                cid = c['id']
+                ogg = f'prompt_{cid}.ogg'
+                round_num = re.search(r'Quiplash3(\w+)Question', path).group()
+                data.append({'id': cid, 'ogg': ogg, 'round': round_num,
+                             'text': c['prompt'].replace('\n', ' ')})
+                d.upload(path.replace('.jet', ''), cid, 'prompt.ogg', name=ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_prompts.tsv', sep='\t', encoding='utf8', index=False)
