@@ -59,15 +59,16 @@ class Game:
         for f in tqdm.tqdm(to_call):
             getattr(self, f)()
 
-    def update_localization(self, src: str, translation: str):
+    def update_localization(self, src: str, *translations: str):
         obj = self._read_json(src)
-        trans = self._read_json(translation)
-        if 'table' in trans:
-            trans = trans['table']
-        if 'en' not in trans:
-            trans = {'en': trans}
-        assert set(obj['table']['en']) <= set(trans['en']), f'Source has untranslated fields: {", ".join(set(obj["table"]["en"])-set(trans["en"]))}'
-        obj['table']['en'] = trans['en']
+        trans = {}
+        for path in translations:
+            t = self._read_json(path)
+            t = t.get('table', t)
+            t = t.get('en', t)
+            trans.update(t)
+        assert set(obj['table']['en']) <= set(trans), f'Source has untranslated fields: {", ".join(set(obj["table"]["en"])-set(trans))}'
+        obj['table']['en'] = trans
         self._write_json(src, obj)
 
     def copy_to_release(self, src: str, dst: str, start_ts: datetime):
