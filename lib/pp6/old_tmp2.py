@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 
 from lib.common import write_json
-from lib.game import Game, decode_mapping, remove_suffix, normalize_text, read_from_folder, write_to_folder, replace_suffix
+from lib.game import Game, decode_mapping, remove_suffix, normalize_text, read_from_folder, write_to_folder
 
 PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 6\games\TriviaDeath2'
 OLD_PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\triviadeath2'
@@ -31,15 +31,18 @@ class OldTMP2(Game):
                 l[k] = l2.get(k) or trans[k]
         return obj
 
-    @decode_mapping(PATH + r'\content\TDQuestion.jet', OLD_PATH + r'\content\en\TDQuestion.jet', folder + 'questions.json')
+    @decode_mapping(PATH + r'\content\TDQuestion.jet', tjsp_folder + 'EncodedQuestion.json', folder + 'questions.json')
     def encode_question(self, obj, old):
-        old = {int(_['id']): _ for _ in old['content']}
+        old = {re.sub(r'\W', '', _.split('\n')[-6].lower()) for _ in old.values()}
         res = {}
         for c in obj['content']:
-            if c['id'] not in old:
+            if re.sub(r'\W', '', c['text'].lower()) not in old:
                 corrects = [i.get('correct') for i in c['choices']]
                 answer = corrects.index(True) + 1
                 res[c['id']] = '{}\n{}\n{}'.format(c['text'], '\n'.join([i['text'] for i in c['choices']]), answer)
+                o = read_from_folder(c['id'], PATH + r'\content\TDQuestion')
+                if intro := o.get('Intro', {}).get('s'):
+                    res[c['id']] = intro + '\n' + res[c['id']]
         return res
 
     @decode_mapping(PATH + r'\content\TDQuestion.jet', OLD_PATH + r'\content\en\TDQuestion.jet',
@@ -147,6 +150,21 @@ class OldTMP2(Game):
                 if c0.get('correct'):
                     c1['correct'] = True
         return obj
+
+    @decode_mapping(PATH + r'\content\TDFinalRound.jet', tjsp_folder + 'final_questions.json', folder + 'final_questions.json')
+    def encode_final_round(self, obj, old):
+        old = {re.sub(r'\W', '', _.split('\n')[0].lower()) for _ in old.values()}
+        res = {}
+        for c in obj['content']:
+            if re.sub(r'\W', '', c['text'].lower()) not in old:
+                corrects = defaultdict(set)
+                for ch in c['choices']:
+                    corrects[ch['correct']].add(ch['text'].strip())
+                text = c['text']
+                for correct, answers in corrects.items():
+                    text += '\n' + '-+'[correct] + '\n' + '\n'.join(answers)
+                res[c['id']] = text
+        return res
 
     @decode_mapping(PATH + r'\content\TDFinalRound.jet', OLD_PATH + r'\content\en\TDFinalRound.jet', PATH + r'\content\TDFinalRound.jet')
     def decode_final_round(self, obj, old):
