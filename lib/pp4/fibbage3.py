@@ -140,7 +140,9 @@ class Fibbage3(Game):
     def _decode_final_suggestions(text: str, correct=False):
         suggestions = []
         for s in text.strip().split('\n'):
-            assert s.count(';') == 1
+            if not s:
+                continue
+            assert(s.count(';') == 1, f'text should have ; inside', text)
             s1, s2 = s.split(';')
             suggestions.append(f'{s1}|{s2}')
         if correct:
@@ -154,7 +156,11 @@ class Fibbage3(Game):
             o = read_from_folder(c['id'], self.fibbage_final)
             o['QuestionText']['v'] = t['question']['text']
             o['Suggestions']['v'] = self._decode_final_suggestions(t['suggestions']['text'])
-            answer, spellings = t['answer']['text'].strip().split('\n', 1)
+            if '\n' in t['answer']['text'].strip():
+                answer, spellings = t['answer']['text'].strip().split('\n', 1)
+            else:
+                answer = t['answer']['text'].strip()
+                spellings = ''
             o['CorrectText']['v'] = self._decode_final_suggestions(answer)
             o['AlternateSpellings']['v'] = self._decode_final_suggestions(spellings)
             write_to_folder(c['id'], self.fibbage_final, o)
