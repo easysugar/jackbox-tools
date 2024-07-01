@@ -56,6 +56,10 @@
         name: "Громадська\n    мазня"
         img: https://static.wikia.nocookie.net/jackboxgames/images/9/90/Civic_Doodle_%282%29.png/revision/latest?cb=20210811073646
         path: /JPP4/CD
+        actor:
+            name: MariAm
+            img: https://yt3.googleusercontent.com/np8ByrUm5qPwJJ7JV9osN6wGF7lgi3FrXtGz0QHOFt31_7RavxeifuxJvgDb0OjmR_qJmi2IlQY=s160-c-k-c0x00ffffff-no-rj
+        status: ⭐
     bracket:
         name: "Жартурнір"
         img: https://static.wikia.nocookie.net/jackboxgames/images/8/88/Bracketeering.png/revision/latest?cb=20210811073411
@@ -90,6 +94,9 @@
         name: "Сміхрясь 3"
         img: https://images.prom.ua/3956695508_w640_h640_klyuch-aktivatsii-the.jpg
         path: /Quiplash3
+        actor:
+            name: Lost Human
+            img: https://yt3.ggpht.com/HPDqK0NCcJ1YFQM1CnBcclKKMVe6EgrIaZQ9smiSbrw7XMXliGyPOjxYNUdp3gNJldv0RSYXkvU=s176-c-k-c0x00ffffff-no-rj-mo
 Окремі ігри:
     drawful2:
         name: "Малювач 2"
