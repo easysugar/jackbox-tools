@@ -79,7 +79,8 @@ class Game:
                 if 'копія' in fpath:
                     continue
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
-                if ts >= start_ts or os.path.getctime(fpath) - os.path.getmtime(fpath) > 600:  # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
+                if ts >= start_ts or abs(os.path.getctime(fpath) - os.path.getmtime(fpath)) > 600:
+                    # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
                     copy_file(fpath, fpath.replace(src, dst))
 
     @staticmethod
@@ -138,15 +139,14 @@ class Game:
                     continue
 
                 processed.add(text)
-                suffix = re.search(r'(\[[\w=]+])*$', text)
                 text = text.replace("'", r"\'").replace('"', r'\"')
                 trans = translation[mid].replace("'", r"\'").replace('"', r'\"').replace('\n', r'\n')
                 old = '^' + text + '^'
-                new = '^' + trans + ('' if not suffix else suffix.group(0)) + '^'
+                new = '^' + replace_suffix(text, trans) + '^'
                 source = source.replace(old, new, 1)
         return source
 
-    def _decode_swf_media(self, path_media: str, path_expanded: str, trans: dict, path_save: str, ignore_suffix=False):
+    def _decode_swf_media(self, path_media: str, path_expanded: str, trans: dict, path_save: str, ignore_tags=False):
         media = self._read(path_media)
         cnt_sep = media.count('^')
         expanded = self._read_json(path_expanded)
@@ -156,9 +156,11 @@ class Game:
             if not trans[oid].strip():
                 continue
             old = '^' + orig[oid] + '^'
-            suffix = '' if ignore_suffix else re.search(r'(\[.+])*$', orig[oid])
             assert '^' not in trans[oid]
-            new = '^' + trans[oid] + ('' if not suffix else suffix.group()) + '^'
+            if ignore_tags:
+                new = '^' + trans[oid] + '^'
+            else:
+                new = '^' + replace_tags(orig[oid], trans[oid]) + '^'
             old, new = media_encoder(old), media_encoder(new)
             mapp[old] = new
         for old, new in mapp.items():
@@ -220,11 +222,11 @@ def transform(obj):
 
 
 def get_suffix(s: str) -> str:
-    return re.search(r'(\[[\w=/]+] ?)*$', s).group()
+    return re.search(r'(\[[\w=/]+]\s*)*$', s).group()
 
 
 def get_prefix(s: str) -> str:
-    return re.search(r'^(\[[\w=/]+])*', s).group()
+    return re.search(r'^(\[[\w=/]+]\s*)*', s).group()
 
 
 def remove_suffix(s: str):
@@ -245,3 +247,7 @@ def normalize_text(s: str):
 
 def replace_suffix(src: str, dst: str) -> str:
     return remove_suffix(dst) + get_suffix(src)
+
+
+def replace_tags(src: str, dst: str) -> str:
+    return get_prefix(src) + remove_prefix(remove_suffix(dst)) + get_suffix(src)
