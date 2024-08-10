@@ -119,12 +119,10 @@ class Quiplash3(Game):
         text = {vid: text for _, vmap in text.items() for vid, text in vmap.items()}
         audio = self._read_json(self.build + 'audio_subtitles.json')
         audio = {vid: text for _, vmap in audio.items() for vid, text in vmap.items()}
-        self._decode_swf_media(
-            path_media=self.folder + '../swf/dict.txt',
-            path_expanded=self.folder + '../expanded.json',
-            trans=text | audio,
-            path_save=self.folder + '../swf/translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder + '../swf/dict.txt',
+                               path_expanded=self.folder + '../swf/expanded.json',
+                               trans=text | audio,
+                               path_save=self.folder + '../swf/translated_dict.txt')
 
     @decode_mapping(PATH_QUESTIONS_FINAL_ROUND, folder + 'final_round.json')
     def encode_final_round(self, obj):

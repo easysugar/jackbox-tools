@@ -449,12 +449,8 @@ class TMP2(Game):
         text = self._read_json(PATH_BUILD_SUBTITLES)
         text = {k: text for v in text.values() for k, text in v.items()}
         translations = {**audio, **text}
-        self._decode_swf_media(
-            path_media=PATH_SOURCE_DICT,
-            path_expanded=PATH_EXPANDED,
-            trans=translations,
-            path_save=PATH_TRANSLATED_DICT,
-        )
+        self._decode_swf_media(path_media=PATH_SOURCE_DICT, path_expanded=PATH_EXPANDED, trans=translations,
+                               path_save=PATH_TRANSLATED_DICT)
 
     def decode_localization(self):
         self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TMP2/LocalizationEN.json')
