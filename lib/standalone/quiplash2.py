@@ -122,12 +122,10 @@ class Quiplash2(Game):
         return self._encode_subtitles(obj, 'T')
 
     def decode_media(self):
-        self._decode_swf_media(
-            path_media=self.folder + 'swf/dict.txt',
-            path_expanded=self.folder + 'swf/Quiplash2_International_GameMain_Expanded.json',
-            trans=self._read_json(PATH_BUILD_AUDIO_SUBTITLES) | self._read_json(PATH_BUILD_TEXT_SUBTITLES),
-            path_save=self.folder + 'swf/translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder + 'swf/dict.txt',
+                               path_expanded=self.folder + 'swf/Quiplash2_International_GameMain_Expanded.json',
+                               trans=self._read_json(PATH_BUILD_AUDIO_SUBTITLES) | self._read_json(
+                                   PATH_BUILD_TEXT_SUBTITLES), path_save=self.folder + 'swf/translated_dict.txt')
 
     def upload_audio_prompts(self):
         d = Drive()

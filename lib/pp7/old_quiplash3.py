@@ -124,12 +124,8 @@ class OldQuiplash3(Game):
                 translations[pp7_id] = remove_suffix(tjsp_text[tjsp_id])
         for vid in additional_text:
             translations[vid] = remove_suffix(additional_text[vid])
-        self._decode_swf_media(
-            path_media=self.folder + 'dict.txt',
-            path_expanded=self.folder + 'expanded.json',
-            trans=translations,
-            path_save=self.folder + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'expanded.json',
+                               trans=translations, path_save=self.folder + 'translated_dict.txt')
 
     @decode_mapping(folder + 'media_mapping.json', out=False)
     def copy_audio(self, obj):

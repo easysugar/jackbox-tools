@@ -79,12 +79,9 @@ class Drawful2(Game):
         self.update_localization(PATH_LOCALIZATION, PATH_BUILD_LOCALIZATION)
 
     def decode_media(self):
-        self._decode_swf_media(
-            path_media=self.folder_swf + 'dict.txt',
-            path_expanded=self.folder + 'expanded.json',
-            trans=self._read_json(PATH_BUILD_SUBTITLES),
-            path_save=self.folder_swf + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=self.folder + 'expanded.json',
+                               trans=self._read_json(PATH_BUILD_SUBTITLES),
+                               path_save=self.folder_swf + 'translated_dict.txt')
 
     @staticmethod
     def decode_translated_audio():
