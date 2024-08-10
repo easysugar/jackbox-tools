@@ -1,3 +1,5 @@
+import re
+
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
 
 
@@ -30,12 +32,8 @@ class Fibbage3(Game):
     @decode_mapping(build + 'text_subtitles.json', out=False)
     def decode_media(self, text: dict):
         text = {k: v['text'] for k, v in text.items()}
-        self._decode_swf_media(
-            path_media=self.folder + 'dict.txt',
-            path_expanded=self.folder + 'expanded.json',
-            trans=text,
-            path_save=self.folder + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'expanded.json',
+                               trans=text, path_save=self.folder + 'translated_dict.txt')
 
     @decode_mapping(folder + 'expanded.json', folder + 'text_subtitles.json')
     def encode_text_subtitles(self, obj: dict):
@@ -98,7 +96,6 @@ class Fibbage3(Game):
                 'personal_question': {'text': o['PersonalQuestionText']['v'], 'crowdinContext': context},
                 'suggestions': {'text': o['Suggestions']['v'], 'crowdinContext': context},
             }
-
             res[c['id']] = row
         return res
 
@@ -142,9 +139,8 @@ class Fibbage3(Game):
         for s in text.strip().split('\n'):
             if not s:
                 continue
-            assert(s.count(';') == 1, f'text should have ; inside', text)
             s1, s2 = s.split(';')
-            suggestions.append(f'{s1}|{s2}')
+            suggestions.append(f'{s1.strip()}|{s2.strip()}')
         if correct:
             assert len(suggestions) == 1
         return ','.join(suggestions)

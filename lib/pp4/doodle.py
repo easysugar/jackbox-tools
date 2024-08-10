@@ -63,12 +63,8 @@ class Doodle(Game):
 
     def decode_media(self):
         text = self._read_json(self.build + 'text_subtitles.json')
-        self._decode_swf_media(
-            path_media=self.folder_swf + 'dict.txt',
-            path_expanded=self.folder_swf + 'expanded.json',
-            trans=text,
-            path_save=self.folder_swf + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=self.folder_swf + 'expanded.json',
+                               trans=text, path_save=self.folder_swf + 'translated_dict.txt')
 
     def decode_localization(self):
         self.update_localization(PATH + r'\Localization.json', self.build + 'localization.json')
