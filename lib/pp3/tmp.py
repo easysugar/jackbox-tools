@@ -139,13 +139,8 @@ class TMP(Game):
         audio = {}
         text = self._read_json(self.build + 'text_subtitles.json')
         text = {k: v['text'] for k, v in text.items()}
-        self._decode_swf_media(
-            path_media=self.folder_swf + 'dict.txt',
-            path_expanded=self.folder_swf + 'expanded.json',
-            trans=audio | text,
-            path_save=self.folder_swf + 'translated_dict.txt',
-            ignore_suffix=True,
-        )
+        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=self.folder_swf + 'expanded.json',
+                               trans=audio | text, path_save=self.folder_swf + 'translated_dict.txt', ignore_tags=True)
 
     @decode_mapping(PATH_WORST_RESPONSE, folder + 'worst_response.json')
     def encode_worst_response(self, obj):

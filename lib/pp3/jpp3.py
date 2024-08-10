@@ -10,6 +10,8 @@ from .tmp import TMP
 PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3'
 PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\jackbox-pack-3'
 
+INSTALL_TIME = datetime(2024, 7, 29, 22)
+
 
 class JPP3(Game):
     def decode_all(self):
@@ -19,9 +21,9 @@ class JPP3(Game):
         Guesspionage().decode_all()
         TMP().decode_all()
         self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/JPP3/localization.json')
-        self.update_localization(rf'{PATH_GAME}\games\PartyPack\Localization.json', '../build/uk/JPP3/localization_pack.json')
+        self.update_localization(rf'{PATH_GAME}\games\Picker\Localization.json', '../build/uk/JPP3/localization_pack.json')
 
-    def release(self, start_time: datetime):
+    def release(self):
         self.decode_all()
-        self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
+        self.copy_to_release(PATH_GAME, PATH_RELEASE, INSTALL_TIME)
         self.make_archive(PATH_RELEASE, 'JPP3-ua.zip')

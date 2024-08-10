@@ -92,11 +92,16 @@ class OldTeeKO(Game):
         assert set(obj) == set(id_map)
         return obj
 
-    @decode_mapping(PATH_DATA + 'translated/text_subtitles.json', PATH_TRANSLATED_DICT, out_json=False)
-    def decode_media_dict(self, translations):
-        source = self._read(PATH_SOURCE_DICT)
-        editable = self._read(PATH_EDITABLE_DICT)
-        return self._update_old_media_dict(source, translations, editable)
+    # @decode_mapping(PATH_DATA + 'translated/text_subtitles.json', PATH_TRANSLATED_DICT, out_json=False)
+    # def decode_media_dict(self, translations):
+    #     source = self._read(PATH_SOURCE_DICT)
+    #     editable = self._read(PATH_EDITABLE_DICT)
+    #     return self._update_old_media_dict(source, translations, editable)
+
+    @decode_mapping(PATH_DATA + 'translated/text_subtitles.json', out=False)
+    def decode_media(self, text: dict):
+        self._decode_swf_media(path_media=PATH_SOURCE_DICT, path_expanded=PATH_EXPANDED,
+                               trans=text, path_save=PATH_TRANSLATED_DICT)
 
     @decode_mapping(PATH_EXPANDED, '../data/tjsp/teeko/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
     def get_games_audio_mapping(self, obj, ext):

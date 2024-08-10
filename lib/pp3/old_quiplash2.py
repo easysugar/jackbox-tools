@@ -72,7 +72,7 @@ class OldQuiplash2(Game):
         # media
         self.copy_text_subtitles()
         self.decode_media()
-        # self.copy_translated_audio()
+        self.copy_translated_audio()
 
     @staticmethod
     def _copy_template(old, new):
@@ -187,12 +187,9 @@ class OldQuiplash2(Game):
         return obj
 
     def decode_media(self):
-        self._decode_swf_media(
-            path_media=self.folder_swf + 'dict.txt',
-            path_expanded=self.folder_swf + 'expanded.json',
-            trans=self._read_json(PATH_DATA + 'translated/text_subtitles.json'),
-            path_save=self.folder_swf + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=self.folder_swf + 'expanded.json',
+                               trans=self._read_json(PATH_DATA + 'translated/text_subtitles.json'),
+                               path_save=self.folder_swf + 'translated_dict.txt')
 
     @decode_mapping(folder_swf + 'expanded.json', '../data/standalone/quiplash2/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
     def get_games_audio_mapping(self, obj, ext):

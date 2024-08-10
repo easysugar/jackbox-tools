@@ -139,12 +139,9 @@ class Fakin(Game):
     def decode_media(self):
         audio = {k: v['text'] for k, v in self._read_json(self.build + 'audio_subtitles.json').items()}
         text = self._read_json(self.build + 'text_subtitles.json')
-        self._decode_swf_media(
-            path_media=self.folder_swf + 'dict.txt',
-            path_expanded=self.folder_swf + 'FakinIt_Expanded.json',
-            trans=audio | text,
-            path_save=self.folder_swf + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt',
+                               path_expanded=self.folder_swf + 'expanded.json', trans=audio | text,
+                               path_save=self.folder_swf + 'translated_dict.txt')
 
     def _upload_audio_tasks(self):
         d = Drive()
@@ -232,7 +229,7 @@ class Fakin(Game):
                 copy_file(os.path.join(PATH_AUDIO_MAIN, file), os.path.join(PATH_MEDIA, file))
 
     @staticmethod
-    def _decode_audio_tasks():
+    def decode_audio_tasks():
         dirs = os.listdir(PATH_TASKS_DIR)
         for cid in tqdm.tqdm(dirs):
             obj = read_from_folder(cid, PATH_TASKS_DIR)
@@ -240,7 +237,7 @@ class Fakin(Game):
             copy_file(os.path.join(PATH_AUDIO_TASKS, f"{cid}.ogg"), os.path.join(PATH_TASKS_DIR, cid, ogg))
 
     @staticmethod
-    def _decode_audio_input():
+    def decode_audio_input():
         dir_path = PATH_INPUT_DIR
         dirs = os.listdir(dir_path)
         for cid in tqdm.tqdm(dirs):

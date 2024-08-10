@@ -41,12 +41,8 @@ class Guesspionage(Game):
     def decode_media(self):
         audio = {}
         text = self._read_json(self.build + 'text_subtitles.json')
-        self._decode_swf_media(
-            path_media=self.folder_swf + 'dict.txt',
-            path_expanded=PATH_EXPANDED,
-            trans=audio | text,
-            path_save=self.folder_swf + 'translated_dict.txt',
-        )
+        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=PATH_EXPANDED, trans=audio | text,
+                               path_save=self.folder_swf + 'translated_dict.txt')
 
     @decode_mapping(PATH_LEADERBOARDS, folder + 'leaderboards.json')
     def encode_leaderboards(self, obj):
@@ -175,7 +171,7 @@ class Guesspionage(Game):
         self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
 
     @staticmethod
-    def _decode_translated_audio():
+    def decode_translated_audio():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
         original = set(os.listdir(PATH_AUDIO))
         for file in tqdm(translated):
