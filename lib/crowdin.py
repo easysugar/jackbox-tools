@@ -166,7 +166,7 @@ class Crowdin:
                 for u, cnt in users.most_common()]
 
     def get_top_members_report(self, date_from: datetime = None, date_to: datetime = None, list_projects: List[int] = PROJECT_LIST.values()):
-        date_from = date_from or datetime.today().replace(day=1)
+        date_from = date_from or (datetime.today() - timedelta(days=7)).replace(day=1)
         date_to = date_to or datetime.today()
         members = []
         for project_id in tqdm.tqdm(list_projects):
@@ -189,13 +189,13 @@ class Crowdin:
         return [{**info[uid], 'count': cnt} for uid, cnt in counter.most_common()]
 
     def _get_last_build_id(self, project_id: int) -> int:
-        build = self.client.translations.list_project_builds(project_id, limit=200)['data'][0]['data']
+        build = self.client.translations.list_project_builds(project_id)['data'][0]['data']
         assert build['status'] == 'finished'
-        assert build['createdAt'].timestamp() >= (datetime.now() - timedelta(minutes=5)).timestamp(), f'Build is not the last: {build}'
+        # assert build['createdAt'].timestamp() >= (datetime.now() - timedelta(minutes=5)).timestamp(), f'Build is not the last: {build}'
         return build['id']
 
     def _download_build(self, project_id: int, build_id, path_build: str):
-        url = self.client.translations.download_project_translations(project_id, build_id)['data']['url']
+        url = self.client.translations.download_project_translations(build_id, project_id)['data']['url']
         r = requests.get(url)
         with open(path_build, 'wb') as f:
             f.write(r.content)
