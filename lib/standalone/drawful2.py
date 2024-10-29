@@ -1,8 +1,35 @@
 import os
+from datetime import datetime
 
 from lib.common import copy_file
 from lib.game import Game, encode_mapping, read_json, decode_mapping, read_from_folder, write_to_folder
-from settings.drawful2 import *
+from paths import DRAWFUL2_PATH, DRAWFUL2_RELEASE_PATH
+
+INSTALL_TIME = datetime(2024, 10, 28)
+PATH = DRAWFUL2_PATH
+PATH_LOCALIZATION = PATH + r'\Localization.json'
+PATH_DECOY = PATH + r'\content\Drawful2Decoy.jet'
+PATH_PROMPT = PATH + r'\content\en\Drawful2Prompt.jet'
+PATH_PROMPT_DIR = PATH + r'\content\en\Drawful2Prompt'
+PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
+
+# data
+PATH_DATA = '../data/standalone/drawful2/'
+PATH_SOURCE_DICT = PATH_DATA + 'swf/dict.txt'
+PATH_TRANSLATED_DICT = PATH_DATA + 'swf/translated_dict.txt'
+PATH_EDITABLE_DICT = PATH_DATA + 'swf/editable.txt'
+
+# build
+PATH_BUILD = '../build/uk/Drawful2/'
+PATH_BUILD_GAME = PATH_BUILD + 'in-game/'
+PATH_BUILD_LOCALIZATION = PATH_BUILD + 'localization.json'
+PATH_BUILD_DECOY = PATH_BUILD_GAME + 'decoy.json'
+PATH_BUILD_PROMPT = PATH_BUILD_GAME + 'prompt.json'
+PATH_BUILD_SUBTITLES = PATH_BUILD + 'audio_subtitles.json'
+
+PATH_TRANSLATED_AUDIO = r'X:\Jackbox\games\drawful2\translated-audio'
+PATH_TRANSLATED_AUDIO_OTHER = r'C:\Jackbox\games\drawful2\translated-audio-other'
+PATH_TRANSLATED_AUDIO_COMMENTS = r'X:\\Jackbox\games\drawful2\translated-audio-comments'
 
 
 class Drawful2(Game):
@@ -57,7 +84,7 @@ class Drawful2(Game):
             c['category'] = trans[cid].split('\n')[0].strip()
         return obj
 
-    def unpack_question(self):
+    def decode_questions(self):
         trans = read_json(PATH_BUILD_PROMPT)
         dirs = os.listdir(PATH_PROMPT_DIR)
         for cid in dirs:
@@ -84,7 +111,7 @@ class Drawful2(Game):
                                path_save=self.folder_swf + 'translated_dict.txt')
 
     @staticmethod
-    def decode_translated_audio():
+    def copy_translated_audio():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
         original = set(os.listdir(PATH_AUDIO))
         for file in translated:
@@ -92,7 +119,7 @@ class Drawful2(Game):
                 copy_file(os.path.join(PATH_TRANSLATED_AUDIO, file), os.path.join(PATH_AUDIO, file))
 
     @staticmethod
-    def decode_translated_audio_other():
+    def copy_translated_audio_other():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO_OTHER))
         original = set(os.listdir(PATH_AUDIO))
         for file in translated:
@@ -100,7 +127,7 @@ class Drawful2(Game):
             copy_file(os.path.join(PATH_TRANSLATED_AUDIO_OTHER, file), os.path.join(PATH_AUDIO, file))
 
     @staticmethod
-    def decode_translated_audio_comments():
+    def copy_translated_audio_comments():
         dirs = os.listdir(PATH_PROMPT_DIR)
         for cid in dirs:
             if not cid.isdigit():
@@ -110,9 +137,7 @@ class Drawful2(Game):
                 copy_file(os.path.join(PATH_TRANSLATED_AUDIO_COMMENTS, f'{cid}.ogg'),
                           os.path.join(PATH_PROMPT_DIR, cid, f"{obj['JokeAudio']['v']}.ogg"))
 
-    def release(self, start_time):
-        PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\Drawful 2'
-        PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\drawful2\jackbox-drawful-2-ua'
+    def release(self):
         self.decode_all()
-        self.copy_to_release(PATH_GAME, PATH_RELEASE, start_time)
-        self.make_archive(PATH_RELEASE, 'Drawful2-UA.zip')
+        self.copy_to_release(DRAWFUL2_PATH, DRAWFUL2_RELEASE_PATH, INSTALL_TIME)
+        self.make_archive(DRAWFUL2_RELEASE_PATH, 'Drawful2-UA.zip')
