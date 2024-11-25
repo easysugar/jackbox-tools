@@ -1,5 +1,4 @@
 import os
-import random
 import re
 from collections import defaultdict
 
@@ -12,7 +11,6 @@ from lib.game import Game, encode_mapping, decode_mapping, copy_file, read_from_
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
-random.seed(34)
 
 
 class TMP2(Game):
@@ -205,7 +203,6 @@ class TMP2(Game):
                     assert sign is not None
                     corrects[sign].add(a)
             c['choices'] = [{'text': a.strip(), 'correct': s == '+', 'difficulty': 0} for s, alist in corrects.items() for a in alist]
-            random.shuffle(c['choices'])
         return obj
 
     @staticmethod

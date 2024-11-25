@@ -1,5 +1,7 @@
 # encoded
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\triviadeath2'
+from paths import TJSP_PATH, TJSP_RELEASE_PATH
+
+PATH = TJSP_PATH + r'\games\triviadeath2'
 PATH_EN = PATH + r'\content\en'
 PATH_QUIPLASH = PATH_EN + r'\QuiplashContent.jet'
 PATH_DICTATION = PATH_EN + r'\TDDictation.jet'
@@ -41,7 +43,7 @@ PATH_EDITABLE_DICT = PATH_DATA + r'swf/editable.txt'
 PATH_EXPANDED = PATH_DATA + r'swf/expanded.json'
 
 # release
-PATH_RELEASE = r'~\Desktop\Jackbox\starter-pack\jackbox-starter-pack-ua'
+PATH_RELEASE = TJSP_RELEASE_PATH
 
 # build
 PATH_BUILD = '../build/uk/TMP2/'

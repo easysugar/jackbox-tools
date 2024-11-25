@@ -1,13 +1,14 @@
 from datetime import datetime
 
 from lib.game import Game
+from paths import TJSP_PATH, TJSP_RELEASE_PATH
 from .quiplash3 import Quiplash3
 from .teeko import TeeKO
 from .tmp2 import TMP2
 
-PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\tjsp\jackbox-starter-pack-ua'
-INSTALL_TIME = datetime(2024, 7, 29, 21, 50)
+PATH_GAME = TJSP_PATH
+PATH_RELEASE = TJSP_RELEASE_PATH
+INSTALL_TIME = datetime(2024, 10, 14)
 
 
 class TJSP(Game):

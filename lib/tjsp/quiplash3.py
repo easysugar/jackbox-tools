@@ -1,13 +1,16 @@
+import os
 import re
 from collections import defaultdict
 
 import pandas as pd
 import tqdm
 
+from lib.common import copy_file
 from lib.drive import Drive
 from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder, clean_text
+from paths import TJSP_PATH
 
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\Quiplash3'
+PATH = TJSP_PATH + r'\games\Quiplash3'
 PATH_QUESTIONS_ROUND1 = PATH + r'\content\en\Quiplash3Round1Question.jet'
 PATH_QUESTIONS_ROUND1_DIR = PATH + r'\content\en\Quiplash3Round1Question'
 PATH_QUESTIONS_ROUND2 = PATH + r'\content\en\Quiplash3Round2Question.jet'
@@ -22,6 +25,7 @@ class Quiplash3(Game):
     folder = '../data/tjsp/quiplash3/encoded/'
     build = '../build/uk/Quiplash3/'
     drive = '14zdrmnUShAr4EFHQw4oL3IIipAoiQ4y8'
+    folder_audio_prompts = r'X:\Jackbox\games\tjsp\quiplash3\audio\prompts'
 
     @encode_mapping(PATH_QUESTIONS_ROUND1, PATH_QUESTIONS_ROUND2, folder + 'triggers.json')
     def encode_quiplash_questions_triggers(self, obj1: dict, obj2: dict) -> dict:
@@ -58,12 +62,13 @@ class Quiplash3(Game):
             c['prompt'] = o['PromptAudio']['s'] = o['PromptText']['v'] = prompt
             c['safetyQuips'] = quips
             o['SafetyQuips']['v'] = '|'.join(quips)
+
             if o['HasJokeAudio']['v'] == 'true':
                 keywords = [t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()]
-                keywords += [' ' + k for k in keywords] + [k + ' ' for k in keywords]
-                keywords += ['<ARTICLE> ' + k for k in keywords]
+                assert c['keywords'] != []
+                c['keywords'] = keywords
                 o['Keywords']['v'] = '|'.join(keywords)
-                o['KeywordResponseAudio']['s'] = o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
+                c['response'] = o['KeywordResponseAudio']['s'] = o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND1_DIR, o)
         return obj
 
@@ -83,10 +88,10 @@ class Quiplash3(Game):
             o['SafetyQuips']['v'] = '|'.join(quips)
             if o['HasJokeAudio']['v'] == 'true':
                 keywords = [t.strip() for t in triggers[c['id']]['keywords']['text'].split('\n') if t.strip()]
-                keywords += [' ' + k for k in keywords] + [k + ' ' for k in keywords]
-                keywords += ['<ARTICLE> ' + k for k in keywords]
+                assert c['keywords'] != []
+                c['keywords'] = keywords
                 o['Keywords']['v'] = '|'.join(keywords)
-                o['KeywordResponseAudio']['s'] = o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
+                c['response'] = o['KeywordResponseAudio']['s'] = o['KeywordResponseText']['v'] = triggers[c['id']]['response']['text']
             write_to_folder(c['id'], PATH_QUESTIONS_ROUND2_DIR, o)
         return obj
 
@@ -208,3 +213,12 @@ class Quiplash3(Game):
         for i in data:
             i['link'] = d.get_link(i['ogg'])
         pd.DataFrame(data).to_csv(self.folder + 'audio_prompts.tsv', sep='\t', encoding='utf8', index=False)
+
+    def _decode_audio_prompts(self):
+        for folder in (PATH_QUESTIONS_ROUND1_DIR, PATH_QUESTIONS_ROUND2_DIR, PATH_QUESTIONS_FINAL_ROUND_DIR):
+            dirs = os.listdir(folder)
+            for cid in tqdm.tqdm(dirs):
+                if not cid.isdigit():
+                    continue
+                ogg = 'prompt.ogg'
+                copy_file(os.path.join(self.folder_audio_prompts, f'{cid}.ogg'), os.path.join(folder, cid, ogg))
