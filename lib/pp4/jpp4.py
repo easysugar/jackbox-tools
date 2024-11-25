@@ -1,15 +1,16 @@
 from datetime import datetime
 
 from lib.game import Game
+from paths import JPP4_PATH, JPP4_RELEASE_PATH
 from .bracket import Bracketeering
 from .doodle import Doodle
 from .fibbage3 import Fibbage3
 from .internet import Internet
 from .monster import Monster
 
-PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp4\jackbox-pack-4'
-INSTALL_TIME = datetime(2024, 7, 29, 20, 10)
+PATH_GAME = JPP4_PATH
+PATH_RELEASE = JPP4_RELEASE_PATH
+INSTALL_TIME = datetime(2024, 10, 13, 20, 10)
 
 
 class JPP4(Game):

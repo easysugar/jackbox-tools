@@ -5,8 +5,9 @@ import tqdm
 
 from lib.drive import Drive
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, clean_text
+from paths import JPP4_PATH
 
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 4\games\Overdrawn'
+PATH = JPP4_PATH + r'\games\Overdrawn'
 PATH_MAP = PATH + r'\content\CivicDoodleMapJokes.jet'
 PATH_FINAL = PATH + r'\content\CivicDoodleFinal'
 PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
