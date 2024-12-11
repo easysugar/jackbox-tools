@@ -1,6 +1,7 @@
-from lib.game import Game, decode_mapping, read_from_folder
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
+from paths import JPP5_PATH
 
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 5\games\SplitTheRoom'
+PATH = JPP5_PATH + r'\games\SplitTheRoom'
 
 
 class SplitTheRoom(Game):
@@ -46,6 +47,31 @@ class SplitTheRoom(Game):
                 res[c['id']]['response'] = {'text': o['ResponseAudio']['s'], 'crowdinContext': context}
         return res
 
+    @staticmethod
+    def _decode_scenario(obj, trans, path_folder: str):
+        for c in obj['content']:
+            cid = str(c['id'])
+            t = trans[cid]
+            c['decoys'] = ' | '.join([d.strip() for d in t['decoys']['text'].split('\n') if d.strip()])
+            if 'category' in t:
+                c['category'] = t['category']['text']
+            if c['answerText']:
+                c['answerText'] = t['answer']['text']
+            c['questionText'] = t['questionText']['text']
+            scenario = [d.strip() for d in t['scenario']['text'].split('\n') if d.strip()]
+            c['scenarioText'] = ' '.join(scenario)
+            o = read_from_folder(cid, path_folder)
+            o['Decoys']['v'] = c['decoys']
+            o['QuestionText']['v'] = c['questionText']
+            if 'Answer' in o:
+                o['Answer']['v'] = c['answerText']
+            n = len(scenario)
+            assert f'ScenarioText{n}' in o and f'ScenarioText{n + 1}' not in o, f'Prompt {cid} should have {n} lines'
+            for i in range(n):
+                o[f'ScenarioText{i+1}']['v'] = scenario[i]
+            write_to_folder(cid, path_folder, o)
+        return obj
+
     @decode_mapping(PATH + r'\content\SplitTheRoomShortie.jet', folder + 'scenarios.json')
     def encode_scenarios_shortie(self, obj: dict):
         return self._encode_scenario(obj, PATH + r'\content\SplitTheRoomShortie')
@@ -57,3 +83,15 @@ class SplitTheRoom(Game):
     @decode_mapping(PATH + r'\content\SplitTheRoomFinal.jet', folder + 'scenarios_final.json')
     def encode_scenarios_final(self, obj: dict):
         return self._encode_scenario(obj, PATH + r'\content\SplitTheRoomFinal')
+
+    @decode_mapping(PATH + r'\content\SplitTheRoomShortie.jet', build + 'scenarios.json', PATH + r'\content\SplitTheRoomShortie.jet')
+    def decode_scenarios_shortie(self, obj, trans):
+        return self._decode_scenario(obj, trans, PATH + r'\content\SplitTheRoomShortie')
+
+    @decode_mapping(PATH + r'\content\SplitTheRoomLater.jet', build + 'scenarios_later.json', PATH + r'\content\SplitTheRoomLater.jet')
+    def decode_scenarios_later(self, obj, trans):
+        return self._decode_scenario(obj, trans, PATH + r'\content\SplitTheRoomLater')
+
+    @decode_mapping(PATH + r'\content\SplitTheRoomFinal.jet', build + 'scenarios_final.json', PATH + r'\content\SplitTheRoomFinal.jet')
+    def decode_scenarios_final(self, obj, trans):
+        return self._decode_scenario(obj, trans, PATH + r'\content\SplitTheRoomFinal')
