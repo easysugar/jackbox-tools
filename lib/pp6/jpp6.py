@@ -1,11 +1,12 @@
 from datetime import datetime
 
 from lib.game import Game
+from paths import JPP6_PATH, JPP6_RELEASE_PATH
 from .old_tmp2 import OldTMP2
 
-PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 6'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp6\jpp6'
-INSTALL_DATE = datetime(2024, 7, 13)
+PATH_GAME = JPP6_PATH
+PATH_RELEASE = JPP6_RELEASE_PATH
+INSTALL_DATE = datetime(2024, 10, 26)
 
 
 class JPP6(Game):

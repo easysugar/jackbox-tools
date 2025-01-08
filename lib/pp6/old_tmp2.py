@@ -1,11 +1,18 @@
+import os
 import re
 from collections import defaultdict
 
-from lib.common import write_json
-from lib.game import Game, decode_mapping, remove_suffix, normalize_text, read_from_folder, write_to_folder
+import tqdm
 
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 6\games\TriviaDeath2'
-OLD_PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\triviadeath2'
+from lib.common import write_json, copy_file
+from lib.game import Game, decode_mapping, remove_suffix, normalize_text, read_from_folder, write_to_folder
+from paths import JPP6_PATH, TJSP_PATH
+
+PATH = JPP6_PATH + r'\games\TriviaDeath2'
+OLD_PATH = TJSP_PATH + r'\games\triviadeath2'
+
+TJSP_AUDIO_FOLDER = r'X:\Jackbox\games\tjsp\tmp2\audio\main2'
+JPP6_AUDIO_FOLDER = r'X:\Jackbox\games\jpp6\tmp2\audio\main'
 
 
 def transform_tags(s: str):
@@ -317,3 +324,13 @@ class OldTMP2(Game):
         translations.update(additional)
         self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'expanded.json', trans=translations,
                                path_save=self.folder + 'translated_dict.txt')
+
+    @decode_mapping(folder + 'media_mapping.json', out=False)
+    def copy_media_audio_from_tjsp(self, mapp):
+        tjsp_ids = [filename.replace('.ogg', '') for filename in os.listdir(TJSP_AUDIO_FOLDER)]
+        for jpp6_id, tjsp_id in tqdm.tqdm(mapp.items()):
+            if tjsp_id in tjsp_ids:
+                copy_file(
+                    os.path.join(TJSP_AUDIO_FOLDER, tjsp_id + '.ogg'),
+                    os.path.join(JPP6_AUDIO_FOLDER, jpp6_id + '.ogg'),
+                )
