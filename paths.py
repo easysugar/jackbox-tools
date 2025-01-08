@@ -9,6 +9,7 @@ DRAWFUL2_PATH = r'X:\SteamLibrary\steamapps\common\Drawful 2'
 
 JPP3_RELEASE_PATH = r'X:\Jackbox\games\jpp3\jackbox-pack-3'
 JPP4_RELEASE_PATH = r'X:\Jackbox\games\jpp4\jackbox-pack-4'
+JPP5_RELEASE_PATH = r'X:\Jackbox\games\jpp5\jackbox-pack-5'
 JPP6_RELEASE_PATH = r'X:\Jackbox\games\jpp6\jackbox-pack-6'
 JPP7_RELEASE_PATH = r'X:\Jackbox\games\jpp7\jackbox-pack-7'
 TJSP_RELEASE_PATH = r'X:\Jackbox\games\tjsp\jackbox-pack-starter'
