@@ -28,8 +28,7 @@ class Crowdin:
         res = []
         offset = 0
         while True:
-            data = self.client.string_translations.list_language_translations(
-                project_id, 'uk', limit=500, offset=offset)['data']
+            data = self.client.string_translations.list_language_translations('uk', project_id, limit=500, offset=offset)['data']
             if not data:
                 break
             offset += 500
