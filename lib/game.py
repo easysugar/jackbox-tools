@@ -2,7 +2,7 @@ import functools
 import re
 import zipfile
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Union
 
 import tqdm
 
@@ -10,6 +10,31 @@ from .common import *
 
 
 class Game:
+    def __init__(self, game_path: str = None, is_international: bool = False):
+        self.game_path = getattr(self, 'game', game_path)
+        self.is_international = is_international
+
+    def _get_path_kind(self, kind: str) -> str:
+        if self.is_international:
+            return os.path.join(self.game_path, 'content', 'en', kind)
+        else:
+            return os.path.join(self.game_path, 'content', kind)
+
+    def read_content(self, cid: Union[str, int], kind: str) -> dict:
+        return read_from_folder(str(cid), self._get_path_kind(kind))
+
+    @staticmethod
+    def get_context(content: dict, title: str = None) -> str:
+        cxt = title or ''
+        if content.get('x') or content.get('us'):
+            if cxt:
+                cxt += '\n-------------'
+            if content.get('us'):
+                cxt += '\nfor USA'
+            if content.get('x'):
+                cxt += '\n18+'
+        return cxt.strip()
+
     @staticmethod
     def _read(src: str):
         with open(src, 'r', encoding='utf8') as f:
@@ -79,7 +104,7 @@ class Game:
                 if 'копія' in fpath:
                     continue
                 ts = datetime.fromtimestamp(os.path.getmtime(fpath))
-                if ts >= start_ts or abs(os.path.getctime(fpath) - os.path.getmtime(fpath)) > 600:
+                if ts >= start_ts:  # or abs(os.path.getctime(fpath) - os.path.getmtime(fpath)) > 600:
                     # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
                     copy_file(fpath, fpath.replace(src, dst))
 
@@ -222,11 +247,11 @@ def transform(obj):
 
 
 def get_suffix(s: str) -> str:
-    return re.search(r'(\[[\w=/]+]\s*)*$', s).group()
+    return re.search(r'(\[[\w=/,]+]\s*)*$', s).group()
 
 
 def get_prefix(s: str) -> str:
-    return re.search(r'^(\[[\w=/]+]\s*)*', s).group()
+    return re.search(r'^(\[[\w=/,]+]\s*)*', s).group()
 
 
 def remove_suffix(s: str):
