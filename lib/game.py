@@ -20,8 +20,19 @@ class Game:
         else:
             return os.path.join(self.game_path, 'content', kind)
 
-    def read_content(self, cid: Union[str, int], kind: str) -> dict:
+    def get_content_path(self, cid: str | int, kind: str):
+        return os.path.join(self._get_path_kind(kind), str(cid))
+
+    def read_content(self, cid: str | int, kind: str) -> dict:
         return read_from_folder(str(cid), self._get_path_kind(kind))
+
+    def get_kind_cids(self, kind: str) -> list[str]:
+        return os.listdir(self._get_path_kind(kind))
+
+    def copy_audio_to_content(self, cid: str | int, kind: str, audio_id: str, src_folder: str, src_audio_id: str = None):
+        src = os.path.join(src_folder, f'{src_audio_id or audio_id}.ogg')
+        dst = os.path.join(self.get_content_path(cid, kind), f'{audio_id}.ogg')
+        copy_file(src, dst)
 
     @staticmethod
     def get_context(content: dict, title: str = None) -> str:
