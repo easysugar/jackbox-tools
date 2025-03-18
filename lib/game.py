@@ -103,8 +103,9 @@ class Game:
             t = t.get('table', t)
             t = t.get('en', t)
             trans.update(t)
-        assert set(obj['table']['en']) <= set(trans), f'Source has untranslated fields: {", ".join(set(obj["table"]["en"])-set(trans))}'
-        obj['table']['en'] = trans
+        if set(obj['table']['en']) > set(trans):
+            print(f'Source has untranslated fields: {", ".join(set(obj["table"]["en"])-set(trans))}')
+        obj['table']['en'].update(trans)
         self._write_json(src, obj)
 
     def copy_to_release(self, src: str, dst: str, start_ts: datetime):
