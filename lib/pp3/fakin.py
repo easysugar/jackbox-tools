@@ -229,7 +229,7 @@ class Fakin(Game):
                 copy_file(os.path.join(PATH_AUDIO_MAIN, file), os.path.join(PATH_MEDIA, file))
 
     @staticmethod
-    def decode_audio_tasks():
+    def copy_audio_tasks():
         dirs = os.listdir(PATH_TASKS_DIR)
         for cid in tqdm.tqdm(dirs):
             obj = read_from_folder(cid, PATH_TASKS_DIR)
@@ -237,7 +237,7 @@ class Fakin(Game):
             copy_file(os.path.join(PATH_AUDIO_TASKS, f"{cid}.ogg"), os.path.join(PATH_TASKS_DIR, cid, ogg))
 
     @staticmethod
-    def decode_audio_input():
+    def copy_audio_input():
         dir_path = PATH_INPUT_DIR
         dirs = os.listdir(dir_path)
         for cid in tqdm.tqdm(dirs):

@@ -171,7 +171,7 @@ class Guesspionage(Game):
         self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
 
     @staticmethod
-    def decode_translated_audio():
+    def copy_translated_audio():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
         original = set(os.listdir(PATH_AUDIO))
         for file in tqdm(translated):

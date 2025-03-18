@@ -1,16 +1,15 @@
 from datetime import datetime
 
 from lib.game import Game
+from paths import JPP3_PATH, JPP3_RELEASE_PATH
 from .fakin import Fakin
 from .guesspionage import Guesspionage
 from .old_quiplash2 import OldQuiplash2
 from .old_teeko import OldTeeKO
 from .tmp import TMP
 
-PATH_GAME = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3'
-PATH_RELEASE = r'C:\Users\админ\Desktop\Jackbox\games\jpp3\jackbox-pack-3'
 
-INSTALL_TIME = datetime(2024, 7, 29, 22)
+INSTALL_TIME = datetime(2024, 10, 15, 23)
 
 
 class JPP3(Game):
@@ -20,10 +19,10 @@ class JPP3(Game):
         Fakin().decode_all()
         Guesspionage().decode_all()
         TMP().decode_all()
-        self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/JPP3/localization.json')
-        self.update_localization(rf'{PATH_GAME}\games\Picker\Localization.json', '../build/uk/JPP3/localization_pack.json')
+        self.update_localization(rf'{JPP3_PATH}\Localization.json', '../build/uk/JPP3/localization.json')
+        self.update_localization(rf'{JPP3_PATH}\games\Picker\Localization.json', '../build/uk/JPP3/localization_pack.json')
 
     def release(self):
         self.decode_all()
-        self.copy_to_release(PATH_GAME, PATH_RELEASE, INSTALL_TIME)
-        self.make_archive(PATH_RELEASE, 'JPP3-ua.zip')
+        self.copy_to_release(JPP3_PATH, JPP3_RELEASE_PATH, INSTALL_TIME)
+        self.make_archive(JPP3_RELEASE_PATH, 'JPP3-ua.zip')

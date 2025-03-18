@@ -72,7 +72,7 @@ class OldQuiplash2(Game):
         # media
         self.copy_text_subtitles()
         self.decode_media()
-        self.copy_translated_audio()
+        # self.copy_translated_audio()
 
     @staticmethod
     def _copy_template(old, new):
@@ -226,7 +226,7 @@ class OldQuiplash2(Game):
         res["342067"] = "113594"
         return res
 
-    def copy_translated_audio(self):
+    def _copy_translated_audio(self):
         obj = self._read_json(self.folder + 'audio_mapping.json')
         standalone_files = set(os.listdir(quiplash2.PATH_AUDIO))
         jpp3_files = set(os.listdir(PATH_AUDIO))
