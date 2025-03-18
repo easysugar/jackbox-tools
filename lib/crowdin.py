@@ -230,7 +230,7 @@ class Crowdin:
         result = set()
         offset = 0
         while True:
-            batch = self.client.source_strings.list_strings(project_id, file_id, limit=500, offset=offset)
+            batch = self.client.source_strings.list_strings(project_id, None, file_id, limit=500, offset=offset)
             if not batch or not batch['data']:
                 return result
             for s in batch['data']:
