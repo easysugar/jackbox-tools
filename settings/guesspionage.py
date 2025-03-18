@@ -1,4 +1,6 @@
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\PollPosition'
+from paths import JPP3_PATH
+
+PATH = JPP3_PATH + r'\games\PollPosition'
 PATH_QUESTIONS = PATH + r'\content\PollPositionQuestions.jet'
 PATH_BONUS_QUESTIONS = PATH + r'\content\PollPositionBonusQuestions.jet'
 PATH_LEADERBOARDS = PATH + r'\leaderboards.jet'

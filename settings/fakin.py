@@ -1,4 +1,6 @@
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\FakinIt'
+from paths import JPP3_PATH
+
+PATH = JPP3_PATH + r'\games\FakinIt'
 PATH_MENU = PATH + r'\menu.jet'
 PATH_TASKS = PATH + r'\content\FakinItTasks.jet'
 PATH_TASKS_DIR = PATH + r'\content\FakinItTasks'

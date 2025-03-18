@@ -1,5 +1,7 @@
 # game
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 3\games\AwShirt'
+from paths import JPP3_PATH
+
+PATH = JPP3_PATH + r'\games\AwShirt'
 
 # in-game
 PATH_SUGGESTIONS = PATH + r'\content\AwShirtDrawingSuggestions.jet'

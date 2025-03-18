@@ -1,9 +1,11 @@
 # game
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt'
-PATH_SUGGESTIONS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtDrawingSuggestions.jet'
-PATH_MODERATED_SLOGANS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtModeratedSlogans.jet'
-PATH_SLOGANS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtSlogans.jet'
-PATH_SLOGAN_SUGGESTIONS = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\AwShirt\content\en\AwShirtSloganSuggestions.jet'
+from paths import TJSP_PATH
+
+PATH = TJSP_PATH + r'\games\AwShirt'
+PATH_SUGGESTIONS = PATH + r'\content\en\AwShirtDrawingSuggestions.jet'
+PATH_MODERATED_SLOGANS = PATH + r'\content\en\AwShirtModeratedSlogans.jet'
+PATH_SLOGANS = PATH + r'\content\en\AwShirtSlogans.jet'
+PATH_SLOGAN_SUGGESTIONS = PATH + r'\content\en\AwShirtSloganSuggestions.jet'
 PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # encoded

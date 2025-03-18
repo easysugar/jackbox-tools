@@ -1,5 +1,7 @@
 # encoded
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\Quiplash 2 InterLASHional'
+from paths import QUIPLASH2_PATH
+
+PATH = QUIPLASH2_PATH
 PATH_LOCALIZATION = PATH + r'\Localization.json'
 PATH_QUESTIONS = PATH + r'\content\QuiplashQuestion'
 PATH_QUESTIONS_JSON = PATH + r'\content\QuiplashQuestion.jet'
