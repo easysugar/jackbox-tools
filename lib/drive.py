@@ -60,4 +60,4 @@ class Drive:
     def get_link(self, _id: str):
         if self.links is None:
             self.links = self.get_files_links(path_drive=self.path_drive)
-        return self.links[_id.removesuffix('.ogg')]
+        return self.links[_id.split('.')[0]]
