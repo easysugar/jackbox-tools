@@ -20,6 +20,7 @@ class SplitTheRoom(Game):
     folder = '../data/pp5/split/'
     build = '../build/uk/JPP5/SplitTheRoom/'
     audio = r'X:\Jackbox\games\jpp5\split\audio\scenarios'
+    audio_reactions = r'X:\Jackbox\games\jpp5\split\audio\reactions'
     rounds = {1: 'SplitTheRoomShortie', 2: 'SplitTheRoomLater', 3: 'SplitTheRoomFinal'}
 
     @decode_mapping(folder + 'expanded.json', folder + 'text_subtitles.json')
@@ -61,7 +62,7 @@ class SplitTheRoom(Game):
                 res[c['id']]['response'] = {'text': o['ResponseAudio']['s'], 'crowdinContext': context}
         return res
 
-    def _decode_scenario(self, obj, trans, path_folder: str):
+    def _decode_scenario(self, obj, trans, kind: str):
         for c in obj['content']:
             cid = str(c['id'])
             t = trans[cid]
@@ -73,7 +74,7 @@ class SplitTheRoom(Game):
             c['questionText'] = t['questionText']['text']
             scenario = [d.strip() for d in t['scenario']['text'].split('\n') if d.strip()]
             c['scenarioText'] = ' '.join(scenario)
-            o = read_from_folder(cid, path_folder)
+            o = self.read_content(cid, kind)
             o['Decoys']['v'] = c['decoys']
             o['QuestionText']['v'] = c['questionText']
             if 'Answer' in o:
@@ -82,11 +83,10 @@ class SplitTheRoom(Game):
             assert f'ScenarioText{n}' in o and f'ScenarioText{n + 1}' not in o, f'Prompt {cid} should have {n} lines'
             for i in range(n):
                 o[f'ScenarioText{i+1}']['v'] = scenario[i]
-            audio_file = os.path.join(self.audio, o['ScenarioAudio']['v'] + '.ogg')
-            if os.path.isfile(audio_file):
-                self._set_scenario_audio_cue(o, audio_file)
-                copy_file(audio_file, os.path.join(path_folder, cid, o['ScenarioAudio']['v'] + '.ogg'))
-            write_to_folder(cid, path_folder, o)
+            self.copy_audio_to_content(cid, kind, o['ScenarioAudio']['v'], self.audio)
+            if o['ResponseAudio']['s'] and o['HasResponseAudio']['v'] == 'true':
+                self.copy_audio_to_content(cid, 'SplitTheRoomFinal', o['ResponseAudio']['v'], self.audio_reactions)
+            self.write_content(cid, kind, o)
         return obj
 
     @decode_mapping(PATH + r'\content\SplitTheRoomShortie.jet', folder + 'scenarios.json')
@@ -103,15 +103,15 @@ class SplitTheRoom(Game):
 
     @decode_mapping(PATH + r'\content\SplitTheRoomShortie.jet', build + 'scenarios.json', PATH + r'\content\SplitTheRoomShortie.jet')
     def decode_scenarios_shortie(self, obj, trans):
-        return self._decode_scenario(obj, trans, PATH + r'\content\SplitTheRoomShortie')
+        return self._decode_scenario(obj, trans, 'SplitTheRoomShortie')
 
     @decode_mapping(PATH + r'\content\SplitTheRoomLater.jet', build + 'scenarios_later.json', PATH + r'\content\SplitTheRoomLater.jet')
     def decode_scenarios_later(self, obj, trans):
-        return self._decode_scenario(obj, trans, PATH + r'\content\SplitTheRoomLater')
+        return self._decode_scenario(obj, trans, 'SplitTheRoomLater')
 
     @decode_mapping(PATH + r'\content\SplitTheRoomFinal.jet', build + 'scenarios_final.json', PATH + r'\content\SplitTheRoomFinal.jet')
     def decode_scenarios_final(self, obj, trans):
-        return self._decode_scenario(obj, trans, PATH + r'\content\SplitTheRoomFinal')
+        return self._decode_scenario(obj, trans, 'SplitTheRoomFinal')
 
     @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
     def upload_audio(self, original, obj):
