@@ -3,36 +3,35 @@ import os
 from lib.game import Game, decode_mapping
 from paths import JPP8_PATH
 
-PATH = os.path.join(JPP8_PATH + r'\games\DrawfulAnimate')
 
 class Drawful3(Game):
-    game = PATH
+    game = os.path.join(JPP8_PATH + r'\games\DrawfulAnimate')
     folder = '../data/pp8/drawful3/'
 
-    @decode_mapping(PATH + r'\content\en\DrawfulAnimatePrompt.jet', folder + 'prompts.json')
-    def encode_prompts(self, obj):
+    def encode_prompts(self):
+        obj = self.read_jet('DrawfulAnimatePrompt')
         res = {}
         for c in obj['content']:
             res[c['id']] = {'prompt': c['prompt'], 'crowdinContext': self.get_context(c, ','.join(c['tags']))}
-        return res
+        self.write_to_data('prompts.json', res)
 
-    @decode_mapping(PATH + r'\content\en\DrawfulAnimateDecoy.jet', folder + 'decoy.json')
-    def encode_decoy(self, obj):
+    def encode_decoy(self):
+        obj = self.read_jet('DrawfulAnimateDecoy')
         res = {}
         for c in obj['content']:
             res[c['id']] = c['text']
-        return res
+        self.write_to_data('decoy.json', res)
 
-    @decode_mapping(PATH + r'\content\en\DrawfulAnimatePersonalPrompt.jet', folder + 'personal_prompts.json')
-    def encode_personal_prompts(self, obj):
+    def encode_personal_prompts(self):
+        obj = self.read_jet('DrawfulAnimatePersonalPrompt')
         res = {}
         for c in obj['content']:
             res[c['id']] = {'prompt': c['prompt'], 'crowdinContext': self.get_context(c, ','.join(c['tags']))}
-        return res
+        self.write_to_data('personal_prompts.json', res)
 
-    @decode_mapping(PATH + r'\content\en\DrawfulAnimatePersonalDecoy.jet', folder + 'personal_decoy.json')
-    def encode_personal_decoy(self, obj):
+    def encode_personal_decoy(self):
+        obj = self.read_jet('DrawfulAnimatePersonalDecoy')
         res = {}
         for c in obj['content']:
             res[c['id']] = {'prompt': c['text'], 'crowdinContext': self.get_context(c, c['title'])}
-        return res
+        self.write_to_data('personal_decoy.json', res)

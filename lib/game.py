@@ -26,6 +26,15 @@ class Game:
     def read_content(self, cid: str | int, kind: str) -> dict:
         return read_from_folder(str(cid), self._get_path_kind(kind))
 
+    def write_content(self, cid: str | int, kind: str, content: dict):
+        write_to_folder(cid, self._get_path_kind(kind), content)
+
+    def read_jet(self, kind: str) -> dict:
+        return self._read_json(self._get_path_kind(kind) + '.jet')
+
+    def write_to_data(self, filename: str, obj: dict):
+        self._write_json(os.path.join(getattr(self, 'folder'), filename), obj)
+
     def get_kind_cids(self, kind: str) -> list[str]:
         return os.listdir(self._get_path_kind(kind))
 
