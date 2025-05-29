@@ -1,6 +1,6 @@
 import os
 
-from lib.game import Game, decode_mapping
+from lib.game import Game, clean_text
 from paths import JPP8_PATH
 
 
@@ -35,3 +35,13 @@ class Drawful3(Game):
         for c in obj['content']:
             res[c['id']] = {'prompt': c['text'], 'crowdinContext': self.get_context(c, c['title'])}
         self.write_to_data('personal_decoy.json', res)
+
+    def encode_audio_subtitles(self):
+        obj = self.read_from_data('media.json')
+        audio = {
+            v['id']: {'text': clean_text(v['text']), 'crowdinContext': c.get('crowdinContext', '')}
+            for c in obj['media']
+            for v in c['versions']
+            if c['type'] == 'A' and 'SFX' not in v['text']
+        }
+        self.write_to_data('audio.json', audio)
