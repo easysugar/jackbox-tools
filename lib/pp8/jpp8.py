@@ -10,7 +10,7 @@ PATH_RELEASE = JPP8_RELEASE_PATH
 INSTALL_DATE = datetime(2025, 5, 20)
 
 
-class JPP7(Game):
+class JPP8(Game):
     def decode_all(self):
         JobJob().decode_all()
         Drawful3().decode_all()
