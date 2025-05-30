@@ -13,8 +13,11 @@ class Game:
     def __init__(self, game_path: str = None, is_international: bool = False):
         self.game_path = getattr(self, 'game', game_path)
         self.is_international = getattr(self, 'international', is_international)
+        self.game_name = getattr(self, 'name', None)
 
     def _get_path_kind(self, kind: str) -> str:
+        if self.game_name and not kind.startswith(self.game_name):
+            kind = self.game_name + kind
         if self.is_international:
             return os.path.join(self.game_path, 'content', 'en', kind)
         else:
