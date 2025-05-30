@@ -4,5 +4,6 @@ from .pp4 import *
 from .pp5 import *
 from .pp6 import *
 from .pp7 import *
+from .pp8 import *
 from .standalone import *
 from .tjsp import *
