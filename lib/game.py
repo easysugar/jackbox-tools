@@ -110,46 +110,6 @@ class Game:
         for f in tqdm.tqdm(to_call):
             getattr(self, f)()
 
-    def update_localization(self, src: str, *translations: str):
-        obj = self._read_json(src)
-        trans = {}
-        for path in translations:
-            t = self._read_json(path)
-            t = t.get('table', t)
-            t = t.get('en', t)
-            trans.update(t)
-        if set(obj['table']['en']) > set(trans):
-            print(f'Source has untranslated fields: {", ".join(set(obj["table"]["en"])-set(trans))}')
-        obj['table']['en'].update(trans)
-        self._write_json(src, obj)
-
-    def copy_to_release(self, src: str, dst: str, start_ts: datetime):
-        print('Coping to release')
-        for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
-            for f in files:
-                fpath = os.path.join(root, f)
-                if 'копія' in fpath:
-                    continue
-                ts = datetime.fromtimestamp(os.path.getmtime(fpath))
-                if ts >= start_ts:  # or abs(os.path.getctime(fpath) - os.path.getmtime(fpath)) > 600:
-                    # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
-                    copy_file(fpath, fpath.replace(src, dst))
-
-    @staticmethod
-    def make_archive(src: str, archive_name: str = 'release.zip'):
-        zip_path = os.path.join(src, '.releases', archive_name)
-        os.makedirs(os.path.dirname(zip_path), exist_ok=True)
-        zip_process = zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED)
-        for folder_path, _, filenames in tqdm.tqdm(os.walk(src)):
-            if any([f.startswith('.') for f in folder_path.split(os.sep)]):
-                continue
-            for filename in filenames:
-                filepath = os.path.join(src, folder_path, filename)
-                if not filename.startswith('.'):
-                    zip_process.write(filepath, os.path.relpath(filepath, src))
-        zip_process.close()
-        print("Created archive")
-
     @staticmethod
     def _encode_subtitles(obj: dict, _type='A', tags='en') -> Dict[str, str]:
         return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == _type and v['tags'] == tags}
@@ -220,6 +180,20 @@ class Game:
             media = media.replace(old, new)
         assert media.count('^') == cnt_sep
         self._write(path_save, media)
+
+
+def update_localization(src: str, *translations: str):
+    obj = read_json(src)
+    trans = {}
+    for path in translations:
+        t = read_json(path)
+        t = t.get('table', t)
+        t = t.get('en', t)
+        trans.update(t)
+    if set(obj['table']['en']) > set(trans):
+        print(f'Source has untranslated fields: {", ".join(set(obj["table"]["en"]) - set(trans))}')
+    obj['table']['en'].update(trans)
+    write_json(src, obj)
 
 
 def media_encoder(s: str):
