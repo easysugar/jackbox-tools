@@ -9,14 +9,14 @@ from lib.game import update_localization
 
 skip_words = ['copy', 'копія']
 
+
 def _copy_to_release(src: str, dst: str, start_ts: datetime):
     print('Coping to release')
     for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
         for f in files:
             fpath = os.path.join(root, f)
-            for skip_word in skip_words:
-                if skip_word in fpath:
-                    continue
+            if any(skip_word in fpath for skip_word in skip_words):
+                continue
             ts = datetime.fromtimestamp(os.path.getmtime(fpath))
             if ts >= start_ts:  # or abs(os.path.getctime(fpath) - os.path.getmtime(fpath)) > 600:
                 # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
