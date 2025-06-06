@@ -1,39 +1,28 @@
 from datetime import datetime
 
-from lib.game import Game
 from paths import TJSP_PATH, TJSP_RELEASE_PATH
 from .quiplash3 import Quiplash3
 from .teeko import TeeKO
 from .tmp2 import TMP2
-
-PATH_GAME = TJSP_PATH
-PATH_RELEASE = TJSP_RELEASE_PATH
-INSTALL_TIME = datetime(2025, 3, 15)
+from ..pack import GamePack
 
 
-class TJSP(Game):
-    def decode_all(self):
-        TMP2().decode_all()
-        TeeKO().decode_all()
-        Quiplash3().decode_all()
-
-        self.update_localization(rf'{PATH_GAME}\LocalizationManager.json', '../build/uk/localizationManager.json')
-        self.update_localization(rf'{PATH_GAME}\games\Picker\LocalizationManager.json', '../build/uk/localizationManager.json')
-        self.update_localization(rf'{PATH_GAME}\games\AwShirt\LocalizationManager.json', '../build/uk/localizationManager.json')
-        self.update_localization(rf'{PATH_GAME}\games\Quiplash3\LocalizationManager.json', '../build/uk/localizationManager.json')
-        self.update_localization(rf'{PATH_GAME}\games\triviadeath2\LocalizationManager.json', '../build/uk/localizationManager.json')
-
-        self.update_localization(rf'{PATH_GAME}\LocalizationPause.json', '../build/uk/LocalizationPackPause.json')
-        self.update_localization(rf'{PATH_GAME}\games\Picker\LocalizationPause.json', '../build/uk/LocalizationPackPause.json')
-        self.update_localization(rf'{PATH_GAME}\games\AwShirt\LocalizationPause.json', '../build/uk/LocalizationPackPause.json')
-        self.update_localization(rf'{PATH_GAME}\games\Quiplash3\LocalizationPause.json', '../build/uk/LocalizationPackPause.json')
-        self.update_localization(rf'{PATH_GAME}\games\triviadeath2\LocalizationPause.json', '../build/uk/LocalizationPackPause.json')
-
-        self.update_localization(rf'{PATH_GAME}\Localization.json', '../build/uk/Localization.json')
-        self.update_localization(rf'{PATH_GAME}\games\Picker\Localization.json', '../build/uk/Localization.json')
-        self.update_localization(rf'{PATH_GAME}\games\AwShirt\Localization.json', '../build/uk/TeeKO/localization.json')
-
-    def release(self):
-        self.decode_all()
-        self.copy_to_release(PATH_GAME, PATH_RELEASE, INSTALL_TIME)
-        self.make_archive(PATH_RELEASE, 'TheJackboxPartyStarter-UA.zip')
+class TJSP(GamePack):
+    path_game: TJSP_PATH
+    path_release: TJSP_RELEASE_PATH
+    install_date = datetime(2025, 4, 20)
+    games = [TeeKO, TMP2, Quiplash3]
+    release_name = 'TheJackboxPartyStarter-UA.zip'
+    localizations = {
+        '../build/uk/localizationManager.json': [
+            'LocalizationManager.json', 'games/Picker/LocalizationManager.json', 'games/AwShirt/LocalizationManager.json',
+            'games/Quiplash3/LocalizationManager.json', 'games/triviadeath2/LocalizationManager.json'
+        ],
+        '../build/uk/LocalizationPackPause.json': [
+            'LocalizationPause.json', 'games/Picker/LocalizationPause.json', 'games/AwShirt/LocalizationPause.json',
+            'games/Quiplash3/LocalizationPause.json', 'games/triviadeath2/LocalizationPause.json'
+        ],
+        '../build/uk/Localization.json': [
+            'Localization.json', 'games/Picker/Localization.json', 'games/AwShirt/Localization.json'
+        ],
+    }
