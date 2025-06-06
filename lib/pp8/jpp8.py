@@ -13,6 +13,6 @@ class JPP8(GamePack):
     release_name = 'JPP8-UA.zip'
     games = [JobJob, Drawful3]
     localizations = {
-        '../build/uk/JPP8/localization.json': 'Localization.json',
-        '../build/uk/JPP8/localization_pack.json': 'games/Picker/Localization.json',
+        '../build/uk/JPP8/localization.json': ['Localization.json'],
+        '../build/uk/JPP8/localization_pack.json': ['games/Picker/Localization.json'],
     }

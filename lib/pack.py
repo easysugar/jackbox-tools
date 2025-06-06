@@ -44,13 +44,14 @@ class GamePack:
     path_release = ''
     install_date = None
     release_name = ''
-    localizations = {}
+    localizations = {}  # build path -> array of source paths
 
     def decode_all(self):
         for game in self.games:
             game.decode_all()
-        for src, dst in self.localizations.items():
-            update_localization(src, os.path.join(self.path_game, dst))
+        for src, *dst in self.localizations.items():
+            for localization_file in dst:
+                update_localization(os.path.join(self.path_game, localization_file), src)
 
     def copy_to_release(self):
         _copy_to_release(self.path_game, self.path_release, self.install_date)
