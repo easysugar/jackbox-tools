@@ -26,6 +26,8 @@ class Drawful3(Game):
         res = {}
         for c in obj['content']:
             res[c['id']] = {'prompt': c['prompt'], 'crowdinContext': self.get_context(c, ','.join(c['tags']))}
+            if c['joke']:
+                res[c['id']]['joke'] = c['joke']
         self.write_to_data('prompts.json', res)
 
     def decode_prompts(self):
@@ -33,6 +35,8 @@ class Drawful3(Game):
         obj = self.read_jet('Prompt')
         for c in obj['content']:
             c['prompt'] = trans[c['id']]['prompt']
+            if c['joke']:
+                c['joke'] = trans[c['id']]['joke']
         self.write_jet('Prompt', obj)
 
     def encode_decoy(self):
@@ -53,7 +57,9 @@ class Drawful3(Game):
         obj = self.read_jet('PersonalPrompt')
         res = {}
         for c in obj['content']:
-            res[c['id']] = {'prompt': c['prompt'], 'crowdinContext': self.get_context(c, ','.join(c['tags']))}
+            res[c['id']] = {'prompt': c['prompt'], 'crowdinContext': self.get_context(c, ','.join(c['tags']) + '\n' + personal_titles_map[c['title']])}
+            if c['joke']:
+                res[c['id']]['joke'] = c['joke']
         self.write_to_data('personal_prompts.json', res)
 
     def decode_personal_prompts(self):
@@ -64,13 +70,16 @@ class Drawful3(Game):
             c['title'] = personal_titles_map.get(c['title'], c['title'])
             if not c['prompt'].startswith(c['title'].removesuffix('...')):
                 print(f'Prompt {c["prompt"]} mismatches title: {c["title"]}')
+            assert c['title'].endswith('...')
+            if c['joke']:
+                c['joke'] = trans[c['id']]['joke']
         self.write_jet('PersonalPrompt', obj)
 
     def encode_personal_decoy(self):
         obj = self.read_jet('PersonalDecoy')
         res = {}
         for c in obj['content']:
-            res[c['id']] = {'prompt': c['text'], 'crowdinContext': self.get_context(c, c['title'])}
+            res[c['id']] = {'prompt': c['text'], 'crowdinContext': self.get_context(c, personal_titles_map[c['title']])}
         self.write_to_data('personal_decoy.json', res)
 
     def decode_personal_decoy(self):
