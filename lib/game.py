@@ -35,11 +35,17 @@ class Game:
     def read_jet(self, kind: str) -> dict:
         return self._read_json(self._get_path_kind(kind) + '.jet')
 
+    def write_jet(self, kind: str, obj: dict) -> dict:
+        return self._write_json(self._get_path_kind(kind) + '.jet', obj)
+
     def read_from_data(self, filename: str) -> dict:
         return self._read_json(os.path.join(getattr(self, 'folder'), filename))
 
     def write_to_data(self, filename: str, obj: dict):
         self._write_json(os.path.join(getattr(self, 'folder'), filename), obj)
+
+    def read_from_build(self, filename: str) -> dict:
+        return self._read_json(os.path.join(getattr(self, 'build'), filename))
 
     def get_kind_cids(self, kind: str) -> list[str]:
         return os.listdir(self._get_path_kind(kind))
@@ -162,7 +168,9 @@ class Game:
         media = self._read(path_media)
         cnt_sep = media.count('^')
         expanded = self._read_json(path_expanded)
-        orig = {v['id']: v['text'] for c in expanded for v in c['versions'] if 'text' in v}
+        if isinstance(expanded, dict) and expanded.get('media'):
+            expanded = expanded['media']
+        orig = {str(v['id']): v['text'] for c in expanded for v in c['versions'] if 'text' in v}
         mapp = {}
         for oid in trans:
             if not trans[oid].strip():
