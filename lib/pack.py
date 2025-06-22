@@ -48,7 +48,7 @@ class GamePack:
 
     def decode_all(self):
         for game in self.games:
-            game.decode_all()
+            game().decode_all()
         for src, *dst in self.localizations.items():
             for localization_file in dst:
                 update_localization(os.path.join(self.path_game, localization_file), src)
