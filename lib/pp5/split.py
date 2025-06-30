@@ -7,7 +7,7 @@ import tqdm
 from lib.audio import get_audio_markers
 from lib.common import copy_file
 from lib.drive import Drive
-from lib.game import Game, decode_mapping, read_from_folder, write_to_folder
+from lib.game import Game, decode_mapping, read_from_folder, update_localization
 from paths import JPP5_PATH
 
 PATH = JPP5_PATH + r'\games\SplitTheRoom'
@@ -34,7 +34,7 @@ class SplitTheRoom(Game):
                 if c['type'] == 'A'}
 
     def decode_localization(self):
-        self.update_localization(PATH + r'\Localization.json', self.build + 'localization.json')
+        update_localization(PATH + r'\Localization.json', self.build + 'localization.json')
 
     @staticmethod
     def _encode_scenario(obj, path_folder):
