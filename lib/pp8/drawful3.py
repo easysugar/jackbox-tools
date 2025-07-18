@@ -37,6 +37,9 @@ class Drawful3(Game):
             c['prompt'] = trans[c['id']]['prompt']
             if c['joke']:
                 c['joke'] = trans[c['id']]['joke']
+                o = self.read_content(c['id'], 'Prompt')
+                o['JokeAudio']['s'] = c['joke']
+                self.write_content(c['id'], 'Prompt', o)
         self.write_jet('Prompt', obj)
 
     def encode_decoy(self):
@@ -73,6 +76,9 @@ class Drawful3(Game):
             assert c['title'].endswith('...')
             if c['joke']:
                 c['joke'] = trans[c['id']]['joke']
+                o = self.read_content(c['id'], 'PersonalPrompt')
+                o['JokeAudio']['s'] = c['joke']
+                self.write_content(c['id'], 'PersonalPrompt', o)
         self.write_jet('PersonalPrompt', obj)
 
     def encode_personal_decoy(self):
