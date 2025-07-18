@@ -2,6 +2,8 @@ import os
 import re
 from collections import defaultdict
 
+import tqdm
+
 from lib.common import write_json, copy_file
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, normalize_text, remove_suffix
 
@@ -9,11 +11,16 @@ PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 7\
 OLD_PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\Quiplash3'
 
 
+def transform_tags(s: str):
+    return s.replace('[i]', '<i>').replace('[/i]', '</i>')
+
+
 class OldQuiplash3(Game):
     folder = '../data/pp7/quiplash3/'
     tjsp_folder = '../data/tjsp/quiplash3/encoded/'
     build = '../build/uk/JPP7/Quiplash 3/'
     tjsp_build = '../build/uk/Quiplash3/'
+    folder_audio_prompts = r'C:\Users\админ\Desktop\Jackbox\games\tjsp\quiplash3\audio\prompts'
 
     @decode_mapping(PATH + r'\Localization.json', OLD_PATH + r'\Localization.json', folder + 'localization.json')
     def encode_localization(self, obj, old_obj):
@@ -29,7 +36,7 @@ class OldQuiplash3(Game):
         for c in obj['content']:
             old = old_obj[c['id']]
             o = read_from_folder(c['id'], PATH + r'\content\Quiplash3Round1Question')
-            c['prompt'] = o['PromptText']['v'] = old['prompt']
+            c['prompt'] = o['PromptText']['v'] = transform_tags(old['prompt'])
             c['safetyQuips'] = old['safetyQuips']
             o['SafetyQuips']['v'] = '|'.join(old['safetyQuips'])
             if o['HasJokeAudio']['v'] == 'true':
@@ -46,7 +53,7 @@ class OldQuiplash3(Game):
         for c in obj['content']:
             old = old_obj[c['id']]
             o = read_from_folder(c['id'], PATH + r'\content\Quiplash3Round2Question')
-            c['prompt'] = o['PromptText']['v'] = old['prompt']
+            c['prompt'] = o['PromptText']['v'] = transform_tags(old['prompt'])
             c['safetyQuips'] = old['safetyQuips']
             o['SafetyQuips']['v'] = '|'.join(c['safetyQuips'])
             if o['HasJokeAudio']['v'] == 'true':
@@ -63,7 +70,7 @@ class OldQuiplash3(Game):
         for c in obj['content']:
             old = old_obj[c['id']]
             o = read_from_folder(c['id'], PATH + r'\content\Quiplash3FinalQuestion')
-            c['prompt'] = o['PromptText']['v'] = old['prompt']
+            c['prompt'] = o['PromptText']['v'] = transform_tags(old['prompt'])
             c['safetyQuips'] = old['safetyQuips']
             o['SafetyQuips']['v'] = '|'.join(c['safetyQuips'])
             write_to_folder(c['id'], PATH + r'\content\Quiplash3FinalQuestion', o)
@@ -128,7 +135,7 @@ class OldQuiplash3(Game):
                                trans=translations, path_save=self.folder + 'translated_dict.txt')
 
     @decode_mapping(folder + 'media_mapping.json', out=False)
-    def copy_audio(self, obj):
+    def _copy_audio(self, obj):
         dst = PATH + r'\TalkshowExport\project\media'
         src = OLD_PATH + r'\TalkshowExport\project\media'
         tjsp_files = set(os.listdir(src))
@@ -138,3 +145,14 @@ class OldQuiplash3(Game):
             tjsp = tjsp + '.ogg'
             if tjsp in tjsp_files and jpp7 in jpp7_files:
                 copy_file(os.path.join(src, tjsp), os.path.join(dst, jpp7))
+
+    def _copy_audio_prompts(self):
+        for folder in (PATH + r'\content\Quiplash3Round1Question',
+                       PATH + r'\content\Quiplash3Round2Question',
+                       PATH + r'\content\Quiplash3FinalQuestion'):
+            dirs = os.listdir(folder)
+            for cid in tqdm.tqdm(dirs):
+                if not cid.isdigit():
+                    continue
+                ogg = 'prompt.ogg'
+                copy_file(os.path.join(self.folder_audio_prompts, f'{cid}.ogg'), os.path.join(folder, cid, ogg))
