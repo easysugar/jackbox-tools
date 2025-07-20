@@ -5,10 +5,12 @@ from collections import defaultdict
 import tqdm
 
 from lib.common import write_json, copy_file
-from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, normalize_text, remove_suffix
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, normalize_text, remove_suffix, \
+    update_localization
+from paths import JPP7_PATH, TJSP_PATH
 
-PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Pack 7\games\Quiplash3'
-OLD_PATH = r'C:\Program Files (x86)\Steam\steamapps\common\The Jackbox Party Starter\games\Quiplash3'
+PATH = os.path.join(JPP7_PATH, 'games', 'Quiplash3')
+OLD_PATH = os.path.join(TJSP_PATH, 'games', 'Quiplash3')
 
 
 def transform_tags(s: str):
@@ -27,7 +29,7 @@ class OldQuiplash3(Game):
         return {k: v for k, v in obj['table']['en'].items() if k not in old_obj['table']['en']}
 
     def decode_localization(self):
-        self.update_localization(PATH + r'\Localization.json', OLD_PATH + r'\Localization.json', self.build + 'localization.json')
+        update_localization(PATH + r'\Localization.json', OLD_PATH + r'\Localization.json', self.build + 'localization.json')
 
     @decode_mapping(PATH + r'\content\Quiplash3Round1Question.jet', OLD_PATH + r'\content\en\Quiplash3Round1Question.jet',
                     PATH + r'\content\Quiplash3Round1Question.jet')
@@ -118,7 +120,8 @@ class OldQuiplash3(Game):
             write_json(self.folder + 'additional_audio.json', missed_audio)
         return maps
 
-    @decode_mapping(tjsp_build + 'audio_subtitles.json', tjsp_build + 'text_subtitles.json', build + 'additional_text.json', folder + 'media_mapping.json',
+    @decode_mapping(tjsp_build + 'audio_subtitles.json', tjsp_build + 'text_subtitles.json', build + 'additional_text.json',
+                    folder + 'media_mapping.json',
                     out=False)
     def decode_media(self, tjsp_audio, tjsp_text, additional_text, maps):
         tjsp_text = {k: v for _ in tjsp_text.values() for k, v in _.items()}
