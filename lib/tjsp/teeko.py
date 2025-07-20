@@ -1,7 +1,7 @@
 import os
 
 from lib.common import copy_file
-from lib.game import Game, encode_mapping, decode_mapping
+from lib.game import Game, encode_mapping, decode_mapping, update_localization
 from settings.teeko import *
 
 
@@ -53,8 +53,9 @@ class TeeKO(Game):
         self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'expanded.json',
                                trans=translations, path_save=self.folder + 'translated_dict.txt')
 
-    def decode_localization(self):
-        self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TeeKO/localization.json')
+    @staticmethod
+    def decode_localization():
+        update_localization(rf'{PATH}\Localization.json', '../build/uk/TeeKO/localization.json')
 
     @staticmethod
     def copy_translated_audio():

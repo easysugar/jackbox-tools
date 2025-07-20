@@ -1,3 +1,4 @@
+import csv
 import os
 import re
 from collections import defaultdict
@@ -7,11 +8,16 @@ import tqdm
 
 from lib.common import read_json
 from lib.drive import Drive
-from lib.game import Game, encode_mapping, decode_mapping, copy_file, read_from_folder, write_to_folder
+from lib.game import Game, encode_mapping, decode_mapping, copy_file, read_from_folder, write_to_folder, clean_text, \
+    update_localization
 from settings.tmp2 import *
 
 subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(MUSIC|SFX|HOST)/.*'
 
+path_audio_quiplash = r'X:\Jackbox\games\tjsp\tmp2\audio\quiplash'
+path_audio_bomb = r'X:\Jackbox\games\tjsp\tmp2\audio\bomb'
+path_audio_knife = r'X:\Jackbox\games\tjsp\tmp2\audio\knife'
+path_audio_madness = r'X:\Jackbox\games\tjsp\tmp2\audio\madness'
 
 class TMP2(Game):
     folder = '../data/tjsp/tmp2/'
@@ -38,15 +44,15 @@ class TMP2(Game):
             if c['text'].get('main')
         }
 
-    @decode_mapping(PATH_SEQUEL, PATH_BUILD_SEQUEL, PATH_SEQUEL)
-    def decode_sequel(self, obj, translations):
-        for c in obj['content']:
-            if c['text'].get('main'):
-                t = translations[c['id']]['text'].strip().split('\n')
-                c['text']['main'] = t[0]
-                if len(t) > 1:
-                    c['text']['sub'] = t[1]
-        return obj
+    # @decode_mapping(PATH_SEQUEL, PATH_BUILD_SEQUEL, PATH_SEQUEL)
+    # def decode_sequel(self, obj, translations):
+    #     for c in obj['content']:
+    #         if c['text'].get('main'):
+    #             t = translations[c['id']]['text'].strip().split('\n')
+    #             c['text']['main'] = t[0]
+    #             if len(t) > 1:
+    #                 c['text']['sub'] = t[1]
+    #     return obj
 
     @encode_mapping(PATH_QUESTION, PATH_ENCODED_QUESTION)
     def encode_question(self, obj: dict):
@@ -386,21 +392,21 @@ class TMP2(Game):
     def encode_mirror_tutorial(self, obj):
         return {c['id']: c['password'] for c in obj['content']}
 
-    @decode_mapping(PATH_MIRROR_TUTORIAL, PATH_BUILD_MIRROR_TUTORIAL, PATH_MIRROR_TUTORIAL)
-    def decode_mirror_tutorial(self, obj, translations):
-        for c in obj['content']:
-            c['password'] = translations[c['id']]
-        return obj
+    # @decode_mapping(PATH_MIRROR_TUTORIAL, PATH_BUILD_MIRROR_TUTORIAL, PATH_MIRROR_TUTORIAL)
+    # def decode_mirror_tutorial(self, obj, translations):
+    #     for c in obj['content']:
+    #         c['password'] = translations[c['id']]
+    #     return obj
 
     @encode_mapping(PATH_MIRROR, 'data/tmp2/encoded/mirror.json')
     def encode_mirror(self, obj):
         return {c['id']: c['password'] for c in obj['content']}
 
-    @decode_mapping(PATH_MIRROR, PATH_BUILD_MIRROR, PATH_MIRROR)
-    def decode_mirror(self, obj, translations):
-        for c in obj['content']:
-            c['password'] = translations[c['id']]
-        return obj
+    # @decode_mapping(PATH_MIRROR, PATH_BUILD_MIRROR, PATH_MIRROR)
+    # def decode_mirror(self, obj, translations):
+    #     for c in obj['content']:
+    #         c['password'] = translations[c['id']]
+    #     return obj
 
     # MIND MELD
 
@@ -449,8 +455,9 @@ class TMP2(Game):
         self._decode_swf_media(path_media=PATH_SOURCE_DICT, path_expanded=PATH_EXPANDED, trans=translations,
                                path_save=PATH_TRANSLATED_DICT)
 
-    def decode_localization(self):
-        self.update_localization(rf'{PATH}\Localization.json', '../build/uk/TMP2/LocalizationEN.json')
+    @staticmethod
+    def decode_localization():
+        update_localization(rf'{PATH}\Localization.json', '../build/uk/TMP2/localization.json')
 
     def upload_audio_main(self):
         d = Drive()
@@ -502,6 +509,12 @@ class TMP2(Game):
             i['link'] = d.get_link(i['ogg'])
         pd.DataFrame(data).to_csv(self.folder + 'audio_weird_doctor.tsv', sep='\t', encoding='utf8', index=False)
 
+    def copy_madness_audio(self):
+        for cid in tqdm.tqdm(os.listdir(PATH_QUESTION_MADNESS_DIR)):
+            src = os.path.join(path_audio_madness, f"{cid}.ogg")
+            dst = os.path.join(PATH_QUESTION_MADNESS_DIR, cid, 'questionAudio.ogg')
+            copy_file(src, dst)
+
     def upload_audio_bomb(self):
         d = Drive(PATH_DRIVE_BOMB)
         expanded = self._read_json(self.folder + 'encoded/expanded.json')
@@ -522,3 +535,108 @@ class TMP2(Game):
         for i in data:
             i['link'] = d.get_link(i['ogg'])
         pd.DataFrame(data).to_csv(self.folder + 'audio_cop_bomb.tsv', sep='\t', encoding='utf8', index=False)
+
+    def copy_bomb_audio(self):
+        for cid in tqdm.tqdm(os.listdir(PATH_QUESTION_BOMB_DIR)):
+            src = os.path.join(path_audio_bomb, f"{cid}.ogg")
+            dst = os.path.join(PATH_QUESTION_BOMB_DIR, cid, 'questionAudio.ogg')
+            copy_file(src, dst)
+
+    def upload_audio_ghost(self):
+        d = Drive(PATH_DRIVE_GHOST)
+        expanded = self._read_json(self.folder + 'encoded/expanded.json')
+        cids = {str(v['id']) for c in expanded for v in c['versions'] if 'old woman:' in v['text'].lower() and v['locale'] == 'en'}
+        data = []
+        obj = self._read_json(PATH_BUILD_AUDIO)
+        for cid in tqdm.tqdm(cids):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_ghost.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_detective(self):
+        d = Drive(PATH_DRIVE_DETECTIVE)
+        expanded = self._read_json(self.folder + 'encoded/expanded.json')
+        cids = {str(v['id']) for c in expanded for v in c['versions'] if 'detective:' in v['text'].lower() and v['locale'] == 'en'}
+        data = []
+        obj = self._read_json(PATH_BUILD_AUDIO)
+        for cid in tqdm.tqdm(cids):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': obj[cid].strip().replace('\n', ' ')})
+            d.upload(PATH_MEDIA, ogg)
+
+        questions = self._read_json(PATH_BUILD_QUESTION_KNIFE)
+        for cid, q in questions.items():
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': q.strip().split('\n')[1]})
+            d.upload(PATH_QUESTION_KNIFE_DIR, cid, 'questionAudio.ogg', name=ogg)
+            ogg = f'{cid}-intro.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': q.strip().split('\n')[0]})
+            d.upload(PATH_QUESTION_KNIFE_DIR, cid, 'introAudio.ogg', name=ogg)
+
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_detective.tsv', sep='\t', encoding='utf8', index=False)
+
+    def copy_detective_audio(self):
+        for cid in tqdm.tqdm(os.listdir(PATH_QUESTION_KNIFE_DIR)):
+            src = os.path.join(path_audio_knife, f"{cid}.ogg")
+            dst = os.path.join(PATH_QUESTION_KNIFE_DIR, cid, 'questionAudio.ogg')
+            copy_file(src, dst)
+            src = os.path.join(path_audio_knife, f"{cid}-intro.ogg")
+            dst = os.path.join(PATH_QUESTION_KNIFE_DIR, cid, 'introAudio.ogg')
+            copy_file(src, dst)
+
+    def upload_audio_quiplash(self):
+        d = Drive('1iKZCfkW8zphbNJJ5K6ebitgODV0Ov2Sp')
+        data = []
+        obj = self._read_json(PATH_QUIPLASH)
+        for c in tqdm.tqdm(obj['content']):
+            cid = c['id']
+            ogg = f'prompt.ogg'
+            data.append({'id': cid, 'ogg': ogg, 'text': clean_text(c['prompt'])})
+            d.upload(PATH_QUIPLASH_DIR, cid, ogg, name=f'{cid}.ogg')
+        for i in data:
+            i['link'] = d.get_link(i['id'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_quiplash.tsv', sep='\t', encoding='utf8', index=False)
+
+    def copy_quiplash_audio(self):
+        obj = self._read_json(PATH_QUIPLASH)
+        for c in tqdm.tqdm(obj['content']):
+            src = os.path.join(path_audio_quiplash, f"{c['id']}.ogg")
+            dst = os.path.join(PATH_QUIPLASH_DIR, c['id'], 'prompt.ogg')
+            copy_file(src, dst)
+
+    def upload_audio_dictation(self):
+        d = Drive('1WynJIO7wPhsZ1H9e2igo48MvN3UMGgJ6')
+        data = []
+        obj = self._read_json(PATH_DICTATION)
+        for c in tqdm.tqdm(obj['content']):
+            text = '\n'.join(c['text'])
+            cid = c['id']
+            ogg = c['eventName'].split('/')[-1] + '.wav'
+            data.append({'id': cid, 'ogg': ogg, 'text': text})
+            d.upload(r'X:\Jackbox\games\tjsp\tmp2\audio\dictation', ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_dictation.tsv', sep='\t', encoding='utf8', index=False, quoting=csv.QUOTE_ALL)
+
+    def upload_audio_questions(self):
+        d = Drive('11dFha7bzNhOaIO1z22hS0p_YKCbncRGT')
+        data = []
+        obj = self._read_json(PATH_QUESTION)
+        for c in tqdm.tqdm(obj['content']):
+            cid = c['id']
+            o = read_from_folder(cid, PATH_QUESTION_DIR)
+            if o.get('HasIntro', {}).get('v') == 'true' and o['Intro'].get('s'):
+                data.append({'id': f'{cid}-intro', 'ogg': 'introAudio.ogg', 'text': o['Intro']['s'], 'type': 'intro'})
+                d.upload(PATH_QUESTION_DIR, cid, 'introAudio.ogg', name=f'{cid}-intro.ogg')
+
+            data.append({'id': cid, 'ogg': 'questionAudio.ogg', 'text': c['text'], 'type': 'question'})
+            d.upload(PATH_QUESTION_DIR, cid, 'questionAudio.ogg', name=f'{cid}.ogg')
+        for i in data:
+            i['link'] = d.get_link(i['id'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_questions.tsv', sep='\t', encoding='utf8', index=False)

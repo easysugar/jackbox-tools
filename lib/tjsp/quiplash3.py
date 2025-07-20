@@ -7,7 +7,8 @@ import tqdm
 
 from lib.common import copy_file
 from lib.drive import Drive
-from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder, clean_text
+from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder, clean_text, \
+    update_localization
 from paths import TJSP_PATH
 
 PATH = TJSP_PATH + r'\games\Quiplash3'
@@ -99,7 +100,7 @@ class Quiplash3(Game):
         self._encode_localization(PATH_LOCALIZATION, self.folder + 'localization.json')
 
     def decode_localization(self):
-        self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+        update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
 
     @encode_mapping(folder + 'expanded.json', folder + 'audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
