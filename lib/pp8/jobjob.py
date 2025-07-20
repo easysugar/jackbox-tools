@@ -48,12 +48,12 @@ class JobJob(Game):
         res = {c['id']: f"{c['firstPrompt']}\n{c['secondPrompt']}" for c in obj['content']}
         self.write_to_data('final_impression.json', res)
 
-    # def encode_audio_subtitles(self):
-    #     obj = self.read_from_data('media.json')
-    #     audio = {
-    #         v['id']: {'text': clean_text(v['text']), 'crowdinContext': c.get('crowdinContext', '')}
-    #         for c in obj['media']
-    #         for v in c['versions']
-    #         if c['type'] == 'A' and 'SFX' not in v['text']
-    #     }
-    #     self.write_to_data('audio.json', audio)
+    def encode_audio_subtitles(self):
+        obj = self.read_from_data('JobGame.json')
+        audio = {
+            v['id']: {'text': clean_text(v['text']), 'crowdinContext': c.get('crowdinContext', '')}
+            for c in obj['media']
+            for v in c['versions']
+            if c['type'] == 'A'
+        }
+        self.write_to_data('audio.json', audio)
