@@ -8,9 +8,9 @@ from ..pack import GamePack
 
 
 class TJSP(GamePack):
-    path_game: TJSP_PATH
-    path_release: TJSP_RELEASE_PATH
-    install_date = datetime(2025, 4, 20)
+    path_game = TJSP_PATH
+    path_release = TJSP_RELEASE_PATH
+    install_date = datetime(2025, 6, 1)
     games = [TeeKO, TMP2, Quiplash3]
     release_name = 'TheJackboxPartyStarter-UA.zip'
     localizations = {
