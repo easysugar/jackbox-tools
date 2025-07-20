@@ -24,18 +24,23 @@ class Crowdin:
         self.start_ts = (start_ts or datetime.now() - timedelta(days=7)).replace(tzinfo=utc)
         self.usernames = {}
 
-    def get_all_translations(self, project_id: int, strings_ids: Set[int] = None):
+    def get_directory_id(self, project_id: int, directory_name: str) -> int:
+        dirs = self.client.source_files.list_directories(project_id, filter=directory_name, recursion=True, limit=500)['data']
+        return dirs[0]['data']['id']
+
+    def get_all_translations(self, project_id: int, directory_id=None):
         res = []
         offset = 0
         while True:
-            data = self.client.string_translations.list_language_translations('uk', project_id, limit=500, offset=offset)['data']
+            data = self.client.string_translations.list_language_translations('uk', project_id, directoryId=directory_id,
+                                                                              limit=500, offset=offset)['data']
             if not data:
                 break
             offset += 500
             for t in data:
                 t = t['data']
-                if strings_ids is not None and t['stringId'] not in strings_ids:
-                    continue
+                # if strings_ids is not None and t['stringId'] not in strings_ids:
+                #     continue
                 item = {
                     'id': t['user']['id'],
                     'username': t['user'].get('username') or t['user'].get('fullName'),
@@ -103,8 +108,8 @@ class Crowdin:
         return users
 
     def get_translators_last_time(self, project_id: int, path: str) -> Counter:
-        strings_ids = self.get_strings_ids_by_folder(project_id, path) if path else None
-        return self._get_users_counter_last_time(project_id, self.get_all_translations, strings_ids)
+        directory_id = self.get_directory_id(project_id, path)
+        return self._get_users_counter_last_time(project_id, self.get_all_translations, directory_id)
 
     def get_commenters_last_time(self, project_id: int) -> Counter:
         return self._get_users_counter_last_time(project_id, self.get_all_comments)
@@ -230,19 +235,19 @@ class Crowdin:
         result = set()
         offset = 0
         while True:
-            batch = self.client.source_strings.list_strings(project_id, None, file_id, limit=500, offset=offset)
+            batch = self.client.source_strings.list_strings(project_id, file_id, limit=500, offset=offset)
             if not batch or not batch['data']:
                 return result
             for s in batch['data']:
                 result.add(s['data']['id'])
             offset += 500
 
-    def get_strings_ids_by_folder(self, project_id: int, path: str) -> Set[int]:
-        all_files = self.client.source_files.list_files(project_id, limit=500)['data']
+    def get_strings_ids_in_directory(self, project_id: int, directory_name: str) -> Set[int]:
+        directory_id = self.get_directory_id(project_id, directory_name)
+        files = self.client.source_files.list_files(project_id, directoryId=directory_id, limit=500)['data']
         string_ids = set()
-        for f in all_files:
-            if f['data']['path'].startswith(path):
-                string_ids |= self.get_string_ids(project_id, f['data']['id'])
+        for f in files:
+            string_ids |= self.get_string_ids(project_id, f['data']['id'])
         return string_ids
 
     def publish_audio_links(self, project_id: int, links: dict, crowdin_audio_path: str):
