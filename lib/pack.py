@@ -23,7 +23,9 @@ def _copy_to_release(src: str, dst: str, start_ts: datetime):
                 copy_file(fpath, fpath.replace(src, dst))
 
 
-def _make_archive(src: str, archive_name: str = 'release.zip'):
+def _make_archive(src: str, archive_name: str = 'release.zip', platform: str = None):
+    if platform:
+        archive_name = '{0}-{2}.{1}'.format(*archive_name.rsplit('.', 1), platform)
     zip_path = os.path.join(src, '.releases', archive_name)
     os.makedirs(os.path.dirname(zip_path), exist_ok=True)
     zip_process = zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED)
@@ -34,6 +36,12 @@ def _make_archive(src: str, archive_name: str = 'release.zip'):
             filepath = os.path.join(src, folder_path, filename)
             if not filename.startswith('.'):
                 zip_process.write(filepath, os.path.relpath(filepath, src))
+    if platform:
+        src_platform = os.path.join(src, f'.{platform}')
+        for folder_path, _, filenames in tqdm.tqdm(os.walk(src_platform)):
+            for filename in filenames:
+                filepath = os.path.join(src_platform, folder_path, filename)
+                zip_process.write(filepath, os.path.relpath(filepath, src_platform))
     zip_process.close()
     print("Created archive")
 
@@ -56,5 +64,5 @@ class GamePack:
     def copy_to_release(self):
         _copy_to_release(self.path_game, self.path_release, self.install_date)
 
-    def make_release(self):
-        _make_archive(self.path_release, self.release_name)
+    def make_release(self, platform=None):
+        _make_archive(self.path_release, self.release_name, platform)
