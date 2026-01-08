@@ -23,9 +23,11 @@ def _copy_to_release(src: str, dst: str, start_ts: datetime):
                 copy_file(fpath, fpath.replace(src, dst))
 
 
-def _make_archive(src: str, archive_name: str = 'release.zip', platform: str = None):
+def _make_archive(src: str, archive_name: str = 'release.zip', platform: str = None, beta=False):
     if platform:
         archive_name = '{0}-{2}.{1}'.format(*archive_name.rsplit('.', 1), platform)
+    if beta:
+        archive_name = '{0}-beta.{1}'.format(*archive_name.rsplit('.', 1))
     zip_path = os.path.join(src, '.releases', archive_name)
     os.makedirs(os.path.dirname(zip_path), exist_ok=True)
     zip_process = zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED)
@@ -64,5 +66,5 @@ class GamePack:
     def copy_to_release(self):
         _copy_to_release(self.path_game, self.path_release, self.install_date)
 
-    def make_release(self, platform=None):
-        _make_archive(self.path_release, self.release_name, platform)
+    def make_release(self, platform: str = None, beta=False):
+        _make_archive(self.path_release, self.release_name, platform, beta)
