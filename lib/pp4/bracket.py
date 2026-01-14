@@ -2,9 +2,8 @@ import pandas as pd
 import tqdm
 
 from lib.drive import Drive
-from lib.game import Game, decode_mapping, remove_suffix
+from lib.game import Game, decode_mapping, remove_suffix, update_localization
 from paths import JPP4_PATH
-
 
 
 class Bracketeering(Game):
@@ -108,7 +107,7 @@ class Bracketeering(Game):
                                trans=text, path_save=self.folder + 'translated_dict.txt')
 
     def decode_localization(self):
-        self.update_localization(self.game + r'\Localization.json', self.build + 'localization.json')
+        update_localization(self.game + r'\Localization.json', self.build + 'localization.json')
 
     @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
     def upload_audio(self, original, obj):

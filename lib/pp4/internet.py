@@ -2,7 +2,7 @@ import pandas as pd
 import tqdm
 
 from lib.drive import Drive
-from lib.game import Game, decode_mapping
+from lib.game import Game, decode_mapping, update_localization
 from paths import JPP4_PATH
 
 PATH = JPP4_PATH + r'\games\SurviveTheInternet'
@@ -220,7 +220,7 @@ class Internet(Game):
         }
 
     def decode_localization(self):
-        self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+        update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
 
     def upload_audio(self):
         d = Drive(self.drive)

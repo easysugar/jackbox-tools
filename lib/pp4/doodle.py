@@ -4,7 +4,7 @@ import pandas as pd
 import tqdm
 
 from lib.drive import Drive
-from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, clean_text
+from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, clean_text, update_localization
 from paths import JPP4_PATH
 
 PATH = JPP4_PATH + r'\games\Overdrawn'
@@ -68,7 +68,7 @@ class Doodle(Game):
                                trans=text, path_save=self.folder_swf + 'translated_dict.txt')
 
     def decode_localization(self):
-        self.update_localization(PATH + r'\Localization.json', self.build + 'localization.json')
+        update_localization(PATH + r'\Localization.json', self.build + 'localization.json')
 
     @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
     def upload_audio(self, original, obj):
