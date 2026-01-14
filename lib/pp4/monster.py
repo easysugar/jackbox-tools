@@ -1,4 +1,10 @@
-from lib.game import Game, decode_mapping
+import os.path
+
+import pandas as pd
+import tqdm
+
+from lib.drive import Drive
+from lib.game import Game, decode_mapping, clean_text, update_localization
 from paths import JPP4_PATH
 
 PATH = JPP4_PATH + r'\games\MonsterMingle'
@@ -16,9 +22,11 @@ PATH_EXPANDED = r'../data/pp4/monster/swf/expanded.json'
 
 
 class Monster(Game):
+    game = PATH
     folder = '../data/pp4/monster/encoded/'
     folder_swf = '../data/pp4/monster/swf/'
     build = '../build/uk/JPP4/MSM/'
+    drive = '1iDYST5HD_Hd3L40WiaQDlPjmtDQHb4eW'
 
     def add_plural234(self, obj):
         if isinstance(obj, dict):
@@ -116,6 +124,24 @@ class Monster(Game):
     def encode_text_subtitles(self, obj):
         return self._encode_subtitles(obj, 'T', '')
 
+    @decode_mapping(PATH_EXPANDED, folder + 'audio_subtitles.json')
+    def encode_audio_subtitles(self, obj):
+        res = {}
+        for c in obj:
+            if c['type'] != 'A':
+                continue
+            for v in c['versions']:
+                if '[category=host]' not in v['text'] or 'SFX' in v['text']:
+                    continue
+                if not os.path.isfile(os.path.join(PATH, 'TalkshowExport', 'project', 'media', f'{v["id"]}.ogg')):
+                    # print('file not found', os.path.join(PATH, 'TalkshowExport', 'project', 'media', f'{v["id"]}.ogg'))
+                    continue
+                context = c.get('crowdinContext', '')
+                if v.get('tag'):
+                    context += f' [{v["tag"]}]'
+                res[v['id']] = {'text': clean_text(v['text']), 'crowdinContext': context.strip()}
+        return res
+
     def decode_media(self):
         audio = {}
         text = self._read_json(self.build + 'text_subtitles.json')
@@ -123,4 +149,19 @@ class Monster(Game):
                                path_save=self.folder_swf + 'translated_dict.txt')
 
     def decode_localization(self):
-        self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+        update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+
+    @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
+    def upload_audio(self, original, obj):
+        d = Drive(self.drive)
+        data = []
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['text'].strip().replace('\n', ' '),
+                         'text': obj[cid]['text'].strip().replace('\n', ' ')})
+            d.upload(self.game + r'\TalkshowExport\project\media', ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
