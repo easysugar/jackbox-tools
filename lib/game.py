@@ -1,8 +1,6 @@
 import functools
 import re
-import zipfile
-from datetime import datetime
-from typing import Dict, Union
+from typing import Dict
 
 import tqdm
 
@@ -14,9 +12,12 @@ class Game:
         self.game_path = getattr(self, 'game', game_path)
         self.is_international = getattr(self, 'international', is_international)
         self.game_name = getattr(self, 'name', None)
+        self.name_short = getattr(self, 'name_short', None)
 
     def _get_path_kind(self, kind: str) -> str:
-        if self.game_name and not kind.startswith(self.game_name):
+        if self.name_short and not kind.startswith(self.name_short):
+            kind = self.name_short + kind
+        elif self.game_name and not kind.startswith(self.game_name):
             kind = self.game_name + kind
         if self.is_international:
             return os.path.join(self.game_path, 'content', 'en', kind)
