@@ -39,6 +39,9 @@ class Game:
     def write_jet(self, kind: str, obj: dict) -> dict:
         return self._write_json(self._get_path_kind(kind) + '.jet', obj)
 
+    def read_json(self, name: str) -> dict:
+        return self._read_json(os.path.join(self.game_path, 'json', name + '.jet'))
+
     def read_from_data(self, filename: str) -> dict:
         return self._read_json(os.path.join(getattr(self, 'folder'), filename))
 
