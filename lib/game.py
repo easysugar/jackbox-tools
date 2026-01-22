@@ -12,6 +12,8 @@ class Game:
         self.game_path = getattr(self, 'game', game_path)
         self.is_international = getattr(self, 'international', is_international)
         self.game_name = getattr(self, 'name', None)
+        if self.game_name and not self.game_path:
+            self.game_path = os.path.join(getattr(self, 'pack'), 'games', self.game_name)
         self.name_short = getattr(self, 'name_short', None)
 
     def _get_path_kind(self, kind: str) -> str:
@@ -89,6 +91,9 @@ class Game:
     @staticmethod
     def _write_json(dst: str, obj):
         return write_json(dst, obj)
+
+    def read_localization(self) -> dict:
+        return self._read_json(os.path.join(self.game_path, 'Localization.json'))['table']['en']
 
     # @staticmethod
     # def _encode_for_swf(text: str):
