@@ -4,7 +4,8 @@ from typing import Any, Tuple, Optional
 
 def count_strings_and_words(obj: Any, drop_keys: Optional[tuple] = None) -> Tuple[int, int]:
     if isinstance(obj, str) and not obj.isdigit() and obj and not obj.isspace():
-        return 1, len(re.findall(r'\S+', obj))
+        print(re.findall(r'[^\s|]+', obj))
+        return 1, len(re.findall(r'[^\s|]+', obj))
     if isinstance(obj, list):
         strings, words = 0, 0
         for item in obj:
