@@ -3,12 +3,12 @@ from lib.utils import count_strings_and_words
 from paths import JPP11_PATH
 
 
-class Legends(Game):
+class LegendsOfTrivia(Game):
     name = 'TriviaRPG'
     pack = JPP11_PATH
     international = True
     folder = '../data/pp11/legends/'
-    build = '../build/uk/JPP11/Legends/'
+    build = '../build/uk/JPP11/LegendsOfTrivia/'
 
     def count_words_to_translate(self):
         audios = [
