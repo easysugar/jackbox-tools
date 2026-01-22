@@ -7,16 +7,16 @@ from paths import JPP8_PATH
 
 class JobJob(Game):
     name = 'ApplyYourself'
+    pack = JPP8_PATH
     international = True
-    game = os.path.join(JPP8_PATH + r'\games\JobGame')
     folder = '../data/pp8/jobjob/'
     build = '../build/uk/JPP8/JobJob/'
-    N_WORDS_POSTER = 5
+    N_WORDS_POSTER = 7
 
     def decode_localization(self):
-        update_localization(os.path.join(self.game, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
-        update_localization(os.path.join(self.game, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
-        update_localization(os.path.join(self.game, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+        update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
 
     def encode_interview_questions(self):
         obj = self.read_jet('InterviewQuestion')
