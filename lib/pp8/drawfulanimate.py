@@ -1,6 +1,10 @@
 import os
 
-from lib.game import Game, clean_text, update_localization
+import pandas as pd
+import tqdm
+
+from lib.drive import Drive
+from lib.game import Game, clean_text, update_localization, decode_mapping
 from paths import JPP8_PATH
 
 personal_titles_map = {
@@ -14,12 +18,13 @@ personal_titles_map = {
 }
 
 
-class Drawful3(Game):
+class DrawfulAnimate(Game):
     name = 'DrawfulAnimate'
+    pack = JPP8_PATH
     international = True
-    game = os.path.join(JPP8_PATH + r'\games\DrawfulAnimate')
     folder = '../data/pp8/drawful3/'
-    build = '../build/uk/JPP8/Drawful3/'
+    build = '../build/uk/JPP8/DrawfulAnimate/'
+    drive = '1STC5GSRkckadmf3FDc-GTjkuLJUkN1ei'
 
     def encode_prompts(self):
         obj = self.read_jet('Prompt')
@@ -60,7 +65,8 @@ class Drawful3(Game):
         obj = self.read_jet('PersonalPrompt')
         res = {}
         for c in obj['content']:
-            res[c['id']] = {'prompt': c['prompt'], 'crowdinContext': self.get_context(c, ','.join(c['tags']) + '\n' + personal_titles_map[c['title']])}
+            res[c['id']] = {'prompt': c['prompt'],
+                            'crowdinContext': self.get_context(c, ','.join(c['tags']) + '\n' + personal_titles_map[c['title']])}
             if c['joke']:
                 res[c['id']]['joke'] = c['joke']
         self.write_to_data('personal_prompts.json', res)
@@ -113,6 +119,61 @@ class Drawful3(Game):
                                trans=text, path_save=self.folder + 'translated_dict.txt')
 
     def decode_localization(self):
-        update_localization(os.path.join(self.game, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
-        update_localization(os.path.join(self.game, 'LocalizationManager.json'), os.path.join(self.build, 'LocalizationManager.json'))
-        update_localization(os.path.join(self.game, 'LocalizationPause.json'), os.path.join(self.build, 'LocalizationPause.json'))
+        update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join(self.build, 'LocalizationManager.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join(self.build, 'LocalizationPause.json'))
+
+        update_localization(os.path.join(JPP8_PATH, 'Localization.json'), os.path.join('../build/uk/JPP8/', 'Localization.json'))
+        update_localization(os.path.join(JPP8_PATH, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(JPP8_PATH, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+        update_localization(os.path.join(JPP8_PATH, 'games', 'Picker', 'Localization.json'),
+                            os.path.join('../build/uk/JPP8/', 'LocalizationPicker.json'))
+        update_localization(os.path.join(JPP8_PATH, 'games', 'Picker', 'LocalizationManager.json'),
+                            os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(JPP8_PATH, 'games', 'Picker', 'LocalizationPause.json'),
+                            os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+
+    @decode_mapping(folder + 'audio.json', build + 'audio.json', out=False)
+    def upload_audio(self, original, obj):
+        d = Drive(self.drive)
+        data = []
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['text'].strip().replace('\n', ' '),
+                         'text': obj[cid]['text'].strip().replace('\n', ' ')})
+            d.upload(self.game_path + r'\TalkshowExport\project\media', ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
+
+    @decode_mapping(build + 'prompts.json', build + 'personal_prompts.json', out=False)
+    def upload_audio_jokes(self, p1: dict, p2: dict):
+        d = Drive(self.drive)
+        data = []
+        for cid, c in tqdm.tqdm(p1.items()):
+            if 'joke' not in c:
+                continue
+            ogg = f'joke-{cid}.ogg'
+            try:
+                d.upload(self.game_path + r'\content\en\DrawfulAnimatePrompt', cid, 'joke.ogg', name=ogg)
+            except FileNotFoundError:
+                continue
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': c['prompt'],
+                         'text': c['joke'].strip().replace('\n', ' ')})
+        for cid, c in tqdm.tqdm(p2.items()):
+            if 'joke' not in c:
+                continue
+            ogg = f'joke-{cid}.ogg'
+            try:
+                d.upload(self.game_path + r'\content\en\DrawfulAnimatePersonalPrompt', cid, 'joke.ogg', name=ogg)
+            except FileNotFoundError:
+                continue
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': c['prompt'],
+                         'text': c['joke'].strip().replace('\n', ' ')})
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio-jokes.tsv', sep='\t', encoding='utf8', index=False)
