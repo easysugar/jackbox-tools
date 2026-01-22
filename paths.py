@@ -8,6 +8,7 @@ JPP9_PATH = r'X:\SteamLibrary\steamapps\common\The Jackbox Party Pack 9'
 JPP10_PATH = r'X:\SteamLibrary\steamapps\common\The Jackbox Party Pack 10'
 JPP11_PATH = r'X:\SteamLibrary\steamapps\common\The Jackbox Party Pack 11'
 TJSP_PATH = r'X:\SteamLibrary\steamapps\common\The Jackbox Party Starter'
+TJNP_PATH = r'X:\SteamLibrary\steamapps\common\The Jackbox Naughty Pack'
 QUIPLASH2_PATH = r'X:\SteamLibrary\steamapps\common\Quiplash 2 InterLASHional'
 DRAWFUL2_PATH = r'X:\SteamLibrary\steamapps\common\Drawful 2'
 
