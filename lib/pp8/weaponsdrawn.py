@@ -5,7 +5,7 @@ from lib.utils import count_strings_and_words
 from paths import JPP8_PATH
 
 
-class Murders(Game):
+class WeaponsDrawn(Game):
     name = 'MurderDetectives'
     pack = JPP8_PATH
     international = True
@@ -14,7 +14,7 @@ class Murders(Game):
 
     def count_words_to_translate(self):
         audios = [
-            clean_text(re.sub('(LORD\s*TIPPET|NARRATOR):', '', v['text'], flags=re.IGNORECASE))
+            clean_text(re.sub(r'(LORD\s*TIPPET|NARRATOR):', '', v['text'], flags=re.IGNORECASE))
             for m in self.read_from_data(f'{self.name}.json')['media']
             for v in m['versions']
             if m['type'] == 'A'
