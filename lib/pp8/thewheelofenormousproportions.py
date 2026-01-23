@@ -3,7 +3,7 @@ from lib.utils import count_strings_and_words
 from paths import JPP8_PATH
 
 
-class Wheel(Game):
+class TheWheelOfEnormousProportions(Game):
     name = 'TheWheel'
     pack = JPP8_PATH
     international = True
