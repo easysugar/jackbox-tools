@@ -1,12 +1,11 @@
-import os
-
-from lib.game import Game, clean_text, count_strings_and_words
+from lib.game import Game, clean_text
+from lib.utils import count_strings_and_words
 from paths import JPP6_PATH
 
 
 class Dictionarium(Game):
     name = 'Ridictionary'
-    game = os.path.join(JPP6_PATH + rf'\games\{name}')
+    pack = JPP6_PATH
     folder = '../data/pp6/dictionarium/'
     build = '../build/uk/JPP6/Dictionarium/'
 
@@ -17,7 +16,7 @@ class Dictionarium(Game):
             if m['type'] == 'A'
         ]
         strings, words = count_strings_and_words([
-            self._read_json(os.path.join(self.game, 'Localization.json'))['table']['en'],
+            self.read_localization(),
             audios,
             self.read_jet('SingleWords'),
             self.read_jet('SingleWordsDefinitions'),
