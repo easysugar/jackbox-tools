@@ -1,5 +1,3 @@
-import os
-
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP6_PATH
@@ -7,7 +5,7 @@ from paths import JPP6_PATH
 
 class PushTheButton(Game):
     name = 'PushTheButton'
-    game = os.path.join(JPP6_PATH + rf'\games\{name}')
+    pack = JPP6_PATH
     folder = '../data/pp6/button/'
     build = '../build/uk/JPP6/Button/'
 
@@ -24,7 +22,7 @@ class PushTheButton(Game):
                 prompts.append(o['HumanPromptText']['v'])
                 prompts += [o[f'AlienPromptText{i}']['v'] for i in range(10) if f'AlienPromptText{i}' in o]
         strings, words = count_strings_and_words([
-            self._read_json(os.path.join(self.game, 'Localization.json'))['table']['en'],
+            self.read_localization(),
             audios,
             prompts
         ])
