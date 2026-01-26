@@ -1,5 +1,9 @@
 import os
 
+import pandas as pd
+import tqdm
+
+from lib.drive import Drive
 from lib.game import Game, decode_mapping, clean_text, update_localization
 from paths import JPP7_PATH
 
@@ -9,6 +13,7 @@ class TalkingPoints(Game):
     pack = JPP7_PATH
     folder = '../data/pp7/talks/'
     build = '../build/uk/JPP7/Talking Points/'
+    drive = '1Pp8MHaoH6tUE-8GO4EQWLb4__hvSgmGB'
 
     def decode_localization(self):
         update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
@@ -76,3 +81,18 @@ class TalkingPoints(Game):
             for v in c['versions']
             if c['type'] == 'A'
         }
+
+    @decode_mapping(folder + 'audio_subtitles.json', build + 'audio_subtitles.json', out=False)
+    def upload_audio(self, original, obj):
+        d = Drive(self.drive)
+        data = []
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['text'].strip().replace('\n', ' '),
+                         'text': obj[cid]['text'].strip().replace('\n', ' ')})
+            d.upload(self.game_path + r'\TalkshowExport\project\media', ogg)
+        for i in data:
+            i['link'] = d.get_link(i['ogg'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
