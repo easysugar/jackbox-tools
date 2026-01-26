@@ -4,14 +4,14 @@ from lib.game import Game, decode_mapping, clean_text, update_localization
 from paths import JPP7_PATH
 
 
-class Talks(Game):
+class TalkingPoints(Game):
     name = 'JackboxTalks'
-    game = os.path.join(JPP7_PATH, 'games', 'JackboxTalks')
+    pack = JPP7_PATH
     folder = '../data/pp7/talks/'
     build = '../build/uk/JPP7/Talking Points/'
 
     def decode_localization(self):
-        update_localization(os.path.join(self.game, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
+        update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
 
     def encode_picture(self):
         obj = self.read_jet('Picture')
