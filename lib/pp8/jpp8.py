@@ -17,5 +17,5 @@ class JPP8(GamePack):
     games = [JobJob, DrawfulAnimate, PollMine, WeaponsDrawn, TheWheelOfEnormousProportions]
     localizations = {
         '../build/uk/JPP8/localization.json': ['Localization.json'],
-        '../build/uk/JPP8/localization_pack.json': ['games/Picker/Localization.json'],
+        '../build/uk/JPP8/localizationPicker.json': ['games/Picker/Localization.json'],
     }

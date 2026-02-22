@@ -23,7 +23,7 @@ class DrawfulAnimate(Game):
     pack = JPP8_PATH
     international = True
     folder = '../data/pp8/drawful3/'
-    build = '../build/uk/JPP8/DrawfulAnimate/'
+    build = '../build/uk/JPP8/Drawful3/'
     drive = '1STC5GSRkckadmf3FDc-GTjkuLJUkN1ei'
 
     def encode_prompts(self):

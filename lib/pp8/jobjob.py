@@ -6,7 +6,8 @@ from paths import JPP8_PATH
 
 
 class JobJob(Game):
-    name = 'ApplyYourself'
+    name = 'JobGame'
+    name_short = 'ApplyYourself'
     pack = JPP8_PATH
     international = True
     folder = '../data/pp8/jobjob/'
