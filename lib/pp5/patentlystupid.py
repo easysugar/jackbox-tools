@@ -31,3 +31,31 @@ class PatentlyStupid(Game):
             prompts,
         ])
         print(f'Total strings: {strings}\nTotal words: {words}')
+
+    def encode_drawing(self):
+        obj = self.read_jet('GeneDrawing')
+        res = {}
+        for c in obj['content']:
+            cid = c['id']
+            o = self.read_content(cid, 'GeneDrawing')
+            cxt = self.get_context(c, c['Title'])
+            res[cid] = {
+                'title': {'text': c['Title'], 'crowdinContext': cxt},
+                'tagline': {'text': o['Tagline']['v'], 'crowdinContext': cxt},
+            }
+        self.write_to_data('gene_drawing.json', res)
+
+    def encode_shortie(self):
+        obj = self.read_jet('Shortie')
+        res = {}
+        for c in obj['content']:
+            cid = c['id']
+            cxt = self.get_context(c, c['prompt'])
+            res[cid] = {
+                'prompt': {'text': c['prompt'], 'crowdinContext': cxt},
+                'decoys': [
+                    {'text': clean_text(decoy), 'crowdinContext': cxt}
+                    for decoy in c['decoys'].split('|')
+                ],
+            }
+        self.write_to_data('shortie.json', res)
