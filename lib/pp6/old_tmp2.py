@@ -2,17 +2,19 @@ import os
 import re
 from collections import defaultdict
 
+import pandas as pd
 import tqdm
 
 from lib.common import write_json, copy_file
+from lib.drive import Drive
 from lib.game import Game, decode_mapping, remove_suffix, normalize_text, read_from_folder, write_to_folder
-from paths import JPP6_PATH, TJSP_PATH
+from paths import JPP6_PATH, TJSP_PATH, TJSP_RELEASE_PATH, JPP6_RELEASE_PATH
 
 PATH = JPP6_PATH + r'\games\TriviaDeath2'
 OLD_PATH = TJSP_PATH + r'\games\triviadeath2'
 
-TJSP_AUDIO_FOLDER = r'X:\Jackbox\games\tjsp\tmp2\audio\main2'
-JPP6_AUDIO_FOLDER = r'X:\Jackbox\games\jpp6\tmp2\audio\main'
+TJSP_AUDIO_FOLDER = os.path.join(OLD_PATH, 'TalkshowExport', 'project', 'media')
+JPP6_AUDIO_FOLDER = os.path.join(PATH, 'TalkshowExport', 'project', 'media')
 
 
 def transform_tags(s: str):
@@ -35,10 +37,13 @@ def transform_tags_recursive(obj):
 
 
 class OldTMP2(Game):
+    game = PATH
     folder = '../data/pp6/tmp2/'
     tjsp_folder = '../data/tjsp/tmp2/encoded/'
     build = '../build/uk/JPP6/TMP2/'
     tjsp_build = '../build/uk/TMP2/'
+    final_audio_folder = r'X:\Jackbox\games\jpp6\tmp2\audio\final'
+    question_audio_folder = rf'X:\Jackbox\games\jpp6\tmp2\audio\questions'
 
     @decode_mapping(PATH + r'\Localization.json', OLD_PATH + r'\Localization.json', folder + 'localization.json')
     def encode_localization(self, obj, old_obj):
@@ -70,13 +75,16 @@ class OldTMP2(Game):
     @decode_mapping(PATH + r'\content\TDQuestion.jet', OLD_PATH + r'\content\en\TDQuestion.jet',
                     build + 'questions.json', PATH + r'\content\TDQuestion.jet')
     def decode_question(self, obj, old, add):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDQuestion')
         old = {str(_['id']): _ for _ in old['content']}
         for c in obj['content']:
             intro = None
+
             try:
                 o = old[c['id']]
                 c['text'] = o['text']
                 c['choices'] = o['choices']
+                self.copy_audio_to_content(c['id'], 'TDQuestion', 'questionAudio', os.path.join(old_content, str(c['id'])))
             except KeyError:
                 if len(add[str(c['id'])].split('\n')) == 7:
                     intro, c['text'], *choices, answer = add[str(c['id'])].split('\n')
@@ -85,16 +93,20 @@ class OldTMP2(Game):
                     c['text'], *choices, answer = add[str(c['id'])].split('\n')
                 c['choices'] = [{'correct': False, 'text': _} for _ in choices]
                 c['choices'][int(answer) - 1]['correct'] = True
+                self.copy_audio_to_content(c['id'], 'TDQuestion', 'questionAudio', self.question_audio_folder, c["id"])
+
             c['questionAudio'] = c['text']
             transform_tags_recursive(c)
             o = read_from_folder(c['id'], PATH + r'\content\TDQuestion.jet')
             o['Q']['s'] = c['text']
-            if o.get('Intro') and o['Intro'].get('s'):
+            if o.get('Intro') and o['Intro'].get('s') and self.is_exist(c['id'], 'TDQuestion', 'introAudio.ogg'):
                 if intro is None:
                     n = read_from_folder(c['id'], OLD_PATH + r'\content\en\TDQuestion.jet')
                     c['introAudio'] = o['Intro']['s'] = n['Intro']['s']
+                    self.copy_audio_to_content(c['id'], 'TDQuestion', 'introAudio', os.path.join(old_content, str(c['id'])))
                 else:
                     o['Intro']['s'] = intro
+                    self.copy_audio_to_content(c['id'], 'TDQuestion', 'introAudio', self.question_audio_folder, f'{c["id"]}-intro')
             write_to_folder(c['id'], PATH + r'\content\TDQuestion.jet', o)
         return obj
 
@@ -104,14 +116,17 @@ class OldTMP2(Game):
         for c in obj['content']:
             c['prompt'] = old[c['id']]['prompt']
             transform_tags_recursive(c)
-            o = read_from_folder(c['id'], PATH + r'\content\QuiplashContent')
+            o = self.read_content(c['id'], 'QuiplashContent')
             o['PromptText']['v'] = c['prompt']
             o['PromptAudio']['s'] = c['prompt']
-            write_to_folder(c['id'], PATH + r'\content\QuiplashContent', o)
+            self.write_content(c['id'], 'QuiplashContent', o)
+            self.copy_audio_to_content(c['id'], 'QuiplashContent', 'prompt',
+                                       os.path.join(OLD_PATH, 'content', 'en', 'QuiplashContent', str(c['id'])))
         return obj
 
     @decode_mapping(PATH + r'\content\TDQuestionBomb.jet', OLD_PATH + r'\content\en\TDQuestionBomb.jet', PATH + r'\content\TDQuestionBomb.jet')
     def decode_bomb(self, obj, old):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDQuestionBomb')
         old = {_['id']: _ for _ in old['content']}
         for c in obj['content']:
             c['questionAudio'] = c['text'] = old[c['id']]['text']
@@ -120,6 +135,7 @@ class OldTMP2(Game):
             o = read_from_folder(c['id'], PATH + r'\content\TDQuestionBomb')
             o['Q']['s'] = c['text']
             write_to_folder(c['id'], PATH + r'\content\TDQuestionBomb', o)
+            self.copy_audio_to_content(c['id'], 'TDQuestionBomb', 'questionAudio', os.path.join(old_content, str(c['id'])))
         return obj
 
     @decode_mapping(PATH + r'\content\TDQuestionGhost.jet', OLD_PATH + r'\content\en\TDQuestionGhost.jet', PATH + r'\content\TDQuestionGhost.jet')
@@ -136,6 +152,7 @@ class OldTMP2(Game):
 
     @decode_mapping(PATH + r'\content\TDQuestionHat.jet', OLD_PATH + r'\content\en\TDQuestionHat.jet', PATH + r'\content\TDQuestionHat.jet')
     def decode_hat(self, obj, old):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDQuestionHat')
         old = {str(_['id']): _ for _ in old['content']}
         for c in obj['content']:
             c['questionAudio'] = c['text'] = old[c['id']]['text']
@@ -144,10 +161,12 @@ class OldTMP2(Game):
             o = read_from_folder(c['id'], PATH + r'\content\TDQuestionHat')
             o['Q']['s'] = c['text']
             write_to_folder(c['id'], PATH + r'\content\TDQuestionHat', o)
+            self.copy_audio_to_content(c['id'], 'TDQuestionHat', 'questionAudio', os.path.join(old_content, str(c['id'])))
         return obj
 
     @decode_mapping(PATH + r'\content\TDQuestionKnife.jet', OLD_PATH + r'\content\en\TDQuestionKnife.jet', PATH + r'\content\TDQuestionKnife.jet')
     def decode_knife(self, obj, old):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDQuestionKnife')
         old = {str(_['id']): _ for _ in old['content']}
         for c in obj['content']:
             c['questionAudio'] = c['text'] = old[c['id']]['text']
@@ -159,11 +178,14 @@ class OldTMP2(Game):
             o['Q']['s'] = c['text']
             o['Intro']['s'] = c['introAudio']
             write_to_folder(c['id'], PATH + r'\content\TDQuestionKnife', o)
+            self.copy_audio_to_content(c['id'], 'TDQuestionKnife', 'questionAudio', os.path.join(old_content, str(c['id'])))
+            self.copy_audio_to_content(c['id'], 'TDQuestionKnife', 'introAudio', os.path.join(old_content, str(c['id'])))
         return obj
 
     @decode_mapping(PATH + r'\content\TDQuestionMadness.jet', OLD_PATH + r'\content\en\TDQuestionMadness.jet',
                     PATH + r'\content\TDQuestionMadness.jet')
     def decode_madness(self, obj, old):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDQuestionMadness')
         old = {str(_['id']): _ for _ in old['content']}
         for c in obj['content']:
             c['questionAudio'] = c['text'] = old[c['id']]['text']
@@ -172,11 +194,13 @@ class OldTMP2(Game):
             o = read_from_folder(c['id'], PATH + r'\content\TDQuestionMadness')
             o['Q']['s'] = c['text']
             write_to_folder(c['id'], PATH + r'\content\TDQuestionMadness', o)
+            self.copy_audio_to_content(c['id'], 'TDQuestionMadness', 'questionAudio', os.path.join(old_content, str(c['id'])))
         return obj
 
     @decode_mapping(PATH + r'\content\TDQuestionWig.jet', OLD_PATH + r'\content\en\TDQuestionWig.jet',
                     PATH + r'\content\TDQuestionWig.jet')
     def decode_wig(self, obj, old):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDQuestionWig')
         old = {str(_['id']): _ for _ in old['content']}
         for c in obj['content']:
             c['questionAudio'] = c['text'] = old[c['id']]['text']
@@ -185,6 +209,7 @@ class OldTMP2(Game):
             o = read_from_folder(c['id'], PATH + r'\content\TDQuestionWig')
             o['Q']['s'] = c['text']
             write_to_folder(c['id'], PATH + r'\content\TDQuestionWig', o)
+            self.copy_audio_to_content(c['id'], 'TDQuestionWig', 'questionAudio', os.path.join(old_content, str(c['id'])))
         return obj
 
     @decode_mapping(PATH + r'\content\TDFinalRound.jet', tjsp_folder + 'final_questions.json', folder + 'final_questions.json')
@@ -205,12 +230,14 @@ class OldTMP2(Game):
     @decode_mapping(PATH + r'\content\TDFinalRound.jet', OLD_PATH + r'\content\en\TDFinalRound.jet', build + 'final_questions.json',
                     PATH + r'\content\TDFinalRound.jet')
     def decode_final_round(self, obj, old, add):
+        old_content = os.path.join(OLD_PATH, 'content', 'en', 'TDFinalRound')
         old = {str(_['id']): _ for _ in old['content']}
         for c in obj['content']:
             if c['id'] in old:
                 o = old[c['id']]
                 c['text'] = o['text']
                 c['choices'] = o['choices']
+                self.copy_audio_to_content(c['id'], 'TDFinalRound', 'question', os.path.join(old_content, str(c['id'])))
             else:
                 c['text'] = add[c['id']].split('\n')[0]
                 choices = []
@@ -223,6 +250,7 @@ class OldTMP2(Game):
                         continue
                     choices.append({'correct': correct, 'difficulty': 0, 'text': row})
                 c['choices'] = choices
+                self.copy_audio_to_content(c['id'], 'TDFinalRound', 'question', self.final_audio_folder, c["id"])
             transform_tags_recursive(c)
             o = read_from_folder(c['id'], PATH + r'\content\TDFinalRound')
             o['Q']['s'] = c['text']
@@ -306,12 +334,11 @@ class OldTMP2(Game):
             write_json(self.folder + 'additional_audio.json', additional)
         return maps
 
-    @decode_mapping(folder + 'expanded.json', tjsp_build + 'EncodedAudio.json', tjsp_build + 'in-game/text_subtitles.json', out=False)
-    def decode_media(self, obj, tjsp_audio, tjsp_text):
+    @decode_mapping(tjsp_build + 'EncodedAudio.json', tjsp_build + 'in-game/text_subtitles.json', out=False)
+    def decode_media(self, tjsp_audio, tjsp_text):
         tjsp_text = {k: v for _ in tjsp_text.values() for k, v in _.items()}
         additional_audio = self._read_json(self.build + 'additional_audio.json')
         maps = self._read_json(self.folder + 'media_mapping.json')
-        obj = {v['id']: v['text'] for c in obj for v in c['versions']}
         translations = {}  # version.id -> translated text
         for pp6_id, tjsp_id in maps.items():
             if tjsp_id in tjsp_audio:
@@ -334,3 +361,51 @@ class OldTMP2(Game):
                     os.path.join(TJSP_AUDIO_FOLDER, tjsp_id + '.ogg'),
                     os.path.join(JPP6_AUDIO_FOLDER, jpp6_id + '.ogg'),
                 )
+
+    @decode_mapping(folder + 'media_mapping.json', out=False)
+    def copy_media_audio_from_tjsp_release(self, mapp):
+        tjsp_release_media = os.path.join(TJSP_RELEASE_PATH, 'games', 'triviadeath2', 'TalkshowExport', 'project', 'media')
+        jpp6_release_media = os.path.join(JPP6_RELEASE_PATH, 'games', 'TriviaDeath2', 'TalkshowExport', 'project', 'media')
+        tjsp_ids = [filename.replace('.ogg', '') for filename in os.listdir(tjsp_release_media)]
+        print('Audio files in TJSP release:', len(tjsp_ids))
+        for jpp6_id, tjsp_id in tqdm.tqdm(mapp.items()):
+            if tjsp_id in tjsp_ids:
+                copy_file(
+                    os.path.join(tjsp_release_media, tjsp_id + '.ogg'),
+                    os.path.join(jpp6_release_media, jpp6_id + '.ogg'),
+                )
+
+    def upload_audio_questions(self):
+        old_cids = os.listdir(os.path.join(OLD_PATH, 'content', 'en', 'TDQuestion'))
+        d = Drive('11dFha7bzNhOaIO1z22hS0p_YKCbncRGT')
+        data = []
+        obj = self.read_jet('TDQuestion')
+        for c in tqdm.tqdm(obj['content']):
+            cid = c['id']
+            if cid in old_cids:
+                continue
+            o = self.read_content(cid, 'TDQuestion')
+            if o.get('HasIntro', {}).get('v') == 'true' and o['Intro'].get('s'):
+                data.append({'id': f'{cid}-intro', 'ogg': 'introAudio.ogg', 'text': o['Intro']['s'], 'type': 'intro'})
+                d.upload(self.get_content_path(cid, 'TDQuestion'), 'introAudio.ogg', name=f'{cid}-intro.ogg')
+
+            data.append({'id': cid, 'ogg': 'questionAudio.ogg', 'text': c['text'], 'type': 'question'})
+            d.upload(self.get_content_path(cid, 'TDQuestion'), 'questionAudio.ogg', name=f'{cid}.ogg')
+        for i in data:
+            i['link'] = d.get_link(i['id'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_questions.tsv', sep='\t', encoding='utf8', index=False)
+
+    def upload_audio_final_questions(self):
+        old_cids = os.listdir(os.path.join(OLD_PATH, 'content', 'en', 'TDFinalRound'))
+        d = Drive('1tfxsDwjMzkAdUe7v28KxMmh6Ak6ZD65L')
+        data = []
+        obj = self.read_jet('TDFinalRound')
+        for c in tqdm.tqdm(obj['content']):
+            cid = c['id']
+            if cid in old_cids:
+                continue
+            data.append({'id': cid, 'ogg': 'question.ogg', 'text': c['text']})
+            d.upload(self.get_content_path(cid, 'TDFinalRound'), 'question.ogg', name=f'{cid}.ogg')
+        for i in data:
+            i['link'] = d.get_link(i['id'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_final_questions.tsv', sep='\t', encoding='utf8', index=False)
