@@ -73,6 +73,9 @@ class Game:
                 cxt += '\n18+'
         return cxt.strip()
 
+    def is_exist(self, cid: str | int, kind: str, filename: str = 'data.jet') -> bool:
+        return os.path.exists(os.path.join(self.get_content_path(cid, kind), filename))
+
     @staticmethod
     def _read(src: str):
         with open(src, 'r', encoding='utf8') as f:
