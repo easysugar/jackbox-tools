@@ -1,6 +1,7 @@
+import os
 import re
 
-from lib.game import Game, clean_text
+from lib.game import Game, clean_text, update_localization
 from lib.utils import count_strings_and_words
 from paths import JPP8_PATH
 
@@ -10,7 +11,7 @@ class WeaponsDrawn(Game):
     pack = JPP8_PATH
     international = True
     folder = '../data/pp8/murders/'
-    build = '../build/uk/JPP8/Murders/'
+    build = '../build/uk/JPP8/Weapons Drawn/'
 
     def count_words_to_translate(self):
         audios = [
@@ -27,3 +28,51 @@ class WeaponsDrawn(Game):
             audios,
         ])
         print(f'Total strings: {strings}\nTotal words: {words}')
+
+    def encode_guest(self):
+        obj = self.read_jet('Guest')
+        res = {
+            cid: {'crowdinContext': self.get_context(c), 'name': c['name']}
+            for cid, c in enumerate(obj['content'])
+        }
+        self.write_to_data('guest.json', res)
+
+    def decode_guest(self):
+        trans = self.read_from_build('guest.json')
+        obj = self.read_jet('Guest')
+        for i, c in enumerate(obj['content']):
+            c['name'] = trans[str(i)]['name']
+        self.write_jet('Guest', obj)
+
+    def encode_weapon(self):
+        obj = self.read_jet('Weapon')
+        res = {
+            cid: {'crowdinContext': self.get_context(c), 'weapon': c['weapon']}
+            for cid, c in enumerate(obj['content'])
+        }
+        self.write_to_data('weapon.json', res)
+
+    def decode_weapon(self):
+        trans = self.read_from_build('weapon.json')
+        obj = self.read_jet('Weapon')
+        for i, c in enumerate(obj['content']):
+            c['weapon'] = trans[str(i)]['weapon']
+        self.write_jet('Weapon', obj)
+
+    def encode_audio_subtitles(self):
+        obj = self.read_from_data(f'{self.name}.json')
+        audio = {
+            v['id']: {
+                'text': clean_text(re.sub(r'(LORD\s*TIPPET|NARRATOR):', '', v['text'], flags=re.IGNORECASE)),
+                'crowdinContext': c.get('crowdinContext', '') + '\n' + v['text'].split(':')[0],
+            }
+            for c in obj['media']
+            for v in c['versions']
+            if c['type'] == 'A'
+        }
+        self.write_to_data('audio.json', audio)
+
+    def decode_localization(self):
+        update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
