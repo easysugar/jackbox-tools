@@ -44,13 +44,19 @@ class ChampdUp(Game):
     def encode_round_halfAB(self):
         A = self.read_jet('SecondHalfA')
         B = self.read_jet('SecondHalfB')
+        titles = {c['id']: c['contest'].strip() for c in A['content']}
+        titles.update({c['id']: c['contest'].strip() for c in B['content']})
+        links = {}
         resA, resB = {}, {}
         for c in A['content']:
-            context = {'crowdinContext': self.get_context(c, title=c['contest'])}
-            resA[c['id']] = {'prompt': {'text': c['contest'], **context}}
+            other_title = titles[c['linkedPrompts'][0]]
+            links[c['linkedPrompts'][0]] = c['id']
+            context = {'crowdinContext': self.get_context(c, title=f"{c['contest']}\n{other_title}")}
+            resA[c['id']] = {'prompt': {'text': c['contest'].strip(), **context}}
         for c in B['content']:
-            context = {'crowdinContext': self.get_context(c, title=c['contest'])}
-            resB[c['id']] = {'prompt': {'text': c['contest'], **context}}
+            other_title = titles[links[c['id']]]
+            context = {'crowdinContext': self.get_context(c, title=f"{c['contest']}\n{other_title}")}
+            resB[c['id']] = {'prompt': {'text': c['contest'].strip(), **context}}
         self.write_to_data('roundA.json', resA)
         self.write_to_data('roundB.json', resB)
 
