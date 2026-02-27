@@ -61,15 +61,18 @@ class WeaponsDrawn(Game):
 
     def encode_audio_subtitles(self):
         obj = self.read_from_data(f'{self.name}.json')
-        audio = {
-            v['id']: {
-                'text': clean_text(re.sub(r'(LORD\s*TIPPET|NARRATOR):', '', v['text'], flags=re.IGNORECASE)),
-                'crowdinContext': c.get('crowdinContext', '') + '\n' + v['text'].split(':')[0],
-            }
-            for c in obj['media']
-            for v in c['versions']
-            if c['type'] == 'A'
-        }
+        audio = {}
+        for c in obj['media']:
+            if c['type'] == 'A':
+                for v in c['versions']:
+                    if ':' not in v['text']:
+                        host = 'LORD TIPPET'
+                    else:
+                        host, v['text'] = v['text'].split(':', 1)
+                    audio[v['id']] = {
+                        'text': clean_text(v['text']),
+                        'crowdinContext': host.strip() + '\n' + c.get('crowdinContext', ''),
+                    }
         self.write_to_data('audio.json', audio)
 
     def decode_localization(self):
