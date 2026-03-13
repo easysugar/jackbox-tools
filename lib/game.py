@@ -33,12 +33,14 @@ class Game:
         return read_from_folder(str(cid), self._get_path_kind(kind))
 
     def write_content(self, cid: str | int, kind: str, content: dict):
+        content = self.normalize(content)
         write_to_folder(cid, self._get_path_kind(kind), content)
 
     def read_jet(self, kind: str) -> dict:
         return self._read_json(self._get_path_kind(kind) + '.jet')
 
     def write_jet(self, kind: str, obj: dict) -> dict:
+        obj = self.normalize(obj)
         return self._write_json(self._get_path_kind(kind) + '.jet', obj)
 
     def read_json(self, name: str) -> dict:
@@ -57,9 +59,29 @@ class Game:
         return os.listdir(self._get_path_kind(kind))
 
     def copy_audio_to_content(self, cid: str | int, kind: str, audio_id: str, src_folder: str, src_audio_id: str = None):
-        src = os.path.join(src_folder, f'{src_audio_id or audio_id}.ogg')
+        audio_id = audio_id.replace('.ogg', '')
+        src = os.path.join(src_folder, f'{src_audio_id or audio_id.replace('.ogg', '')}.ogg')
         dst = os.path.join(self.get_content_path(cid, kind), f'{audio_id}.ogg')
+        if not os.path.exists(dst):
+            return
         copy_file(src, dst)
+
+    def validate(self, obj: str | dict | list):
+        if not hasattr(self, 'font'):
+            return
+        if isinstance(obj, list):
+            [self.validate(item) for item in obj]
+        if isinstance(obj, dict):
+            [self.validate(item) for item in obj.values()]
+        if isinstance(obj, str):
+            symbols = {s for s in obj if not s.isspace()}
+            assert symbols < set(getattr(self,
+                                         'font')), f'All symbols should be present in the font!\nText: {obj}\nMissing symbols:{symbols - set(getattr(self, 'font'))}'
+
+    def normalize(self, obj: dict) -> dict:
+        obj = transform(obj)
+        self.validate(obj)
+        return obj
 
     @staticmethod
     def get_context(content: dict, title: str = None) -> str:
