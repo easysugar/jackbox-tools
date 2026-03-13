@@ -25,6 +25,8 @@ class DrawfulAnimate(Game):
     folder = '../data/pp8/drawful3/'
     build = '../build/uk/JPP8/Drawful3/'
     drive = '1STC5GSRkckadmf3FDc-GTjkuLJUkN1ei'
+    font = r'''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥§¨©ª«¬­®¯°±´µ¶·¸º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĐđıŒœŠšŸŽžƒˆ˜πЄІЇАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдежзийклмнопрстуфхцчшщьюяєіїҐґ–—‘’‚“”„†‡•…‰‹›€™Ω√≈'''
+    audio_jokes_path = r'X:\Jackbox\games\jpp8\drawful3\audio\jokes'
 
     def encode_prompts(self):
         obj = self.read_jet('Prompt')
@@ -45,6 +47,7 @@ class DrawfulAnimate(Game):
                 o = self.read_content(c['id'], 'Prompt')
                 o['JokeAudio']['s'] = c['joke']
                 self.write_content(c['id'], 'Prompt', o)
+                self.copy_audio_to_content(c['id'], 'Prompt', 'joke.ogg', self.audio_jokes_path, c['id'])
         self.write_jet('Prompt', obj)
 
     def encode_decoy(self):
@@ -85,6 +88,7 @@ class DrawfulAnimate(Game):
                 o = self.read_content(c['id'], 'PersonalPrompt')
                 o['JokeAudio']['s'] = c['joke']
                 self.write_content(c['id'], 'PersonalPrompt', o)
+                self.copy_audio_to_content(c['id'], 'PersonalPrompt', 'joke.ogg', self.audio_jokes_path, c['id'])
         self.write_jet('PersonalPrompt', obj)
 
     def encode_personal_decoy(self):
