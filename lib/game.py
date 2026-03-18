@@ -120,6 +120,13 @@ class Game:
     def read_localization(self) -> dict:
         return self._read_json(os.path.join(self.game_path, 'Localization.json'))['table']['en']
 
+    def write_localization(self, obj: dict):
+        source = self._read_json(os.path.join(self.game_path, 'Localization.json'))
+        l10n = source['table']['en']
+        assert set(l10n) <= set(obj), f'Source has untranslated fields: {", ".join(set(l10n) - set(obj))}'
+        l10n.update(obj)
+        write_json(os.path.join(self.game_path, 'Localization.json'), source)
+
     # @staticmethod
     # def _encode_for_swf(text: str):
     #     return '^' + text.replace("'", r"\'").replace('"', r'\"') + '^'
