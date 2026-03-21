@@ -84,16 +84,17 @@ class Game:
         return obj
 
     @staticmethod
-    def get_context(content: dict, title: str = None) -> str:
-        cxt = title or ''
-        if content.get('x') or content.get('us'):
-            if cxt:
-                cxt += '\n-------------'
-            if content.get('us'):
-                cxt += '\nfor USA'
-            if content.get('x'):
-                cxt += '\n18+'
-        return cxt.strip()
+    def get_context(content: dict, *extra: str) -> str:
+        head = '\n'.join(extra)
+        traits = []
+        if content.get('us'):
+            traits.append('for USA')
+        if content.get('x'):
+            traits.append('18+')
+        tail = '\n'.join(traits)
+        if head and tail:
+            return f'{head}\n-------------{tail}'
+        return head or tail
 
     def is_exist(self, cid: str | int, kind: str, filename: str = 'data.jet') -> bool:
         return os.path.exists(os.path.join(self.get_content_path(cid, kind), filename))
