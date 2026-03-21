@@ -12,6 +12,7 @@ class WeaponsDrawn(Game):
     international = True
     folder = '../data/pp8/murders/'
     build = '../build/uk/JPP8/Weapons Drawn/'
+    font = r'''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¥¨©«®°±´¶·»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿŒœŸˆ˜πЄІЇАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдежзийклмнопрстуфхцчшщьюяєіїҐґ–—‘’“”„†•…‹›€™√∞∩≈'''
 
     def count_words_to_translate(self):
         audios = [
@@ -79,3 +80,9 @@ class WeaponsDrawn(Game):
         update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
         update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
         update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+
+    def decode_media(self):
+        text = self.read_from_build('audio.json')
+        text = {k: v['text'] for k, v in text.items()}
+        self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'MurderDetectives.json',
+                               trans=text, path_save=self.folder + 'translated_dict.txt')
