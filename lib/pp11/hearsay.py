@@ -23,9 +23,11 @@ class HearSay(Game):
         res = {}
         for c in obj['content']:
             directions |= {s['direction'] for s in c['soundsToRecord'] if s.get('direction')}
-            cxt = self.get_crowdin_context(c, c['videoTitle'], c['appearance'])
             res[c['id']] = [
-                {'text': s['prompt'], **cxt}
+                {
+                    'text': s['prompt'],
+                    **self.get_crowdin_context(c, c['videoTitle'], c['appearance'], s.get('direction')),
+                }
                 for s in c['soundsToRecord']
             ]
         assert len(directions) == 1
