@@ -96,6 +96,9 @@ class Game:
             return f'{head}\n-------------{tail}'
         return head or tail
 
+    def get_crowdin_context(self, content: dict, *extra: str) -> dict:
+        return {'crowdinContext': self.get_context(content, *extra)}
+
     def is_exist(self, cid: str | int, kind: str, filename: str = 'data.jet') -> bool:
         return os.path.exists(os.path.join(self.get_content_path(cid, kind), filename))
 
