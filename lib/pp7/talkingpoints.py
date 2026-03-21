@@ -11,8 +11,8 @@ from paths import JPP7_PATH
 class TalkingPoints(Game):
     name = 'JackboxTalks'
     pack = JPP7_PATH
-    folder = '../data/pp7/talks/'
-    build = '../build/uk/JPP7/Talking Points/'
+    folder = './data/pp7/talks/'
+    build = './build/uk/JPP7/Talking Points/'
     drive = '1Pp8MHaoH6tUE-8GO4EQWLb4__hvSgmGB'
 
     def decode_localization(self):

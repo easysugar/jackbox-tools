@@ -14,9 +14,9 @@ PATH_WORST_DRAWING = PATH + r'\content\TDWorstDrawing.jet'
 
 
 class TMP(Game):
-    folder = '../data/pp3/tmp/encoded/'
-    folder_swf = '../data/pp3/tmp/swf/'
-    build = '../build/uk/JPP3/TMP/'
+    folder = './data/pp3/tmp/encoded/'
+    folder_swf = './data/pp3/tmp/swf/'
+    build = './build/uk/JPP3/TMP/'
 
     @encode_mapping(PATH_QUESTION, folder + 'questions.json')
     def encode_question(self, obj: dict):

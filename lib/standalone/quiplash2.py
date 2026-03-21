@@ -18,7 +18,7 @@ class NotFoundPromptAudioException(Exception):
 
 
 class Quiplash2(Game):
-    folder = '../data/standalone/quiplash2/'
+    folder = './data/standalone/quiplash2/'
 
     @staticmethod
     def _update_question_obj(obj: dict, text: str):

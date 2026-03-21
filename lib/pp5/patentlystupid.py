@@ -9,8 +9,8 @@ from paths import JPP5_PATH
 class PatentlyStupid(Game):
     name = 'PatentlyStupid'
     game = os.path.join(JPP5_PATH + rf'\games\{name}')
-    folder = '../data/pp5/patents/'
-    build = '../build/uk/JPP5/PatentlyStupid/'
+    folder = './data/pp5/patents/'
+    build = './build/uk/JPP5/PatentlyStupid/'
 
     def count_words_to_translate(self):
         audios = [

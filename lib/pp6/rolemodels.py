@@ -7,8 +7,8 @@ class RoleModels(Game):
     name = 'RoleModels'
     name_short = 'RM'
     pack = JPP6_PATH
-    folder = '../data/pp6/roles/'
-    build = '../build/uk/JPP6/Roles/'
+    folder = './data/pp6/roles/'
+    build = './build/uk/JPP6/Roles/'
 
     def count_words_to_translate(self):
         audios = [

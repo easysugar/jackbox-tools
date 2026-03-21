@@ -9,8 +9,8 @@ from paths import JPP7_PATH
 class ChampdUp(Game):
     name = 'WorldChampions'
     game = os.path.join(JPP7_PATH, 'games', name)
-    folder = '../data/pp7/champd/'
-    build = '../build/uk/JPP7/ChampdUp/'
+    folder = './data/pp7/champd/'
+    build = './build/uk/JPP7/ChampdUp/'
 
     @staticmethod
     def split_title(text: str) -> Tuple[str, str]:

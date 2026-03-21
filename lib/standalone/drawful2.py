@@ -33,8 +33,8 @@ PATH_TRANSLATED_AUDIO_COMMENTS = r'X:\\Jackbox\games\drawful2\translated-audio-c
 
 
 class Drawful2(Game):
-    folder = '../data/standalone/drawful2/encoded/'
-    folder_swf = '../data/standalone/drawful2/swf/'
+    folder = './data/standalone/drawful2/encoded/'
+    folder_swf = './data/standalone/drawful2/swf/'
 
     @encode_mapping(folder + 'expanded.json', folder + 'audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):

@@ -8,8 +8,8 @@ from paths import JPP7_PATH
 class BlatherRound(Game):
     name = 'BlankyBlank'
     game = os.path.join(JPP7_PATH + rf'\games\{name}')
-    folder = '../data/pp7/blather/'
-    build = '../build/uk/JPP7/Blather/'
+    folder = './data/pp7/blather/'
+    build = './build/uk/JPP7/Blather/'
 
     def count_words_to_translate(self):
         audios = [

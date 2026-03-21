@@ -18,10 +18,10 @@ def transform_tags(s: str):
 
 
 class OldQuiplash3(Game):
-    folder = '../data/pp7/quiplash3/'
-    tjsp_folder = '../data/tjsp/quiplash3/encoded/'
-    build = '../build/uk/JPP7/Quiplash 3/'
-    tjsp_build = '../build/uk/Quiplash3/'
+    folder = './data/pp7/quiplash3/'
+    tjsp_folder = './data/tjsp/quiplash3/encoded/'
+    build = './build/uk/JPP7/Quiplash 3/'
+    tjsp_build = './build/uk/Quiplash3/'
     folder_audio_prompts = r'C:\Users\админ\Desktop\Jackbox\games\tjsp\quiplash3\audio\prompts'
 
     @decode_mapping(PATH + r'\Localization.json', OLD_PATH + r'\Localization.json', folder + 'localization.json')

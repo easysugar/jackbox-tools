@@ -23,8 +23,8 @@ PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 
 class Quiplash3(Game):
-    folder = '../data/tjsp/quiplash3/encoded/'
-    build = '../build/uk/Quiplash3/'
+    folder = './data/tjsp/quiplash3/encoded/'
+    build = './build/uk/Quiplash3/'
     drive = '14zdrmnUShAr4EFHQw4oL3IIipAoiQ4y8'
     folder_audio_prompts = r'X:\Jackbox\games\tjsp\quiplash3\audio\prompts'
 

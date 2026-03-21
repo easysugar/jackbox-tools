@@ -6,7 +6,7 @@ from settings.teeko import *
 
 
 class TeeKO(Game):
-    folder = '../data/tjsp/teeko/swf/'
+    folder = './data/tjsp/teeko/swf/'
 
     @encode_mapping(PATH_SLOGANS, 'data/teeko/encoded/slogans.json')
     def encode_slogans(self, obj: dict):

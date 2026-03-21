@@ -7,8 +7,8 @@ class FakinItAllNightLong(Game):
     name = 'FakinIt2'
     pack = TJNP_PATH
     international = True
-    folder = '../data/tjnp/fakin2/'
-    build = '../build/uk/TJNP/Fakin2/'
+    folder = './data/tjnp/fakin2/'
+    build = './build/uk/TJNP/Fakin2/'
 
     def count_words_to_translate(self):
         audios = [

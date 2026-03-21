@@ -6,8 +6,8 @@ from paths import JPP6_PATH
 class Dictionarium(Game):
     name = 'Ridictionary'
     pack = JPP6_PATH
-    folder = '../data/pp6/dictionarium/'
-    build = '../build/uk/JPP6/Dictionarium/'
+    folder = './data/pp6/dictionarium/'
+    build = './build/uk/JPP6/Dictionarium/'
 
     def count_words_to_translate(self):
         audios = [

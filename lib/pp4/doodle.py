@@ -14,9 +14,9 @@ PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 
 class Doodle(Game):
-    folder = '../data/pp4/doodle/encoded/'
-    folder_swf = '../data/pp4/doodle/swf/'
-    build = '../build/uk/JPP4/CD/'
+    folder = './data/pp4/doodle/encoded/'
+    folder_swf = './data/pp4/doodle/swf/'
+    build = './build/uk/JPP4/CD/'
     drive = '1pSF8GunDpRRW2DvyQLgv7GfIQezlOhAt'
 
     @decode_mapping(PATH_MAP, folder + 'map.json')

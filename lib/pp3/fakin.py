@@ -11,9 +11,9 @@ from settings.fakin import *
 
 
 class Fakin(Game):
-    folder = '../data/pp3/fakin/encoded/'
-    folder_swf = '../data/pp3/fakin/swf/'
-    build = '../build/uk/JPP3/FakinIt/'
+    folder = './data/pp3/fakin/encoded/'
+    folder_swf = './data/pp3/fakin/swf/'
+    build = './build/uk/JPP3/FakinIt/'
 
     @decode_mapping(PATH_EXPANDED, PATH_AUDIO_SUBTITLES)
     def encode_audio_subtitles(self, obj: dict):

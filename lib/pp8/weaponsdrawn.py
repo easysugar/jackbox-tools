@@ -10,8 +10,8 @@ class WeaponsDrawn(Game):
     name = 'MurderDetectives'
     pack = JPP8_PATH
     international = True
-    folder = '../data/pp8/murders/'
-    build = '../build/uk/JPP8/Weapons Drawn/'
+    folder = './data/pp8/murders/'
+    build = './build/uk/JPP8/Weapons Drawn/'
     font = r'''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¥¨©«®°±´¶·»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿŒœŸˆ˜πЄІЇАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдежзийклмнопрстуфхцчшщьюяєіїҐґ–—‘’“”„†•…‹›€™√∞∩≈'''
 
     def count_words_to_translate(self):

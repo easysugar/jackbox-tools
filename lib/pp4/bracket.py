@@ -8,8 +8,8 @@ from paths import JPP4_PATH
 
 class Bracketeering(Game):
     game = JPP4_PATH + r'\games\Bracketeering'
-    folder = '../data/pp4/bracket/'
-    build = '../build/uk/JPP4/Bracketeering/'
+    folder = './data/pp4/bracket/'
+    build = './build/uk/JPP4/Bracketeering/'
     drive = '1xTFolPKkGdeOEYRIJQ-QDMegpaS0_5wH'
     drive_prompts = '1aYcg7w_5SMvINVlhH0rbG67SWwbFDkZ5'
     audio_folder = r'X:\Jackbox\games\jpp4\bracket\audio\media2'

@@ -18,7 +18,7 @@ subtitles_technical_regex = r'\w+/\w+|[a-z]+\d?|\{\{.*|(intro|TD|GAMEPLAY_)\w+|(
 class TMP2(Game):
     game = PATH
     international = True
-    folder = '../data/tjsp/tmp2/'
+    folder = './data/tjsp/tmp2/'
     path_audio = r'X:\Jackbox\games\tjsp\tmp2\audio'
     path_audio_bomb = os.path.join(path_audio, 'bomb')
     path_audio_knife = os.path.join(path_audio, 'knife')

@@ -8,8 +8,8 @@ from paths import JPP8_PATH
 class PollMine(Game):
     name = 'SurveyBomb'
     pack = JPP8_PATH
-    folder = '../data/pp8/pollmine/'
-    build = '../build/uk/JPP8/PollMine/'
+    folder = './data/pp8/pollmine/'
+    build = './build/uk/JPP8/PollMine/'
     font = r'''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿŒœŸˆ˜πЄІЇАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдежзийклмнопрстуфхцчшщьюяєіїҐґ      –—‘’‚“”„†‡•…‰‹›⁄€ℓ№℠™Ω℮√∞∩≈'''
 
     def decode_localization(self):

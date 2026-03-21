@@ -23,9 +23,9 @@ PATH_EXPANDED = r'../data/pp4/monster/swf/expanded.json'
 
 class Monster(Game):
     game = PATH
-    folder = '../data/pp4/monster/encoded/'
-    folder_swf = '../data/pp4/monster/swf/'
-    build = '../build/uk/JPP4/MSM/'
+    folder = './data/pp4/monster/encoded/'
+    folder_swf = './data/pp4/monster/swf/'
+    build = './build/uk/JPP4/MSM/'
     drive = '1iDYST5HD_Hd3L40WiaQDlPjmtDQHb4eW'
 
     def add_plural234(self, obj):

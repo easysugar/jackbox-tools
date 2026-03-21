@@ -7,8 +7,8 @@ class Suspectives(Game):
     name = 'DirtyDetectives'
     pack = JPP11_PATH
     international = True
-    folder = '../data/pp11/suspectives/'
-    build = '../build/uk/JPP11/Suspectives/'
+    folder = './data/pp11/suspectives/'
+    build = './build/uk/JPP11/Suspectives/'
 
     def count_words_to_translate(self):
         audios = [

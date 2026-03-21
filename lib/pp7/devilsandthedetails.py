@@ -9,8 +9,8 @@ class DevilsAndTheDetails(Game):
     name = 'Everyday'
     international = True
     game = os.path.join(JPP7_PATH + rf'\games\{name}')
-    folder = '../data/pp7/devils/'
-    build = '../build/uk/JPP7/Devils/'
+    folder = './data/pp7/devils/'
+    build = './build/uk/JPP7/Devils/'
 
     def count_words_to_translate(self):
         audios = [

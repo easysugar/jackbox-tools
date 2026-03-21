@@ -7,8 +7,8 @@ class Drawful3(Game):
     name = 'Drawful3'
     pack = TJNP_PATH
     international = True
-    folder = '../data/tjnp/drawful3/'
-    build = '../build/uk/TJNP/Drawful3/'
+    folder = './data/tjnp/drawful3/'
+    build = './build/uk/TJNP/Drawful3/'
 
     def count_words_to_translate(self):
         audios = [

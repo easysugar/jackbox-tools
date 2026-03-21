@@ -8,8 +8,8 @@ class LetMeFinish(Game):
     name_short = 'Captcha'
     pack = TJNP_PATH
     international = True
-    folder = '../data/tjnp/letmefinish/'
-    build = '../build/uk/TJNP/Letmefinish/'
+    folder = './data/tjnp/letmefinish/'
+    build = './build/uk/TJNP/Letmefinish/'
 
     def count_words_to_translate(self):
         audios = [

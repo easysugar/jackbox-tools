@@ -11,9 +11,9 @@ from settings.guesspionage import *
 
 
 class Guesspionage(Game):
-    folder = '../data/pp3/pollposition/encoded/'
-    folder_swf = '../data/pp3/pollposition/swf/'
-    build = '../build/uk/JPP3/Guesspionage/'
+    folder = './data/pp3/pollposition/encoded/'
+    folder_swf = './data/pp3/pollposition/swf/'
+    build = './build/uk/JPP3/Guesspionage/'
 
     @decode_mapping(PATH_EXPANDED, folder + 'audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):

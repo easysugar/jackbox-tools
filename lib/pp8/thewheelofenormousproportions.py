@@ -7,8 +7,8 @@ class TheWheelOfEnormousProportions(Game):
     name = 'TheWheel'
     pack = JPP8_PATH
     international = True
-    folder = '../data/pp8/wheel/'
-    build = '../build/uk/JPP8/Wheel/'
+    folder = './data/pp8/wheel/'
+    build = './build/uk/JPP8/Wheel/'
 
     def count_words_to_translate(self):
         audios = [

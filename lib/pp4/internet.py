@@ -41,9 +41,9 @@ def _replace_text(obj, trans):
 
 
 class Internet(Game):
-    folder = '../data/pp4/internet/encoded/'
-    folder_swf = '../data/pp4/internet/swf/'
-    build = '../build/uk/JPP4/STI/'
+    folder = './data/pp4/internet/encoded/'
+    folder_swf = './data/pp4/internet/swf/'
+    build = './build/uk/JPP4/STI/'
     drive = '18N-GPGwsbm80DJRMMa7QufsIXBOj_nDs'
 
     @decode_mapping(PATH_TWIST, folder + 'twist.json')

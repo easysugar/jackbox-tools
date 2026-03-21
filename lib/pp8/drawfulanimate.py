@@ -22,8 +22,8 @@ class DrawfulAnimate(Game):
     name = 'DrawfulAnimate'
     pack = JPP8_PATH
     international = True
-    folder = '../data/pp8/drawful3/'
-    build = '../build/uk/JPP8/Drawful3/'
+    folder = './data/pp8/drawful3/'
+    build = './build/uk/JPP8/Drawful3/'
     drive = '1STC5GSRkckadmf3FDc-GTjkuLJUkN1ei'
     font = r'''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥§¨©ª«¬­®¯°±´µ¶·¸º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĐđıŒœŠšŸŽžƒˆ˜πЄІЇАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгдежзийклмнопрстуфхцчшщьюяєіїҐґ–—‘’‚“”„†‡•…‰‹›€™Ω√≈'''
     audio_jokes_path = r'X:\Jackbox\games\jpp8\drawful3\audio\jokes'

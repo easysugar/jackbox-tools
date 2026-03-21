@@ -6,8 +6,8 @@ from paths import JPP6_PATH
 class PushTheButton(Game):
     name = 'PushTheButton'
     pack = JPP6_PATH
-    folder = '../data/pp6/button/'
-    build = '../build/uk/JPP6/Button/'
+    folder = './data/pp6/button/'
+    build = './build/uk/JPP6/Button/'
 
     def count_words_to_translate(self):
         audios = [

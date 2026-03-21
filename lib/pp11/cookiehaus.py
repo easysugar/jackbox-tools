@@ -7,7 +7,7 @@ class CookieHaus(Game):
     name = 'CookiesGame'
     pack = JPP11_PATH
     international = True
-    folder = '../data/pp11/cookies/'
+    folder = './data/pp11/cookies/'
     build = '../build/uk/JPP11/CookieHaus/'
 
     def count_words_to_translate(self):

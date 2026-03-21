@@ -7,8 +7,8 @@ class Doominate(Game):
     name = 'YouRuinedIt'
     pack = JPP11_PATH
     international = True
-    folder = '../data/pp11/doominate/'
-    build = '../build/uk/JPP11/Doominate/'
+    folder = './data/pp11/doominate/'
+    build = './build/uk/JPP11/Doominate/'
 
     def count_words_to_translate(self):
         audios = [

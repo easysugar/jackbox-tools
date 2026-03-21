@@ -17,8 +17,8 @@ PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 class SplitTheRoom(Game):
     game = PATH
     drive = '1-7isayk367umf7bz3tYF913DXrowy6o_'
-    folder = '../data/pp5/split/'
-    build = '../build/uk/JPP5/SplitTheRoom/'
+    folder = './data/pp5/split/'
+    build = './build/uk/JPP5/SplitTheRoom/'
     audio = r'X:\Jackbox\games\jpp5\split\audio\scenarios'
     audio_reactions = r'X:\Jackbox\games\jpp5\split\audio\reactions'
     rounds = {1: 'SplitTheRoomShortie', 2: 'SplitTheRoomLater', 3: 'SplitTheRoomFinal'}
