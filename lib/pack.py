@@ -25,10 +25,7 @@ def _copy_to_release(src: str, dst: str, start_ts: datetime):
             src_mtime = os.path.getmtime(fpath)
             src_ctime = os.path.getctime(fpath)
 
-            if src_mtime <= start_ts_unix:
-                continue
-
-            if src_ctime >= start_ts_unix and src_mtime - src_ctime <= MANUAL_EDIT_GRACE_SECONDS:
+            if src_ctime <= start_ts_unix or src_mtime <= start_ts_unix:
                 continue
 
             dst_path = os.path.join(dst, os.path.relpath(fpath, src))
