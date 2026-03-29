@@ -1,4 +1,5 @@
 import functools
+import logging
 import re
 from typing import Dict
 
@@ -149,13 +150,13 @@ class Game:
     #     self._write(dst, media)
 
     def encode_all(self):
-        print('Encoding', self.__class__.__name__)
+        logging.debug('Encoding %s', self.__class__.__name__)
         for f in tqdm.tqdm(dir(self)):
             if f.startswith('encode_') and f != 'encode_all' and callable(getattr(self, f)):
                 getattr(self, f)()
 
     def decode_all(self):
-        print('Decoding', self.__class__.__name__)
+        logging.debug('Decoding %s', self.__class__.__name__)
         to_call = [f for f in dir(self) if (f.startswith('decode_') or f.startswith('unpack_')) and f != 'decode_all' and callable(getattr(self, f))]
         to_call.sort()  # decode first, unpack second
         for f in tqdm.tqdm(to_call):
@@ -244,7 +245,7 @@ def update_localization(src: str, *translations: str):
         t = t.get('en', t)
         trans.update(t)
     if set(obj['table']['en']) > set(trans):
-        print(f'Source has untranslated fields: {", ".join(set(obj["table"]["en"]) - set(trans))}')
+        logging.debug('Source has untranslated fields: %s', ", ".join(set(obj["table"]["en"]) - set(trans)))
     obj['table']['en'].update(trans)
     write_json(src, obj)
 

@@ -1,3 +1,13 @@
+import logging
+import sys
+
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.DEBUG,
+    format='[%(asctime)s] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
+
 from .crowdin import Crowdin
 from .pp11 import *
 from .pp3 import *

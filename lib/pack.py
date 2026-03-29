@@ -1,3 +1,4 @@
+import logging
 import os
 import zipfile
 from datetime import datetime
@@ -13,7 +14,7 @@ SKIP_WORDS = ['copy', 'копія']
 
 def _copy_to_release(src: str, dst: str, start_ts: datetime):
     start_ts_unix = start_ts.timestamp()
-    print('Coping to release')
+    logging.debug('Coping to release')
     for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
         for f in files:
             fpath = os.path.join(root, f)
@@ -60,7 +61,7 @@ def _make_archive(src: str, archive_name: str = 'release.zip', platform: str = N
                 filepath = os.path.join(src_platform, folder_path, filename)
                 zip_process.write(filepath, os.path.relpath(filepath, src_platform))
     zip_process.close()
-    print("Created archive")
+    logging.debug("Created archive")
 
 
 class GamePack:
