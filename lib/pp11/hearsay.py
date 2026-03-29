@@ -43,3 +43,6 @@ class HearSay(Game):
                 if s.get('direction'):
                     s['direction'] = trans['direction']
         self.write_jet('Prompt', obj)
+
+    def decode_localization(self):
+        self.write_localization(self.read_from_build('Localization.json')['table']['en'])
