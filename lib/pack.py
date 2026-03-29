@@ -7,20 +7,35 @@ import tqdm
 from lib.common import copy_file
 from lib.game import update_localization
 
-skip_words = ['copy', 'копія']
+MANUAL_EDIT_GRACE_SECONDS = 600
+SKIP_WORDS = ['copy', 'копія']
 
 
 def _copy_to_release(src: str, dst: str, start_ts: datetime):
+    start_ts_unix = start_ts.timestamp()
     print('Coping to release')
     for root, dirs, files in tqdm.tqdm(list(os.walk(src, topdown=False))):
         for f in files:
             fpath = os.path.join(root, f)
-            if any(skip_word in fpath for skip_word in skip_words):
+            filename = os.path.basename(fpath).casefold()
+            if any(skip_word.casefold() in filename for skip_word in SKIP_WORDS):
                 continue
-            ts = datetime.fromtimestamp(os.path.getmtime(fpath))
-            if ts >= start_ts:  # or abs(os.path.getctime(fpath) - os.path.getmtime(fpath)) > 600:
-                # or ts <= start_ts - timedelta(days=1) or (os.path.getmtime(fpath) - os.path.getctime(fpath) > 60):
-                copy_file(fpath, fpath.replace(src, dst))
+
+            src_mtime = os.path.getmtime(fpath)
+            src_ctime = os.path.getctime(fpath)
+
+            if src_mtime <= start_ts_unix:
+                continue
+
+            if src_ctime >= start_ts_unix and src_mtime - src_ctime <= MANUAL_EDIT_GRACE_SECONDS:
+                continue
+
+            dst_path = os.path.join(dst, os.path.relpath(fpath, src))
+            if os.path.exists(dst_path):
+                dst_mtime = os.path.getmtime(dst_path)
+                if src_mtime <= dst_mtime and os.path.getsize(fpath) == os.path.getsize(dst_path):
+                    continue
+            copy_file(fpath, dst_path)
 
 
 def _make_archive(src: str, archive_name: str = 'release.zip', platform: str = None, beta=False):
