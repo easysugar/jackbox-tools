@@ -85,7 +85,7 @@ class Game:
 
     @staticmethod
     def get_context(content: dict, *extra: str) -> str:
-        head = '\n'.join(extra)
+        head = '\n'.join(filter(bool, extra))
         traits = []
         if content.get('us'):
             traits.append('for USA')
