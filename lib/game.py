@@ -17,6 +17,10 @@ class Game:
             self.game_path = os.path.join(getattr(self, 'pack'), 'games', self.game_name)
         self.name_short = getattr(self, 'name_short', None)
 
+    @property
+    def media_path(self):
+        return os.path.join(self.game_path, 'TalkshowExport', 'project', 'media')
+
     def _get_path_kind(self, kind: str) -> str:
         if self.name_short and not kind.startswith(self.name_short):
             kind = self.name_short + kind

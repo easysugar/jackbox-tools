@@ -1,6 +1,10 @@
 import os
 from collections import Counter
 
+import pandas as pd
+import tqdm
+
+from lib.audio import gather_audio_files
 from lib.game import Game, update_localization, clean_text
 from paths import JPP8_PATH
 
@@ -106,3 +110,17 @@ class PollMine(Game):
         text = {k: v['text'] for k, v in text.items()}
         self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'SurveyBomb.json',
                                trans=text, path_save=self.folder + 'translated_dict.txt')
+
+    def upload_audio(self):
+        original = self.read_from_data('audio.json')
+        obj = self.read_from_build('audio.json')
+        data = []
+        for cid in tqdm.tqdm(obj):
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['text'].strip().replace('\n', ' '),
+                         'text': obj[cid]['text'].strip().replace('\n', ' ')})
+        data.sort(key=lambda x: (x.get('context'), x['id']))
+        gather_audio_files(self.media_path, [_['ogg'] for _ in data], os.path.join(self.folder, 'pollmine_main_audio.wav'))
+        pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
