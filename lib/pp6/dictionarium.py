@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP6_PATH
@@ -23,4 +25,4 @@ class Dictionarium(Game):
             self.read_jet('Slang'),
             self.read_jet('SlangDefinitions'),
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

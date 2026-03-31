@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -30,7 +31,7 @@ class PatentlyStupid(Game):
             self.read_jet('PatentlyStupidGeneDrawing'),
             prompts,
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)
 
     def decode_localization(self):
         trans = self.read_from_build('Localization.json')['table']['en']

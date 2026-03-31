@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pandas as pd
@@ -81,7 +82,7 @@ class DrawfulAnimate(Game):
             c['prompt'] = trans[c['id']]['prompt']
             c['title'] = personal_titles_map.get(c['title'], c['title'])
             if not c['prompt'].startswith(c['title'].removesuffix('...')):
-                print(f'Prompt {c["prompt"]} mismatches title: {c["title"]}')
+                logging.debug('Prompt %s mismatches title: %s', c["prompt"], c["title"])
             assert c['title'].endswith('...')
             if c['joke']:
                 c['joke'] = trans[c['id']]['joke']

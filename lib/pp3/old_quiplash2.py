@@ -1,3 +1,4 @@
+import logging
 import os
 
 import Levenshtein
@@ -79,7 +80,7 @@ class OldQuiplash2(Game):
         mapp = {str(c['id']): c['prompt'] for c in new['content']}
         for c in old['content']:
             if str(c['id']) not in mapp:
-                print(c['id'], c['prompt'])
+                logging.debug('%s %s', c['id'], c['prompt'])
                 # continue
             c['prompt'] = mapp[str(c['id'])]
         return old

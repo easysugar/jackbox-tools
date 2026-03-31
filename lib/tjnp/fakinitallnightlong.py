@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import TJNP_PATH
@@ -26,4 +28,4 @@ class FakinItAllNightLong(Game):
             [[x['fakerHint'], x['task']] for x in self.read_jet('FakinIt2Thumbs')['content']],
             [[x['fakerHint'], x['task']] for x in self.read_jet('FakinIt2Write')['content']],
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

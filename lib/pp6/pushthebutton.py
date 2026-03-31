@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP6_PATH
@@ -26,4 +28,4 @@ class PushTheButton(Game):
             audios,
             prompts
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

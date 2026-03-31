@@ -1,3 +1,4 @@
+import logging
 import os
 
 from lib.game import Game, clean_text
@@ -25,4 +26,4 @@ class BlatherRound(Game):
              for c in self.read_jet('BlankyBlankPasswords')['content']],
             [c['structures'] for c in self.read_jet('BlankyBlankSentenceStructures')['content']],
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -120,7 +121,7 @@ class Guesspionage(Game):
             assert 0 <= int(x['A']['v']) <= 100
             result[cid] = body
             unique_fields.update({k: x[k]['v'] for k in x if 'v' in x[k]})
-        print('unique fields:', unique_fields)
+        logging.debug('unique fields: %s', unique_fields)
         return result
 
     @decode_mapping(PATH_QUESTIONS, build + 'in-game/questions.json', PATH_QUESTIONS)

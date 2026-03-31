@@ -1,3 +1,4 @@
+import logging
 import os
 
 from lib.game import Game
@@ -33,4 +34,4 @@ class DevilsAndTheDetails(Game):
             self.read_json('gameconfig')['payload']['OTHER_CAT_NAME_CHOICES'],
             audios,
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)
