@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 import zipfile
 from collections import Counter
@@ -207,8 +208,20 @@ class Crowdin:
     def download_last_build(self, project_id: int, path_build='build.zip'):
         self._download_build(project_id, self._get_last_build_id(project_id), path_build)
 
-    def create_build(self, project_id: int):
-        self.client.translations.build_crowdin_project_translation(project_id)
+    def create_build(self, project_id: int) -> int:
+        build = self.client.translations.build_crowdin_project_translation(project_id)
+        logging.debug('build %s', build['data']['createdAt'])
+        return build['data']['id']
+
+    def reload_translations(self, project_id: int, path='./build', path_archive='build.zip'):
+        build_id = self.create_build(project_id)
+        while True:
+            time.sleep(1)
+            last_build_id = self._get_last_build_id(project_id)
+            if last_build_id == build_id:
+                break
+        self._download_build(project_id, build_id, path_archive)
+        self.unzip_build(path_archive, path)
 
     @staticmethod
     def unzip_build(path_build: str = 'build.zip', path_folder: str = 'build'):
