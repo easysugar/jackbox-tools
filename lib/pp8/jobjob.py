@@ -1,6 +1,9 @@
 import os
 import random
 
+import pandas as pd
+
+from lib.audio import gather_audio_files
 from lib.game import Game, clean_text, update_localization
 from paths import JPP8_PATH
 
@@ -136,3 +139,21 @@ class JobJob(Game):
         text = {k: v['text'] for k, v in text.items()}
         self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'JobGame.json',
                                trans=text, path_save=self.folder + 'translated_dict.txt')
+
+    def upload_audio(self):
+        original = self.read_from_data('audio.json')
+        obj = self.read_from_build('audio.json')
+        data = []
+        for cid in obj:
+            ogg = f'{cid}.ogg'
+            data.append({'id': cid, 'ogg': ogg,
+                         'context': obj[cid]['crowdinContext'],
+                         'original': original[cid]['text'].strip().replace('\n', ' '),
+                         'text': obj[cid]['text'].strip().replace('\n', ' ')})
+        data.sort(key=lambda x: (x.get('context'), x['id']))
+        fax = [_ for _ in data if '(говорить факс)' in _['context']]
+        bubbles = [_ for _ in data if '(говорить факс)' not in _['context']]
+        gather_audio_files(self.media_path, [_['ogg'] for _ in fax], os.path.join(self.folder, 'jobjob_main_fax_audio.wav'))
+        pd.DataFrame(fax).to_csv(self.folder + 'audio_fax.tsv', sep='\t', encoding='utf8', index=False)
+        gather_audio_files(self.media_path, [_['ogg'] for _ in bubbles], os.path.join(self.folder, 'jobjob_main_bubbles_audio.wav'))
+        pd.DataFrame(bubbles).to_csv(self.folder + 'audio_bubbles.tsv', sep='\t', encoding='utf8', index=False)
