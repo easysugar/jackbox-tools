@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP11_PATH
@@ -27,4 +29,4 @@ class Suspectives(Game):
             [[c['evidence'], c['interrogations'], c['question'], c['reminder'], c['summary'], c['choices']]
              for c in self.read_jet('Ranking')['content']],
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

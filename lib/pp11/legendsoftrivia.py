@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP11_PATH
@@ -30,4 +32,4 @@ class LegendsOfTrivia(Game):
             self.read_jet('ReverseMultipleChoice'),
             self.read_jet('Riddle'),
         ], ('theme', 'altText'))
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

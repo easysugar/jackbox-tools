@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP11_PATH
@@ -24,4 +26,4 @@ class CookieHaus(Game):
             [c['text'] for c in self.read_jet('Redraw')['content']],
             [c['text'] for c in self.read_jet('Prompt')['content']],
         ], drop_keys=('colors', 'cookieTypes', 'id', 'key', 'shapes', 'sprinkleTypes', 'type', 'weights'))
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

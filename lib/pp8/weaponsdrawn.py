@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -28,7 +29,7 @@ class WeaponsDrawn(Game):
             [c['weapon'] for c in self.read_jet('Weapon')['content']],
             audios,
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)
 
     def encode_guest(self):
         obj = self.read_jet('Guest')

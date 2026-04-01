@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game, clean_text
 from lib.utils import count_strings_and_words
 from paths import JPP11_PATH
@@ -24,4 +26,4 @@ class Doominate(Game):
             self.read_jet('YouRuinedItUnruins'),
             [[c['punchlines'], c['setup']] for c in self.read_jet('YouRuinedItSetups')['content']],
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)

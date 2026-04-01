@@ -1,3 +1,5 @@
+import logging
+
 from lib.game import Game
 from lib.utils import count_strings_and_words
 from paths import JPP8_PATH
@@ -28,4 +30,4 @@ class TheWheelOfEnormousProportions(Game):
             self.read_jet('TypingList'),
             audios,
         ])
-        print(f'Total strings: {strings}\nTotal words: {words}')
+        logging.debug('Total strings: %s\nTotal words: %s', strings, words)
