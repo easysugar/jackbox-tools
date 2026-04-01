@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from typing import List
@@ -5,6 +6,8 @@ from typing import List
 import tqdm
 from mutagen.oggvorbis import OggVorbis
 from pydub import AudioSegment
+
+logging.getLogger("pydub.converter").setLevel(logging.WARNING)
 
 
 def get_audio_markers(path: str):
@@ -37,6 +40,7 @@ def gather_audio_files(audio_folder: str, audio_files: List[str], output_path: s
     combined = AudioSegment.empty()
 
     # Load and concatenate audio files with 1-second gaps
+    logging.debug('Start audio gathering')
     for i, filename in enumerate(tqdm.tqdm(audio_files)):
         filepath = os.path.join(audio_folder, filename)
         audio = AudioSegment.from_file(filepath)
@@ -45,4 +49,4 @@ def gather_audio_files(audio_folder: str, audio_files: List[str], output_path: s
         combined += audio
 
     combined.export(output_path, format="wav")
-    print(f"Combined audio saved to {output_path}")
+    logging.debug(f"Combined audio saved to {output_path}")
