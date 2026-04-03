@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from collections import defaultdict
@@ -367,7 +368,7 @@ class OldTMP2(Game):
         tjsp_release_media = os.path.join(TJSP_RELEASE_PATH, 'games', 'triviadeath2', 'TalkshowExport', 'project', 'media')
         jpp6_release_media = os.path.join(JPP6_RELEASE_PATH, 'games', 'TriviaDeath2', 'TalkshowExport', 'project', 'media')
         tjsp_ids = [filename.replace('.ogg', '') for filename in os.listdir(tjsp_release_media)]
-        print('Audio files in TJSP release:', len(tjsp_ids))
+        logging.debug('Audio files in TJSP release: %s', len(tjsp_ids))
         for jpp6_id, tjsp_id in tqdm.tqdm(mapp.items()):
             if tjsp_id in tjsp_ids:
                 copy_file(
