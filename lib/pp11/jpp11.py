@@ -12,4 +12,8 @@ class JPP11(GamePack):
     release_name = 'JPP11-UA.zip'
     games = [HearSay]
     localizations = {
+        './build/uk/JPP11/Localization.json': ['Localization.json'],
+        './build/uk/JPP11/LocalizationManager.json': ['games/Picker/LocalizationManager.json', 'LocalizationManager.json'],
+        './build/uk/JPP11/LocalizationPause.json': ['games/Picker/LocalizationPause.json', 'LocalizationPause.json'],
+        './build/uk/JPP11/PickerLocalization.json': ['games/Picker/Localization.json'],
     }
