@@ -246,7 +246,8 @@ def update_localization(src: str, *translations: str):
     for path in translations:
         t = read_json(path)
         t = t.get('table', t)
-        t = t.get('en', t)
+        if isinstance(t.get('en'), dict):
+            t = t['en']
         trans.update(t)
     if set(obj['table']['en']) > set(trans):
         logging.debug('Source has untranslated fields: %s', ", ".join(set(obj["table"]["en"]) - set(trans)))
