@@ -2,6 +2,7 @@ import re
 from collections import defaultdict
 
 import pandas as pd
+import tqdm
 
 from lib.drive import Drive
 from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder
@@ -199,7 +200,7 @@ class TMP(Game):
         original = self.read_from_data('questions.json')
         obj = self.read_from_build('questions.json')
         data = []
-        for cid in obj:
+        for cid in tqdm.tqdm(obj):
             o = self.read_content(cid, 'Question')
             ogg = f'{o['Q']['v']}.ogg'
             d.upload(self.get_content_path(cid, 'Question'), ogg)
