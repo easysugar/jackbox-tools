@@ -1,6 +1,9 @@
 import re
 from collections import defaultdict
 
+import pandas as pd
+
+from lib.drive import Drive
 from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder
 from paths import JPP3_PATH
 
@@ -14,9 +17,13 @@ PATH_WORST_DRAWING = PATH + r'\content\TDWorstDrawing.jet'
 
 
 class TMP(Game):
+    name = 'TriviaDeath'
+    name_short = 'TD'
+    pack = JPP3_PATH
     folder = './data/pp3/tmp/encoded/'
     folder_swf = './data/pp3/tmp/swf/'
     build = './build/uk/JPP3/TMP/'
+    drive_questions = '13pgPPykkpp8XhDzNolev9y0Gxuzg_o6O'
 
     @encode_mapping(PATH_QUESTION, folder + 'questions.json')
     def encode_question(self, obj: dict):
@@ -186,3 +193,22 @@ class TMP(Game):
             o['QuestionText']['v'] = trans[cid]
             write_to_folder(cid, PATH_WORST_DRAWING, o)
         return obj
+
+    def upload_audio_questions(self):
+        d = Drive(self.drive_questions)
+        original = self.read_from_data('questions.json')
+        obj = self.read_from_build('questions.json')
+        data = []
+        for cid in obj:
+            o = self.read_content(cid, 'Question')
+            ogg = f'{o['Q']['v']}.ogg'
+            d.upload(self.get_content_path(cid, 'Question'), ogg)
+            data.append({
+                'id': cid,
+                'ogg': ogg,
+                'link': d.get_link(ogg),
+                'original': original[cid].splitlines()[0],
+                'text': obj[cid].splitlines()[0],
+            })
+        data.sort(key=lambda x: x['id'])
+        pd.DataFrame(data).to_csv(self.folder + 'audio_questions.tsv', sep='\t', encoding='utf8', index=False)
