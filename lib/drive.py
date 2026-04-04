@@ -16,18 +16,21 @@ class Drive:
         self.drive = GoogleDrive(self.gauth)
         self.path_drive = path_drive
         self.uploaded = self.get_uploaded_files(self.path_drive) if self.path_drive else set()
-        self.links = None
+        self.links = self.get_files_links(path_drive=self.path_drive)
 
     def upload(self, *path, name=None):
         name = path[-1] if not name else name
         if name not in self.uploaded:
-            self.copy_to_drive(self.path_drive, os.path.join(*path), name)
+            url = self.copy_to_drive(self.path_drive, os.path.join(*path), name)
             self.uploaded.add(name)
+            self.links[name.split('.')[0]] = url
 
-    def copy_to_drive(self, folder, filepath, filename):
+    def copy_to_drive(self, folder, filepath, filename) -> str:
         gfile = self.drive.CreateFile({'parents': [{'id': folder}], 'title': filename})
         gfile.SetContentFile(filepath)
         gfile.Upload()
+        gfile.FetchMetadata(fields='alternateLink')
+        return gfile.get('alternateLink')
 
     def copy_audio_subtitles_to_drive(self, game: str):
         self.upload_audio_to_drive(SUBTITLES[game], MEDIA_FOLDER[game], DRIVE_FOLDER[game])
@@ -58,6 +61,4 @@ class Drive:
         return {file['originalFilename'].split('.')[0]: file['alternateLink'] for file in file_list}
 
     def get_link(self, _id: str):
-        if self.links is None:
-            self.links = self.get_files_links(path_drive=self.path_drive)
         return self.links[_id.split('.')[0]]
