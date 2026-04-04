@@ -1,8 +1,10 @@
+import json
 import logging
 import os
 import re
 
 from lib.game import Game, clean_text
+from lib.images import create_image, make_collage, add_title
 from lib.utils import count_strings_and_words
 from paths import JPP5_PATH
 
@@ -91,3 +93,15 @@ class PatentlyStupid(Game):
             c['prompt'] = trans[cid]['prompt']['text']
             c['decoys'] = '|'.join([_['text'] for _ in trans[cid]['decoys']])
         self.write_jet('Shortie', obj)
+
+    def show_gene_drawings(self):
+        obj = self.read_jet('GeneDrawing')
+        imgs = []
+        for c in obj['content']:
+            o = self.read_content(c['id'], 'GeneDrawing')
+            img = create_image(json.loads(o['Lines']['v']))
+            img = add_title(img, c['Title'])
+            imgs.append(img)
+        result = make_collage(imgs, 7)
+        result.show()
+        result.save('gene_drawings.png')
