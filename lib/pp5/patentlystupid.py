@@ -67,6 +67,7 @@ class PatentlyStupid(Game):
             c['Title'] = trans[cid]['title']['text']
             o = self.read_content(c['id'], 'GeneDrawing')
             o['Tagline']['v'] = trans[cid]['tagline']['text']
+            o['Title']['v'] = c['Title']
             self.write_content(c['id'], 'GeneDrawing', o)
         self.write_jet('GeneDrawing', obj)
 
@@ -105,3 +106,14 @@ class PatentlyStupid(Game):
         result = make_collage(imgs, 7)
         result.show()
         result.save('gene_drawings.png')
+
+    def encode_text_subtitles(self):
+        obj = self.read_from_data('PatentlyStupid.json')['media']
+        obj = {v['id']: v['text'] for c in obj for v in c['versions']
+               if c['type'] == 'T' and not re.search('^MUSIC/|^SFX/|^Bttn', v['text'])}
+        self.write_to_data('text_subtitles.json', obj)
+
+    def decode_media(self):
+        text = self.read_from_build('text_subtitles.json')
+        self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'PatentlyStupid.json',
+                               trans=text, path_save=self.folder + 'translated_dict.txt')
