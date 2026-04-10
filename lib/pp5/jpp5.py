@@ -13,6 +13,6 @@ class JPP5(GamePack):
     release_name = 'JPP5-ua.zip'
     games = [SplitTheRoom, PatentlyStupid]
     localizations = {
-        '../build/uk/JPP5/localization.json': ['Localization.json'],
-        '../build/uk/JPP5/localization_pack.json': ['games/Picker/Localization.json'],
+        './build/uk/JPP5/localization.json': ['Localization.json'],
+        './build/uk/JPP5/localization_pack.json': ['games/Picker/Localization.json'],
     }
