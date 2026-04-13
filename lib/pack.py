@@ -21,6 +21,8 @@ def _copy_to_release(src: str, dst: str, start_ts: datetime):
             filename = os.path.basename(fpath).casefold()
             if any(skip_word.casefold() in filename for skip_word in SKIP_WORDS):
                 continue
+            if filename.startswith('.'):
+                continue
 
             src_mtime = os.path.getmtime(fpath)
             if src_mtime <= start_ts_unix:
