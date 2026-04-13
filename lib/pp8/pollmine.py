@@ -18,8 +18,8 @@ class PollMine(Game):
 
     def decode_localization(self):
         update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
-        update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
-        update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join('./build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join('./build/uk/JPP8/', 'LocalizationPause.json'))
 
     def encode_team_names(self):
         obj = self.read_jet('TeamNames')

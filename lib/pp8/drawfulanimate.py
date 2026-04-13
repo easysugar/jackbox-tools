@@ -128,15 +128,15 @@ class DrawfulAnimate(Game):
         update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join(self.build, 'LocalizationManager.json'))
         update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join(self.build, 'LocalizationPause.json'))
 
-        update_localization(os.path.join(JPP8_PATH, 'Localization.json'), os.path.join('../build/uk/JPP8/', 'Localization.json'))
-        update_localization(os.path.join(JPP8_PATH, 'LocalizationManager.json'), os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
-        update_localization(os.path.join(JPP8_PATH, 'LocalizationPause.json'), os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+        update_localization(os.path.join(JPP8_PATH, 'Localization.json'), os.path.join('./build/uk/JPP8/', 'Localization.json'))
+        update_localization(os.path.join(JPP8_PATH, 'LocalizationManager.json'), os.path.join('./build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(JPP8_PATH, 'LocalizationPause.json'), os.path.join('./build/uk/JPP8/', 'LocalizationPause.json'))
         update_localization(os.path.join(JPP8_PATH, 'games', 'Picker', 'Localization.json'),
-                            os.path.join('../build/uk/JPP8/', 'LocalizationPicker.json'))
+                            os.path.join('./build/uk/JPP8/', 'LocalizationPicker.json'))
         update_localization(os.path.join(JPP8_PATH, 'games', 'Picker', 'LocalizationManager.json'),
-                            os.path.join('../build/uk/JPP8/', 'LocalizationManager.json'))
+                            os.path.join('./build/uk/JPP8/', 'LocalizationManager.json'))
         update_localization(os.path.join(JPP8_PATH, 'games', 'Picker', 'LocalizationPause.json'),
-                            os.path.join('../build/uk/JPP8/', 'LocalizationPause.json'))
+                            os.path.join('./build/uk/JPP8/', 'LocalizationPause.json'))
 
     @decode_mapping(folder + 'audio.json', build + 'audio.json', out=False)
     def upload_audio(self, original, obj):
