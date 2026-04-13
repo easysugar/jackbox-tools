@@ -177,7 +177,7 @@ class OldQuiplash2(Game):
     def encode_text_subtitles(self, obj: dict):
         return self._encode_subtitles(obj, 'T', tags='')
 
-    @decode_mapping(folder + 'text_subtitles.json', '../data/standalone/quiplash2/encoded/text_subtitles.json',
+    @decode_mapping(folder + 'text_subtitles.json', './data/standalone/quiplash2/encoded/text_subtitles.json',
                     quiplash2.PATH_BUILD_TEXT_SUBTITLES, PATH_DATA + 'translated/text_subtitles.json')
     def copy_text_subtitles(self, obj, ext_orig, ext_trans):
         ext_map = {v: k for k, v in ext_orig.items()}
@@ -192,7 +192,7 @@ class OldQuiplash2(Game):
                                trans=self._read_json(PATH_DATA + 'translated/text_subtitles.json'),
                                path_save=self.folder_swf + 'translated_dict.txt')
 
-    @decode_mapping(folder_swf + 'expanded.json', '../data/standalone/quiplash2/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
+    @decode_mapping(folder_swf + 'expanded.json', './data/standalone/quiplash2/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
     def get_games_audio_mapping(self, obj, ext):
         audio = {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and 'sfx' not in v['text'].lower()}
         assert None not in audio

@@ -17,5 +17,5 @@ class JPP3(GamePack):
     games = [Fakin, OldQuiplash2, OldTeeKO, TMP, Guesspionage]
     localizations = {
         './build/uk/JPP3/localization.json': ['Localization.json'],
-        '../build/uk/JPP8/localization_pack.json': ['games/Picker/Localization.json'],
+        './build/uk/JPP8/localization_pack.json': ['games/Picker/Localization.json'],
     }

@@ -103,7 +103,7 @@ class OldTeeKO(Game):
         self._decode_swf_media(path_media=PATH_SOURCE_DICT, path_expanded=PATH_EXPANDED,
                                trans=text, path_save=PATH_TRANSLATED_DICT)
 
-    @decode_mapping(PATH_EXPANDED, '../data/tjsp/teeko/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
+    @decode_mapping(PATH_EXPANDED, './data/tjsp/teeko/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
     def get_games_audio_mapping(self, obj, ext):
         audio = {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'A' and v['tags'] == ''}
         res = {i: None for i in ext}
