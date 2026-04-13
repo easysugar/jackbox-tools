@@ -9,8 +9,8 @@ class LegendsOfTrivia(Game):
     name = 'TriviaRPG'
     pack = JPP11_PATH
     international = True
-    folder = '../data/pp11/legends/'
-    build = '../build/uk/JPP11/LegendsOfTrivia/'
+    folder = './data/pp11/legends/'
+    build = './build/uk/JPP11/LegendsOfTrivia/'
 
     def count_words_to_translate(self):
         audios = [

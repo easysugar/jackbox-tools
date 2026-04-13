@@ -14,6 +14,6 @@ class JPP7(GamePack):
     release_name = 'JPP7-UA.zip'
     games = [OldQuiplash3, TalkingPoints, ChampdUp]
     localizations = {
-        '../build/uk/JPP7/localization.json': ['Localization.json'],
-        '../build/uk/JPP7/localization_pack.json': ['games/Picker/Localization.json'],
+        './build/uk/JPP7/localization.json': ['Localization.json'],
+        './build/uk/JPP7/localization_pack.json': ['games/Picker/Localization.json'],
     }
