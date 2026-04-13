@@ -55,7 +55,7 @@ class TeeKO(Game):
 
     @staticmethod
     def decode_localization():
-        update_localization(rf'{PATH}\Localization.json', '../build/uk/TeeKO/localization.json')
+        update_localization(rf'{PATH}\Localization.json', './build/uk/TeeKO/localization.json')
 
     @staticmethod
     def copy_translated_audio():

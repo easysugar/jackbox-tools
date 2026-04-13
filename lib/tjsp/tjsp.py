@@ -14,15 +14,15 @@ class TJSP(GamePack):
     games = [TeeKO, TMP2, Quiplash3]
     release_name = 'TheJackboxPartyStarter-UA.zip'
     localizations = {
-        '../build/uk/localizationManager.json': [
+        './build/uk/localizationManager.json': [
             'LocalizationManager.json', 'games/Picker/LocalizationManager.json', 'games/AwShirt/LocalizationManager.json',
             'games/Quiplash3/LocalizationManager.json', 'games/triviadeath2/LocalizationManager.json'
         ],
-        '../build/uk/LocalizationPackPause.json': [
+        './build/uk/LocalizationPackPause.json': [
             'LocalizationPause.json', 'games/Picker/LocalizationPause.json', 'games/AwShirt/LocalizationPause.json',
             'games/Quiplash3/LocalizationPause.json', 'games/triviadeath2/LocalizationPause.json'
         ],
-        '../build/uk/Localization.json': [
+        './build/uk/Localization.json': [
             'Localization.json', 'games/Picker/Localization.json', 'games/AwShirt/Localization.json'
         ],
     }
