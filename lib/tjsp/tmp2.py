@@ -350,7 +350,7 @@ class TMP2(Game):
 
     # KNIFE
 
-    @encode_mapping(PATH_QUESTION_KNIFE, '../data/tmp2/encoded/question_knife.json')
+    @encode_mapping(PATH_QUESTION_KNIFE, './data/tmp2/encoded/question_knife.json')
     def encode_question_knife(self, obj):
         return self._encode_question_template(obj, True, PATH_QUESTION_KNIFE_DIR)
 
@@ -475,7 +475,7 @@ class TMP2(Game):
 
     @staticmethod
     def decode_localization():
-        update_localization(rf'{PATH}\Localization.json', '../build/uk/TMP2/localization.json')
+        update_localization(rf'{PATH}\Localization.json', './build/uk/TMP2/localization.json')
 
     def upload_audio_main(self):
         d = Drive()
