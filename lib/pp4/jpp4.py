@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from lib.game import Game
 from paths import JPP4_PATH, JPP4_RELEASE_PATH
 from .bracket import Bracketeering
 from .doodle import Doodle
@@ -17,6 +16,6 @@ class JPP4(GamePack):
     games = [Monster, Internet, Doodle, Bracketeering, Fibbage3]
     release_name = 'JPP4-ua.zip'
     localizations = {
-        '../build/uk/JPP4/localization.json': ['Localization.json'],
-        '../build/uk/JPP4/localization_pack.json': ['games/Picker/Localization.json'],
+        './build/uk/JPP4/localization.json': ['Localization.json'],
+        './build/uk/JPP4/localization_pack.json': ['games/Picker/Localization.json'],
     }

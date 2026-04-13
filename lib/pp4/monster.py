@@ -18,7 +18,7 @@ PATH_SPONSORS = PATH + r'\content\MMSponsors.jet'
 PATH_LOCALIZATION = PATH + r'\Localization.json'
 
 # encoded
-PATH_EXPANDED = r'../data/pp4/monster/swf/expanded.json'
+PATH_EXPANDED = r'./data/pp4/monster/swf/expanded.json'
 
 
 class Monster(Game):
