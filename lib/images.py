@@ -3,7 +3,11 @@ from typing import List
 from PIL import Image, ImageDraw, ImageFont
 
 
-def create_image(strokes: list):
+def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=None):
+    strokes = [
+        stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
+        for stroke in strokes
+    ]
     # First pass: find canvas size
     max_x, max_y = 0, 0
     for stroke in strokes:
@@ -12,6 +16,8 @@ def create_image(strokes: list):
             x, y = map(int, p.split(","))
             max_x = max(max_x, x)
             max_y = max(max_y, y)
+    if size:
+        max_x, max_y = size, size
 
     # Create image (add padding)
     img = Image.new("RGB", (max_x, max_y), "white")
