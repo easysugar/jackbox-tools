@@ -39,10 +39,10 @@ def transform_tags_recursive(obj):
 
 class OldTMP2(Game):
     game = PATH
-    folder = '../data/pp6/tmp2/'
-    tjsp_folder = '../data/tjsp/tmp2/encoded/'
-    build = '../build/uk/JPP6/TMP2/'
-    tjsp_build = '../build/uk/TMP2/'
+    folder = './data/pp6/tmp2/'
+    tjsp_folder = './data/tjsp/tmp2/encoded/'
+    build = './build/uk/JPP6/TMP2/'
+    tjsp_build = './build/uk/TMP2/'
     final_audio_folder = r'X:\Jackbox\games\jpp6\tmp2\audio\final'
     question_audio_folder = rf'X:\Jackbox\games\jpp6\tmp2\audio\questions'
 
