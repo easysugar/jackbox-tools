@@ -2,25 +2,33 @@ from typing import List
 
 from PIL import Image, ImageDraw, ImageFont
 
+from json import load
 
-def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=None):
+
+def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=None) -> Image:
     strokes = [
         stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
         for stroke in strokes
     ]
     # First pass: find canvas size
-    max_x, max_y = 0, 0
-    for stroke in strokes:
-        pts = stroke["points"].split("|")
-        for p in pts:
-            x, y = map(int, p.split(","))
-            max_x = max(max_x, x)
-            max_y = max(max_y, y)
     if size:
         max_x, max_y = size, size
+    else:
+        max_x, max_y = 0, 0
+
+        for stroke in strokes:
+            pts = stroke["points"].split("|")
+            if not pts[0]: break
+            for p in pts:
+                x, y = map(int, p.split(","))
+                max_x = max(max_x, x)
+                max_y = max(max_y, y)
+
+        max_x, max_y = max_x+10, max_y+10
 
     # Create image (add padding)
     img = Image.new("RGB", (max_x, max_y), "white")
+    img.joins = 0
     draw = ImageDraw.Draw(img)
 
     # Draw strokes
@@ -28,12 +36,17 @@ def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=
         thickness = stroke["thickness"]
         color = stroke["color"]
 
-        pts = [tuple(map(int, p.split(","))) for p in stroke["points"].split("|")]
+        try:
+            pts = [tuple(map(int, p.split(","))) for p in stroke["points"].split("|")]
+        except:
+            continue
 
+        img.joins += len(pts)
         # Draw connected lines
         if len(pts) > 1:
             draw.line(pts, fill=color, width=thickness)
         else:
+            if not pts[0]: continue
             x, y = pts[0]
             draw.ellipse((x, y, x + thickness, y + thickness), fill=color)
     return img
@@ -72,8 +85,8 @@ def add_title(image, title, font_path="./fonts/a_AlbionicTitulInfl_Bold.ttf", fo
 
 
 def make_collage(images: List[Image], cols: int = 1):
-    # Assume all images same size
-    w, h = images[0].size
+    # Grab maximum width and height
+    w, h = map(max, zip(*map(lambda img: img.size, images)))
 
     rows = (len(images) + cols - 1) // cols
 
@@ -89,3 +102,17 @@ def make_collage(images: List[Image], cols: int = 1):
         collage.paste(img, (x, y))
 
     return collage
+
+# Make collage but from .jet file
+def make_collage_from_file(file_path: str, encoding: str = "utf-8", cols = 1, include_title = False):
+    with open(file_path, "r", encoding=encoding) as f:
+        content = load(f)
+
+    images = [create_image(item["lines"]) for item in content["content"]]
+    if include_title: images = list(map(lambda el: add_title(el, f"Points: {el.joins}"), images))
+
+    collage = make_collage(images, cols)
+    collage.save(f"{file_path.split("/")[-1]}.png")
+
+if __name__ == "__main__":
+    make_collage_from_file("C:/Program Files (x86)/Steam/steamapps/common/The Jackbox Party Pack 6/games/TriviaDeath2/content/TDMirror.jet", cols=5, include_title=True)
