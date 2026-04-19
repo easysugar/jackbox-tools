@@ -12,6 +12,6 @@ class JPP6(GamePack):
     release_name = 'JPP6-UA.zip'
     games = [OldTMP2]
     localizations = {
-        '../build/uk/JPP6/localization.json': ['Localization.json'],
-        '../build/uk/JPP6/localization_pack.json': ['games/Picker/Localization.json'],
+        './build/uk/JPP6/localization.json': ['Localization.json'],
+        './build/uk/JPP6/localization_pack.json': ['games/Picker/Localization.json'],
     }
