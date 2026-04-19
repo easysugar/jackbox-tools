@@ -1,5 +1,7 @@
 from typing import List
 
+from os import path
+
 from PIL import Image, ImageDraw, ImageFont
 
 from json import load
@@ -110,4 +112,4 @@ def make_collage_from_file(file_path: str, output_path: str = ".", encoding: str
     if include_title: images = list(map(lambda el: add_title(el, f"Points: {el.joins}"), images))
 
     collage = make_collage(images, cols)
-    collage.save(f"{output_path}/{file_path.split("/")[-1]}.png")
+    collage.save(f"{output_path}/{path.basename(file_path)}.png")
