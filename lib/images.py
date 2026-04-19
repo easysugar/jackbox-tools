@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 from json import load
 
 
-def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=None) -> Image:
+def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=None, padding=16) -> Image:
     strokes = [
         stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
         for stroke in strokes
@@ -17,14 +17,14 @@ def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=
         max_x, max_y = 0, 0
 
         for stroke in strokes:
+            if not stroke["points"]: continue
             pts = stroke["points"].split("|")
-            if not pts[0]: break
             for p in pts:
                 x, y = map(int, p.split(","))
                 max_x = max(max_x, x)
                 max_y = max(max_y, y)
 
-        max_x, max_y = max_x+10, max_y+10
+        max_x, max_y = max_x+2*padding, max_y+2*padding
 
     # Create image (add padding)
     img = Image.new("RGB", (max_x, max_y), "white")
@@ -36,10 +36,8 @@ def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=
         thickness = stroke["thickness"]
         color = stroke["color"]
 
-        try:
-            pts = [tuple(map(int, p.split(","))) for p in stroke["points"].split("|")]
-        except:
-            continue
+        if not stroke["points"]: continue
+        pts = [tuple(map(lambda coordinate: int(coordinate)+padding, p.split(","))) for p in stroke["points"].split("|")]
 
         img.joins += len(pts)
         # Draw connected lines
@@ -104,15 +102,12 @@ def make_collage(images: List[Image], cols: int = 1):
     return collage
 
 # Make collage but from .jet file
-def make_collage_from_file(file_path: str, encoding: str = "utf-8", cols = 1, include_title = False):
+def make_collage_from_file(file_path: str, output_path: str = ".", encoding: str = "utf-8", cols = 1, include_title = False, padding = 16):
     with open(file_path, "r", encoding=encoding) as f:
         content = load(f)
 
-    images = [create_image(item["lines"]) for item in content["content"]]
+    images = [create_image(item["lines"], padding=padding) for item in content["content"]]
     if include_title: images = list(map(lambda el: add_title(el, f"Points: {el.joins}"), images))
 
     collage = make_collage(images, cols)
-    collage.save(f"{file_path.split("/")[-1]}.png")
-
-if __name__ == "__main__":
-    make_collage_from_file("C:/Program Files (x86)/Steam/steamapps/common/The Jackbox Party Pack 6/games/TriviaDeath2/content/TDMirror.jet", cols=5, include_title=True)
+    collage.save(f"{output_path}/{file_path.split("/")[-1]}.png")
