@@ -24,6 +24,7 @@ def create_image(strokes: List[dict | str], background_color='white', color='#fe
                 x, y = map(int, p.split(","))
                 max_x = max(max_x, x)
                 max_y = max(max_y, y)
+    max_x, max_y = max_x + 2*padding, max_y + 2*padding
     if size:
         max_x, max_y = size, size
 
