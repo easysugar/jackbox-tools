@@ -2,10 +2,15 @@ import os
 
 from lib.common import copy_file
 from lib.game import Game, encode_mapping, decode_mapping, update_localization
+from lib.images import create_image, make_collage
 from settings.teeko import *
 
 
 class TeeKO(Game):
+    name = 'AwShirt'
+    name_short = 'AwShirt'
+    pack = TJSP_PATH
+    international = False
     folder = './data/tjsp/teeko/swf/'
 
     @encode_mapping(PATH_SLOGANS, 'data/teeko/encoded/slogans.json')
@@ -64,3 +69,14 @@ class TeeKO(Game):
         for file in translated:
             if file in original:
                 copy_file(os.path.join(PATH_TRANSLATED_AUDIO, file), os.path.join(PATH_AUDIO, file))
+
+    def show_drawings(self):
+        obj = self.read_jet('AwShirtDrawings')
+        imgs = []
+        for c in obj['content']:
+            o = self._read_json(os.path.join(self.get_content_path(c['id'], 'AwShirtDrawings'), 'data.jet'))
+            img = create_image(o['lines'], size=350, background_color='grey')
+            imgs.append(img)
+        result = make_collage(imgs, 28, 'grey')
+        result.show()
+        result.save('teeko_drawings.png')
