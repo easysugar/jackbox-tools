@@ -3,7 +3,7 @@ from typing import List
 from PIL import Image, ImageDraw, ImageFont
 
 
-def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=None):
+def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size=None):
     strokes = [
         stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
         for stroke in strokes
@@ -20,7 +20,7 @@ def create_image(strokes: List[dict | str], color='#fe6100', thickness=16, size=
         max_x, max_y = size, size
 
     # Create image (add padding)
-    img = Image.new("RGB", (max_x, max_y), "white")
+    img = Image.new("RGB", (max_x, max_y), background_color)
     draw = ImageDraw.Draw(img)
 
     # Draw strokes
@@ -71,13 +71,13 @@ def add_title(image, title, font_path="./fonts/a_AlbionicTitulInfl_Bold.ttf", fo
     return new_img
 
 
-def make_collage(images: List[Image], cols: int = 1):
+def make_collage(images: List[Image], cols: int = 1, background_color='white'):
     # Assume all images same size
     w, h = images[0].size
 
     rows = (len(images) + cols - 1) // cols
 
-    collage = Image.new("RGB", (cols * w, rows * h), "white")
+    collage = Image.new("RGB", (cols * w, rows * h), background_color)
 
     for i, img in enumerate(images):
         row = i // cols
