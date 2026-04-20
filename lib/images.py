@@ -3,7 +3,7 @@ from typing import List
 from PIL import Image, ImageDraw, ImageFont
 
 
-def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size=None):
+def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size: int = None):
     strokes = [
         stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
         for stroke in strokes
