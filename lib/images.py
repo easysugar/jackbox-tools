@@ -2,8 +2,10 @@ from typing import List
 
 from PIL import Image, ImageDraw, ImageFont
 
+from math import sqrt, ceil
 
-def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size: int = None):
+
+def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size: int = None, padding: int = 16):
     strokes = [
         stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
         for stroke in strokes
@@ -22,6 +24,7 @@ def create_image(strokes: List[dict | str], background_color='white', color='#fe
                 x, y = map(int, p.split(","))
                 max_x = max(max_x, x)
                 max_y = max(max_y, y)
+    max_x, max_y = max_x + 2*padding, max_y + 2*padding
     if size:
         max_x, max_y = size, size
 
@@ -80,9 +83,11 @@ def add_title(image, title, font_path="./fonts/a_AlbionicTitulInfl_Bold.ttf", fo
     return new_img
 
 
-def make_collage(images: List[Image], cols: int = 1, background_color='white'):
-    # Assume all images same size
-    w, h = images[0].size
+def make_collage(images: List[Image.Image], cols: int = None, background_color='white') -> Image.Image:
+    cols = cols or ceil(sqrt(cols))
+
+    # Grab maximum width and height
+    w, h = map(max, zip(*map(lambda img: img.size, images)))
 
     rows = (len(images) + cols - 1) // cols
 
