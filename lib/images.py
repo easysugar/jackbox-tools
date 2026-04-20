@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 from math import sqrt, ceil
 
 
-def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size=None, padding: int = 16):
+def create_image(strokes: List[dict | str], background_color='white', color='#fe6100', thickness=16, size: int = None, padding: int = 16):
     strokes = [
         stroke if isinstance(stroke, dict) else {'points': stroke, 'color': color, 'thickness': thickness}
         for stroke in strokes
