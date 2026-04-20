@@ -11,11 +11,17 @@ def create_image(strokes: List[dict | str], background_color='white', color='#fe
     # First pass: find canvas size
     max_x, max_y = 0, 0
     for stroke in strokes:
-        pts = stroke["points"].split("|")
-        for p in pts:
-            x, y = map(int, p.split(","))
-            max_x = max(max_x, x)
-            max_y = max(max_y, y)
+        if isinstance(stroke['points'], list):
+            for p in stroke['points']:
+                x, y = int(p['x']), int(p['y'])
+                max_x = max(max_x, x)
+                max_y = max(max_y, y)
+        else:
+            pts = stroke["points"].split("|")
+            for p in pts:
+                x, y = map(int, p.split(","))
+                max_x = max(max_x, x)
+                max_y = max(max_y, y)
     if size:
         max_x, max_y = size, size
 
@@ -28,7 +34,10 @@ def create_image(strokes: List[dict | str], background_color='white', color='#fe
         thickness = stroke["thickness"]
         color = stroke["color"]
 
-        pts = [tuple(map(int, p.split(","))) for p in stroke["points"].split("|")]
+        if isinstance(stroke['points'], list):
+            pts = [(int(p['x']), int(p['y'])) for p in stroke["points"]]
+        else:
+            pts = [tuple(map(int, p.split(","))) for p in stroke["points"].split("|")]
 
         # Draw connected lines
         if len(pts) > 1:
