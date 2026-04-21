@@ -3,6 +3,8 @@ from datetime import datetime
 
 from lib.common import copy_file
 from lib.game import Game, encode_mapping, read_json, decode_mapping, read_from_folder, write_to_folder
+from lib.images import create_image, make_collage
+from lib.pack import GamePack
 from paths import DRAWFUL2_PATH, DRAWFUL2_RELEASE_PATH
 
 INSTALL_TIME = datetime(2024, 10, 28)
@@ -32,9 +34,13 @@ PATH_TRANSLATED_AUDIO_OTHER = r'C:\Jackbox\games\drawful2\translated-audio-other
 PATH_TRANSLATED_AUDIO_COMMENTS = r'X:\\Jackbox\games\drawful2\translated-audio-comments'
 
 
-class Drawful2(Game):
+class Drawful2(GamePack, Game):
+    game = DRAWFUL2_PATH
+    is_international = False
     folder = './data/standalone/drawful2/encoded/'
     folder_swf = './data/standalone/drawful2/swf/'
+    path_release = DRAWFUL2_RELEASE_PATH
+    release_name = 'Drawful2-UA.zip'
 
     @encode_mapping(folder + 'expanded.json', folder + 'audio_subtitles.json')
     def encode_audio_subtitles(self, obj: dict):
@@ -137,7 +143,12 @@ class Drawful2(Game):
                 copy_file(os.path.join(PATH_TRANSLATED_AUDIO_COMMENTS, f'{cid}.ogg'),
                           os.path.join(PATH_PROMPT_DIR, cid, f"{obj['JokeAudio']['v']}.ogg"))
 
-    def release(self):
-        self.decode_all()
-        self.copy_to_release(DRAWFUL2_PATH, DRAWFUL2_RELEASE_PATH, INSTALL_TIME)
-        self.make_archive(DRAWFUL2_RELEASE_PATH, 'Drawful2-UA.zip')
+    def show_decoy_drawings(self):
+        obj = self.read_jet('Drawful2DecoyDrawings')
+        imgs = []
+        for c in obj['content']:
+            img = create_image(c['lines'])
+            imgs.append(img)
+        result = make_collage(imgs, 4)
+        result.show()
+        result.save('drawful2_decoy_drawings.png')
