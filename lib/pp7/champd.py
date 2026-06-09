@@ -26,12 +26,12 @@ class ChampdUp(Game):
         res = {}
         for c in obj['content']:
             o = self.read_content(c['id'], 'Round')
-            context = {'crowdinContext': self.get_context(c, title=c['contest'])}
+            cxt = self.get_crowdin_context(c, c['contest'])
             res[c['id']] = {
-                'prompt': {'text': c['contest'], **context},
+                'prompt': {'text': c['contest'], **cxt},
             }
             if o['HasResponseAudio']['v'] == 'true':
-                res[c['id']]['response'] = {'text': o['ResponseText']['v'], **context}
+                res[c['id']]['response'] = {'text': o['ResponseText']['v'], **cxt}
         self.write_to_data('round.json', res)
 
     def decode_round(self):
@@ -51,12 +51,12 @@ class ChampdUp(Game):
         for c in A['content']:
             other_title = titles[c['linkedPrompts'][0]]
             links[c['linkedPrompts'][0]] = c['id']
-            context = {'crowdinContext': self.get_context(c, title=f"{c['contest']}\n{other_title}")}
-            resA[c['id']] = {'prompt': {'text': c['contest'].strip(), **context}}
+            cxt = self.get_crowdin_context(c, c['contest'], other_title)
+            resA[c['id']] = {'prompt': {'text': c['contest'].strip(), **cxt}}
         for c in B['content']:
             other_title = titles[links[c['id']]]
-            context = {'crowdinContext': self.get_context(c, title=f"{c['contest']}\n{other_title}")}
-            resB[c['id']] = {'prompt': {'text': c['contest'].strip(), **context}}
+            cxt = self.get_crowdin_context(c, c['contest'], other_title)
+            resB[c['id']] = {'prompt': {'text': c['contest'].strip(), **cxt}}
         self.write_to_data('roundA.json', resA)
         self.write_to_data('roundB.json', resB)
 
