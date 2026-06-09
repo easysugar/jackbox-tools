@@ -1,7 +1,7 @@
 import functools
 import logging
 import re
-from typing import Dict
+from typing import Dict, Any
 
 import tqdm
 
@@ -49,16 +49,24 @@ class Game:
         return self._write_json(self._get_path_kind(kind) + '.jet', obj)
 
     def read_json(self, name: str) -> dict:
-        return self._read_json(os.path.join(self.game_path, 'json', name + '.jet'))
+        if not '.' in name:
+            name = name + '.jet'
+        return self._read_json(os.path.join(self.game_path, 'json', name))
 
-    def read_from_data(self, filename: str) -> dict:
+    def read_from_data(self, filename: str) -> Any:
         return self._read_json(os.path.join(getattr(self, 'folder'), filename))
 
-    def write_to_data(self, filename: str, obj: dict):
+    def write_to_data(self, filename: str, obj: Any):
         self._write_json(os.path.join(getattr(self, 'folder'), filename), obj)
 
     def read_from_build(self, filename: str) -> dict:
         return self._read_json(os.path.join(getattr(self, 'build'), filename))
+
+    def read_from_game(self, filename: str) -> dict:
+        return self._read_json(os.path.join(self.game_path, filename))
+
+    def write_to_game(self, filename: str, obj: dict):
+        self._write_json(os.path.join(self.game_path, filename), obj)
 
     def get_kind_cids(self, kind: str) -> list[str]:
         return os.listdir(self._get_path_kind(kind))
@@ -130,6 +138,9 @@ class Game:
         return self._read_json(os.path.join(self.game_path, 'Localization.json'))['table']['en']
 
     def write_localization(self, obj: dict):
+        obj = obj.get('table', obj)
+        if len(obj) <= 6 and 'en' in obj:  # sometimes 'en' is a key for languages, sometimes it's not
+            obj = obj['en']
         source = self._read_json(os.path.join(self.game_path, 'Localization.json'))
         l10n = source['table']['en']
         assert set(l10n) <= set(obj), f'Source has untranslated fields: {", ".join(set(l10n) - set(obj))}'

@@ -1,3 +1,5 @@
+import re
+
 from lib.game import Game
 from paths import JPP8_PATH
 
@@ -91,3 +93,46 @@ class TheWheelOfEnormousProportions(Game):
             text = build_text(prompt, answers)
             result[cid] = {'text': text, **cxt}
         self.write_to_data('typing_list.json', result)
+
+    def encode_guessing(self):
+        obj = self.read_jet('Guessing')
+        result = {}
+        for c in obj['content']:
+            cid = c['id']
+            prompt = c['prompt']
+            cxt = {'crowdinContext': self.get_context(c, prompt, c['answer'])}
+            followup = c['followup'] or ''
+            reveal = c['reveal'] or ''
+            clues = []
+            for cl in c['clues']:
+                clue = cl['clue'].replace('’', "'")
+                comment = cl.get('clueComment')
+                if comment:
+                    comment = re.split('[!.?]+', comment[len(clue) - 4:], 1)[-1].strip()
+                    clue = clue + '\n' + comment
+                clues.append(clue)
+            answers = [c['answer'], *c.get('altSpellings', [])]
+            for ans in answers:
+                assert ',' not in ans
+            answers = build_text(answers)
+            result[cid] = {
+                'followup': {'text': followup, **cxt},
+                'prompt': {'text': prompt, **cxt},
+                'clues': [{'text': clue, **cxt} for clue in clues],
+                'reveal': {'text': reveal, **cxt},
+                'answers': {'text': answers, **cxt},
+            }
+        self.write_to_data('guessing.json', result)
+
+    def encode_answer_buckets(self):
+        buckets = self.read_json('answerbuckets.json')['payload']
+        result = []
+        for i, b in enumerate(buckets):
+            keyword = b['keywords'][0] if b['keywords'] else ''
+            sequential = b['sequential'][0] if b['sequential'] else ''
+            cxt = self.get_crowdin_context({}, keyword, sequential)
+            result.append([
+                {'text': ans, **cxt}
+                for ans in b['answers']
+            ])
+        self.write_to_data('answer_buckets.json', result)
