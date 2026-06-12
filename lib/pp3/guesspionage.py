@@ -12,6 +12,8 @@ from settings.guesspionage import *
 
 
 class Guesspionage(Game):
+    name = 'PollPosition'
+    pack = JPP3_PATH
     folder = './data/pp3/pollposition/encoded/'
     folder_swf = './data/pp3/pollposition/swf/'
     build = './build/uk/JPP3/Guesspionage/'
@@ -39,11 +41,11 @@ class Guesspionage(Game):
     def encode_text_subtitles(self, obj: dict):
         return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'}
 
-    def decode_media(self):
-        audio = {}
-        text = self._read_json(self.build + 'text_subtitles.json')
-        self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=PATH_EXPANDED, trans=audio | text,
-                               path_save=self.folder_swf + 'translated_dict.txt')
+    # def decode_media(self):
+    #     audio = {}
+    #     text = self._read_json(self.build + 'text_subtitles.json')
+    #     self._decode_swf_media(path_media=self.folder_swf + 'dict.txt', path_expanded=PATH_EXPANDED, trans=audio | text,
+    #                            path_save=self.folder_swf + 'translated_dict.txt')
 
     @decode_mapping(PATH_LEADERBOARDS, folder + 'leaderboards.json')
     def encode_leaderboards(self, obj):
@@ -81,6 +83,7 @@ class Guesspionage(Game):
 
     @decode_mapping(PATH_BONUS_QUESTIONS, build + 'in-game/bonus_questions.json', PATH_BONUS_QUESTIONS)
     def decode_bonus_questions(self, obj, trans):
+        answers = self.load_custom_polls_answers()
         for c in obj['content']:
             cid = str(c['id'])
             x = list(trans[cid].values())[0]
@@ -90,14 +93,12 @@ class Guesspionage(Game):
             o['QText']['v'] = x['text']
             o['DataMode']['v'] = x['data_mode']
             o['ExpResults']['v'] = x['exp_results']
-
             for f in sorted(o):
                 if f.startswith('Choice'):
                     o[f]['v'] = x['choices'][int(f.replace('Choice', ''))]
-                if f.startswith('Val'):
-                    o[f]['v'] = x['answers'][int(f.replace('Val', ''))]
+                if f.startswith('Val') and cid in answers:
+                    o[f]['v'] = str(answers[cid][int(f.replace('Val', ''))])
                     assert 0 <= int(o[f]['v']) <= 100
-
             write_to_folder(cid, PATH_BONUS_QUESTIONS_DIR, o)
         return obj
 
@@ -124,8 +125,53 @@ class Guesspionage(Game):
         logging.debug('unique fields: %s', unique_fields)
         return result
 
+    def load_custom_polls_answers(self):
+        # pay attention that some polls had enabled multiple choices so total percentage may be more than 100%
+        polls = self.read_from_data('questions_polls.json')
+        result = {}
+        for poll in polls:
+            if not poll['question_id']:
+                continue
+            for opt in poll['options']:
+                assert 0 <= opt['percentage'] <= 100, (
+                    f"Invalid percentage for question {poll['question_id']} "
+                    f"({poll['title']}): {opt['name']} = {opt['percentage']}"
+                )
+            if poll['question_source'] == 'bonus_question':
+                bonus_answers = []
+                for opt in poll['options']:
+                    choice_index = opt.get('choice_index')
+                    if choice_index is None or choice_index == -1:
+                        continue
+                    assert isinstance(choice_index, int)
+                    assert 0 <= choice_index <= 8
+                    bonus_answers.append((choice_index, round(opt['percentage'])))
+                choice_indexes = [choice_index for choice_index, _ in bonus_answers]
+                assert len(choice_indexes) == len(set(choice_indexes))
+                assert sorted(choice_indexes) == list(range(9))
+                result[poll['question_id']] = [answer for _, answer in sorted(bonus_answers)]
+                continue
+            else:
+                answers = [o for o in poll['options'] if o.get('answer')]
+                if not answers:
+                    answers = [poll['options'][0]]
+                if not any([opt.get('ignore') for opt in poll['options']]):
+                    if len(answers) == 1:
+                        answer = answers[0]['percentage']
+                    else:
+                        answer = sum([_['percentage'] for _ in answers])  # not really correct who cares
+                else:
+                    answer_votes = sum([_['votes'] for _ in answers])
+                    total = sum([opt['votes'] for opt in poll['options'] if not opt.get('ignore')])
+                    answer = answer_votes * 100 / total
+                answer = round(answer)
+                assert 0 <= answer <= 100
+                result[poll['question_id']] = answer
+        return result
+
     @decode_mapping(PATH_QUESTIONS, build + 'in-game/questions.json', PATH_QUESTIONS)
     def decode_questions(self, obj, trans):
+        answers = self.load_custom_polls_answers()
         for c in obj['content']:
             cid = str(c['id'])
             x = list(trans[cid].values())[0]
@@ -135,7 +181,20 @@ class Guesspionage(Game):
             o['QText']['v'] = x['text']
             o['DataMode']['v'] = x['data_mode']
             o['ExpResults']['v'] = x['exp_results']
-            o['A']['v'] = x['answer']
+            if cid in answers:
+                to_replace = {
+                    'відсотку людей': 'відсотку українців',
+                    'відсоток людей': 'відсоток українців',
+                    'відсотка людей': 'відсотка українців',
+                    'відсоток жінок': 'відсоток українок',
+                    'відсотків людей': 'відсотків українців',
+                }
+                new = x['text']
+                for _from, _to in to_replace.items():
+                    new = new.replace(_from, _to)
+                x['text'] = new
+                o['A']['v'] = str(answers[cid])
+                o['QText']['v'] = x['text']
             o['Target']['v'] = x['target']
 
             for f in sorted(o):
@@ -169,10 +228,10 @@ class Guesspionage(Game):
         pd.DataFrame(data).to_csv(self.folder + 'audio_questions.tsv', sep='\t', encoding='utf8', index=False)
 
     def decode_localization(self):
-        self.update_localization(PATH_LOCALIZATION, self.build + 'localization.json')
+        self.write_localization(self.read_from_build('Localization.json'))
 
     @staticmethod
-    def copy_translated_audio():
+    def _copy_translated_audio():
         translated = set(os.listdir(PATH_TRANSLATED_AUDIO))
         original = set(os.listdir(PATH_AUDIO))
         for file in tqdm(translated):
