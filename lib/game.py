@@ -53,6 +53,11 @@ class Game:
             name = name + '.jet'
         return self._read_json(os.path.join(self.game_path, 'json', name))
 
+    def write_json(self, name: str, obj) -> dict:
+        if not '.' in name:
+            name = name + '.jet'
+        return self._write_json(os.path.join(self.game_path, 'json', name), obj)
+
     def read_from_data(self, filename: str) -> Any:
         return self._read_json(os.path.join(getattr(self, 'folder'), filename))
 
