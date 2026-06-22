@@ -1,6 +1,8 @@
+import os
 import re
 
-from lib.game import Game
+from lib.game import Game, update_localization
+from lib.pp4.fibbage3 import is_translated
 from paths import JPP8_PATH
 
 
@@ -18,6 +20,11 @@ class TheWheelOfEnormousProportions(Game):
     folder = './data/pp8/wheel/'
     build = './build/uk/JPP8/Wheel/'
 
+    def decode_localization(self):
+        update_localization(os.path.join(self.game_path, 'Localization.json'), os.path.join(self.build, 'Localization.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationManager.json'), os.path.join('./build/uk/JPP8/', 'LocalizationManager.json'))
+        update_localization(os.path.join(self.game_path, 'LocalizationPause.json'), os.path.join('./build/uk/JPP8/', 'LocalizationPause.json'))
+
     def encode_tapping_list(self):
         obj = self.read_jet('TappingList')
         result = {}
@@ -29,6 +36,24 @@ class TheWheelOfEnormousProportions(Game):
             text = build_text(prompt, '+', answers, '-', decoys)
             result[cid] = text
         self.write_to_data('tapping_list.json', result)
+
+    def decode_tapping_list(self):
+        trans = self.read_from_build('tapping_list.json')
+        obj = self.read_jet('TappingList')
+        result = []
+        for c in obj['content']:
+            if not is_translated(trans[c['id']]):
+                continue
+            prompt, pls, *t = trans[c['id']].strip().splitlines()
+            assert pls == '+'
+            c['prompt'] = prompt
+            answers = t[:t.index('-')]
+            decoys = t[t.index('-') + 1:]
+            c['answers'] = [{'text': a} for a in answers]
+            c['decoys'] = [{'text': d} for d in decoys]
+            result.append(c)
+        obj['content'] = result
+        self.write_jet('TappingList', obj)
 
     def encode_number_target(self):
         obj = self.read_jet('NumberTarget')
@@ -45,6 +70,28 @@ class TheWheelOfEnormousProportions(Game):
             result[cid] = text
         self.write_to_data('number_target.json', result)
 
+    def decode_number_target(self):
+        trans = self.read_from_build('number_target.json')
+        obj = self.read_jet('NumberTarget')
+        result = []
+        for c in obj['content']:
+            if not is_translated(trans[c['id']]):
+                continue
+            prompt, answer = trans[c['id']].strip().splitlines()
+            assert float(answer)
+            c['value'] = answer
+            unit = ''
+            if prompt.strip().endswith(')'):
+                prompt, unit = prompt.rsplit('(', 1)
+                unit = '(' + unit
+            prompt = prompt.strip()
+            assert '?' in prompt, f'Prompt {prompt} has no ?'
+            c['unit'] = (unit or '')
+            c['prompt'] = prompt
+            result.append(c)
+        obj['content'] = result
+        self.write_jet('NumberTarget', obj)
+
     def encode_matching(self):
         obj = self.read_jet('Matching')
         result = {}
@@ -58,6 +105,31 @@ class TheWheelOfEnormousProportions(Game):
             text = build_text(prompt, prompt_header, header, answers)
             result[cid] = text
         self.write_to_data('matching.json', result)
+
+    def decode_matching(self):
+        trans = self.read_from_build('matching.json')
+        obj = self.read_jet('Matching')
+        result = []
+        for c in obj['content']:
+            if not is_translated(trans[c['id']]):
+                continue
+            prompt, prompt_header, header, *answers = trans[c['id']].strip().splitlines()
+            c['prompt'] = prompt
+            c['promptHeader'] = prompt_header
+            assert header.count(' - ') == 1
+            header_a, header_b = header.split(' - ')
+            c['headers'][0].update({'text': header_a, 'match': header_b})
+            new_answers = []
+            for ans in answers:
+                if not ans:
+                    continue
+                assert ans.count(' - ') == 1
+                a, b = ans.split(' - ')
+                new_answers.append({'text': a, 'match': b})
+            c['answers'] = new_answers
+            result.append(c)
+        obj['content'] = result
+        self.write_jet('Matching', obj)
 
     def encode_rapid_fire(self):
         obj = self.read_jet('RapidFire')
@@ -78,6 +150,27 @@ class TheWheelOfEnormousProportions(Game):
             result[cid] = {'text': text, **cxt}
         self.write_to_data('rapid_fire.json', result)
 
+    def decode_rapid_fire(self):
+        trans = self.read_from_build('rapid_fire.json')
+        obj = self.read_jet('RapidFire')
+        result = []
+        for c in obj['content']:
+            t = trans[c['id']]['text']
+            if not is_translated(t):
+                continue
+            prompt, *answers = t.strip().splitlines()
+            unit = re.search(r' (\(.*?\))$', prompt)
+            unit = '' if not unit else unit.group()
+            c['unit'] = unit
+            prompt = prompt.replace(unit, '') if unit else prompt
+            c['prompt'] = prompt
+            if c['subtype'] in ('most/least', 'closest') and c['sort'] == 'ascending':
+                answers = answers[::-1]
+            c['answers'] = [{'text': a, 'value': f'{i}'} for i, a in enumerate(answers)]
+            result.append(c)
+        obj['content'] = result
+        self.write_jet('RapidFire', obj)
+
     def encode_typing_list(self):
         obj = self.read_jet('TypingList')
         result = {}
@@ -93,6 +186,29 @@ class TheWheelOfEnormousProportions(Game):
             text = build_text(prompt, answers)
             result[cid] = {'text': text, **cxt}
         self.write_to_data('typing_list.json', result)
+
+    def decode_typing_list(self):
+        trans = self.read_from_build('typing_list.json')
+        obj = self.read_jet('TypingList')
+        result = []
+        for c in obj['content']:
+            t = trans[c['id']]['text']
+            if not is_translated(t):
+                continue
+            prompt, *answers = t.strip().splitlines()
+            c['prompt'] = prompt
+            spellings = [
+                [_.strip() for _ in answer.strip().split(',') if _.strip()]
+                for answer in answers
+                if answer.strip()
+            ]
+            c['answers'] = [
+                {'text': s[0], 'altSpellings': s[1:], "hint": ""}
+                for s in spellings
+            ]
+            result.append(c)
+        obj['content'] = result
+        self.write_jet('TypingList', obj)
 
     def encode_guessing(self):
         obj = self.read_jet('Guessing')
@@ -124,6 +240,34 @@ class TheWheelOfEnormousProportions(Game):
             }
         self.write_to_data('guessing.json', result)
 
+    def decode_guessing(self):
+        trans = self.read_from_build('guessing.json')
+        obj = self.read_jet('Guessing')
+        result = []
+        for c in obj['content']:
+            t = trans[c['id']]
+            if not is_translated(t['prompt']['text']):
+                continue
+            c['prompt'] = t['prompt']['text']
+            c['followup'] = t['followup']['text'] or None
+            c['reveal'] = t['reveal']['text'] or None
+            answers = [_.strip() for _ in t['answers']['text'].strip().split('\n') if _.strip()]
+            c['answer'] = answers[0]
+            c['altSpellings'] = answers[1:]
+            clues = []
+            for clue in t['clues']:
+                clue = clue['text']
+                assert clue.count('\n') <= 1
+                comment = ''
+                if '\n' in clue:
+                    clue, comment = clue.split('\n')
+                    comment = clue + ' ' + comment
+                clues.append({'clue': clue, 'clueComment': comment})
+            c['clues'] = clues
+            result.append(c)
+        obj['content'] = result
+        self.write_jet('Guessing', obj)
+
     def encode_answer_buckets(self):
         buckets = self.read_json('answerbuckets.json')['payload']
         result = []
@@ -136,3 +280,11 @@ class TheWheelOfEnormousProportions(Game):
                 for ans in b['answers']
             ])
         self.write_to_data('answer_buckets.json', result)
+
+    def _decode_answer_buckets(self):
+        trans = self.read_from_build('answer_buckets.json')
+        obj = self.read_json('answerbuckets.json')
+        buckets = obj['payload']
+        for i, b in enumerate(buckets):
+            b['answers'] = [_['text'] for _ in trans[i]]
+        self.write_json('answerbuckets.json', obj)
