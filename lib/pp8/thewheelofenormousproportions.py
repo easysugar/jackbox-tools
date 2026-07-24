@@ -47,6 +47,7 @@ class TheWheelOfEnormousProportions(Game):
             prompt, pls, *t = trans[c['id']].strip().splitlines()
             assert pls == '+'
             c['prompt'] = prompt
+            assert '-' in t, f'Incorrect text: {t}'
             answers = t[:t.index('-')]
             decoys = t[t.index('-') + 1:]
             c['answers'] = [{'text': a} for a in answers]
@@ -281,10 +282,10 @@ class TheWheelOfEnormousProportions(Game):
             ])
         self.write_to_data('answer_buckets.json', result)
 
-    def _decode_answer_buckets(self):
+    def decode_answer_buckets(self):
         trans = self.read_from_build('answer_buckets.json')
         obj = self.read_json('answerbuckets.json')
         buckets = obj['payload']
-        for i, b in enumerate(buckets):
+        for i, b in enumerate(buckets[:len(trans)]):
             b['answers'] = [_['text'] for _ in trans[i]]
         self.write_json('answerbuckets.json', obj)
