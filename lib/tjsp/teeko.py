@@ -12,6 +12,7 @@ class TeeKO(Game):
     pack = TJSP_PATH
     international = False
     folder = './data/tjsp/teeko/swf/'
+    build = './build/uk/TeeKO/'
 
     @encode_mapping(PATH_SLOGANS, 'data/teeko/encoded/slogans.json')
     def encode_slogans(self, obj: dict):
