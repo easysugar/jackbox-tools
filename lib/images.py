@@ -1,8 +1,8 @@
+import math
+from math import sqrt, ceil
 from typing import List
 
 from PIL import Image, ImageDraw, ImageFont
-
-from math import sqrt, ceil
 
 
 def create_image(strokes: List[dict | str], background_color='white', color='#000000', thickness=16, size: int = None, padding: int = 16):
@@ -21,7 +21,7 @@ def create_image(strokes: List[dict | str], background_color='white', color='#00
         else:
             pts = stroke["points"].split("|")
             for p in pts:
-                x, y = map(int, p.split(","))
+                x, y = map(math.ceil, map(float, p.split(",")))
                 max_x = max(max_x, x)
                 max_y = max(max_y, y)
     max_x, max_y = max_x + 2*padding, max_y + 2*padding
