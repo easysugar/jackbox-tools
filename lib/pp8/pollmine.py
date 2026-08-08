@@ -5,7 +5,7 @@ import pandas as pd
 import tqdm
 
 from lib.audio import gather_audio_files
-from lib.game import Game, update_localization, clean_text
+from lib.game import Game, clean_audio_text, clean_text, update_localization
 from paths import JPP8_PATH
 
 
@@ -124,3 +124,26 @@ class PollMine(Game):
         data.sort(key=lambda x: (x.get('context'), x['id']))
         gather_audio_files(self.media_path, [_['ogg'] for _ in data], os.path.join(self.folder, 'pollmine_main_audio.wav'))
         pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
+
+    def export_question_audio(self):
+        original = self.read_from_data('questions.json')
+        translated = self.read_from_build('questions.json')
+
+        assert set(original) == set(translated)
+
+        data = []
+        for cid, source in original.items():
+            content = self.read_content(cid, 'Questions')
+            assert content['HasQuestionAudio']['v'] == 'true', f'Question {cid} has no question audio'
+
+            ogg = content['QuestionAudio']['v'] + '.ogg'
+            assert self.is_exist(cid, 'Questions', ogg), f'Question audio file is missing: {cid}/{ogg}'
+
+            data.append({
+                'id': cid,
+                'original': clean_audio_text(source['question']['text']),
+                'translation': clean_audio_text(translated[cid]['question']['text']),
+            })
+
+        output_path = os.path.join(self.folder, 'audio_questions.tsv')
+        pd.DataFrame(data).to_csv(output_path, sep='\t', encoding='utf8', index=False)
