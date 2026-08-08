@@ -342,6 +342,11 @@ def clean_text(s: str):
     return remove_prefix(remove_suffix(s.strip()).strip()).strip()
 
 
+def clean_audio_text(s: str):
+    text = re.sub(r'\[/?(?:b|i|u)(?:=[^]]+)?]', '', clean_text(s), flags=re.IGNORECASE)
+    return ' '.join(text.split())
+
+
 def normalize_text(s: str):
     return remove_prefix(remove_suffix(s.strip().lower()).strip()).strip()
 
