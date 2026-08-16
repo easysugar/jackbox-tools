@@ -257,7 +257,7 @@ class TheWheelOfEnormousProportions(Game):
             c['altSpellings'] = answers[1:]
             clues = []
             for clue in t['clues']:
-                clue = clue['text']
+                clue = clue['text'].strip()
                 assert clue.count('\n') <= 1
                 comment = ''
                 if '\n' in clue:
