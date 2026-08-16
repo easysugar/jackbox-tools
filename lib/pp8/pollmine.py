@@ -132,12 +132,14 @@ class PollMine(Game):
         assert set(original) == set(translated)
 
         data = []
+        audio_files = []
         for cid, source in original.items():
             content = self.read_content(cid, 'Questions')
             assert content['HasQuestionAudio']['v'] == 'true', f'Question {cid} has no question audio'
 
             ogg = content['QuestionAudio']['v'] + '.ogg'
             assert self.is_exist(cid, 'Questions', ogg), f'Question audio file is missing: {cid}/{ogg}'
+            audio_files.append(os.path.join(str(cid), ogg))
 
             data.append({
                 'id': cid,
@@ -145,5 +147,10 @@ class PollMine(Game):
                 'translation': clean_audio_text(translated[cid]['question']['text']),
             })
 
+        gather_audio_files(
+            self._get_path_kind('Questions'),
+            audio_files,
+            os.path.join(self.folder, 'pollmine_questions_audio.wav'),
+        )
         output_path = os.path.join(self.folder, 'audio_questions.tsv')
         pd.DataFrame(data).to_csv(output_path, sep='\t', encoding='utf8', index=False)
