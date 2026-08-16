@@ -14,6 +14,7 @@ class ChampdUp(Game):
 
     @staticmethod
     def split_title(text: str) -> Tuple[str, str]:
+        assert re.search(r'Чемпіон з (.+)', text), f'Incorrect text: {text}'
         title = re.search(r'Чемпіон з (.+)', text).groups()[0]
         text = f'чемпіона з {title}'
         return text, title
