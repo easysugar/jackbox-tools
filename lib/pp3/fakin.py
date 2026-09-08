@@ -11,6 +11,8 @@ from settings.fakin import *
 
 
 class Fakin(Game):
+    name = 'FakinIt'
+    pack = JPP3_PATH
     folder = './data/pp3/fakin/encoded/'
     folder_swf = './data/pp3/fakin/swf/'
     build = './build/uk/JPP3/FakinIt/'
@@ -229,7 +231,7 @@ class Fakin(Game):
                 copy_file(os.path.join(PATH_AUDIO_MAIN, file), os.path.join(PATH_MEDIA, file))
 
     @staticmethod
-    def copy_audio_tasks():
+    def _copy_audio_tasks():
         dirs = os.listdir(PATH_TASKS_DIR)
         for cid in tqdm.tqdm(dirs):
             obj = read_from_folder(cid, PATH_TASKS_DIR)
@@ -237,7 +239,7 @@ class Fakin(Game):
             copy_file(os.path.join(PATH_AUDIO_TASKS, f"{cid}.ogg"), os.path.join(PATH_TASKS_DIR, cid, ogg))
 
     @staticmethod
-    def copy_audio_input():
+    def _copy_audio_input():
         dir_path = PATH_INPUT_DIR
         dirs = os.listdir(dir_path)
         for cid in tqdm.tqdm(dirs):
