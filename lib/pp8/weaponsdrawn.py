@@ -2,7 +2,10 @@ import logging
 import os
 import re
 
-from lib.game import Game, clean_text, update_localization
+import pandas as pd
+
+from lib.audio import gather_audio_files
+from lib.game import Game, clean_audio_text, clean_text, update_localization
 from lib.utils import count_strings_and_words
 from paths import JPP8_PATH
 
@@ -87,3 +90,41 @@ class WeaponsDrawn(Game):
         text = {k: v['text'] for k, v in text.items()}
         self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'MurderDetectives.json',
                                trans=text, path_save=self.folder + 'translated_dict.txt')
+
+    def export_lord_tippet_audio(self):
+        original = self.read_from_data('audio.json')
+        translated = self.read_from_build('audio.json')
+
+        assert set(original) == set(translated), 'Source and translated audio IDs do not match'
+
+        data = []
+        for cid, translation in translated.items():
+            context = translation.get('crowdinContext', '').strip()
+            if 'LORD TIPPET' not in context:
+                continue
+
+            ogg = f'{cid}.ogg'
+            assert os.path.isfile(os.path.join(self.media_path, ogg)), f'Audio file is missing: {ogg}'
+            data.append({
+                'id': cid,
+                'ogg': ogg,
+                'text': clean_audio_text(translation['text']),
+                'original': clean_audio_text(original[cid]['text']),
+                'context': context.replace('LORD TIPPET', '').strip(),
+            })
+
+        data.sort(key=lambda row: (row['context'], row['id']))
+        gather_audio_files(
+            self.media_path,
+            [row['ogg'] for row in data],
+            os.path.join(self.folder, 'audio_lord_tippet.wav'),
+            gap_duration_ms=1000,
+        )
+        output_path = os.path.join(self.folder, 'audio_lord_tippet.tsv')
+        pd.DataFrame(data, columns=['id', 'ogg', 'text', 'original', 'context']).to_csv(
+            output_path,
+            sep='\t',
+            encoding='utf8',
+            index=False,
+        )
+        return output_path
