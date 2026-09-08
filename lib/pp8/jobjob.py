@@ -4,6 +4,7 @@ import random
 import pandas as pd
 
 from lib.audio import gather_audio_files
+from lib.common import read
 from lib.game import Game, clean_text, update_localization
 from paths import JPP8_PATH
 
@@ -97,7 +98,7 @@ class JobJob(Game):
     def decode_filler_phrase(self):
         trans = self.read_from_build('filler_phrase.json')
         obj = self.read_jet('FillerPhrase')
-        words = list(set(self._read(os.path.join(self.folder, 'post_words.txt')).strip().splitlines()))
+        words = list(set(read(os.path.join(self.folder, 'post_words.txt')).strip().splitlines()))
         left = words.copy()
         for c in obj['content']:
             c['phrase'] = trans[c['id']]
