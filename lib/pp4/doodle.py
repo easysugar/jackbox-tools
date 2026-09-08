@@ -1,3 +1,4 @@
+import json
 import os
 
 import pandas as pd
@@ -5,6 +6,7 @@ import tqdm
 
 from lib.drive import Drive
 from lib.game import Game, decode_mapping, read_from_folder, write_to_folder, clean_text, update_localization
+from lib.images import create_image, make_collage
 from paths import JPP4_PATH
 
 PATH = JPP4_PATH + r'\games\Overdrawn'
@@ -14,6 +16,9 @@ PATH_MEDIA = PATH + r'\TalkshowExport\project\media'
 
 
 class Doodle(Game):
+    pack = JPP4_PATH
+    name = 'Overdrawn'
+    name_short = 'CivicDoodle'
     folder = './data/pp4/doodle/encoded/'
     folder_swf = './data/pp4/doodle/swf/'
     build = './build/uk/JPP4/CD/'
@@ -84,3 +89,14 @@ class Doodle(Game):
         for i in data:
             i['link'] = d.get_link(i['ogg'])
         pd.DataFrame(data).to_csv(self.folder + 'audio.tsv', sep='\t', encoding='utf8', index=False)
+
+    def show_drawings(self):
+        obj = self.read_jet('StartingArt')
+        imgs = []
+        for c in obj['content']:
+            o = self.read_content(c['id'], 'StartingArt')
+            img = create_image(json.loads(o['Lines']['v']))
+            imgs.append(img)
+        result = make_collage(imgs, 10)
+        result.show()
+        result.save('civic_doodle_drawings.png')
