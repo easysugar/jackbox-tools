@@ -42,7 +42,7 @@ class Game:
         write_to_folder(cid, self._get_path_kind(kind), content)
 
     def read_jet(self, kind: str) -> dict:
-        return self._read_json(self._get_path_kind(kind) + '.jet')
+        return read(self._get_path_kind(kind) + '.jet')
 
     def write_jet(self, kind: str, obj: dict) -> dict:
         obj = self.normalize(obj)
@@ -51,7 +51,7 @@ class Game:
     def read_json(self, name: str) -> dict:
         if not '.' in name:
             name = name + '.jet'
-        return self._read_json(os.path.join(self.game_path, 'json', name))
+        return read(os.path.join(self.game_path, 'json', name))
 
     def write_json(self, name: str, obj) -> dict:
         if not '.' in name:
@@ -59,16 +59,16 @@ class Game:
         return self._write_json(os.path.join(self.game_path, 'json', name), obj)
 
     def read_from_data(self, filename: str) -> Any:
-        return self._read_json(os.path.join(getattr(self, 'folder'), filename))
+        return read(os.path.join(getattr(self, 'folder'), filename))
 
     def write_to_data(self, filename: str, obj: Any):
         self._write_json(os.path.join(getattr(self, 'folder'), filename), obj)
 
     def read_from_build(self, filename: str) -> dict:
-        return self._read_json(os.path.join(getattr(self, 'build'), filename))
+        return read(os.path.join(getattr(self, 'build'), filename))
 
     def read_from_game(self, filename: str) -> dict:
-        return self._read_json(os.path.join(self.game_path, filename))
+        return read(os.path.join(self.game_path, filename))
 
     def write_to_game(self, filename: str, obj: dict):
         self._write_json(os.path.join(self.game_path, filename), obj)
@@ -140,13 +140,13 @@ class Game:
         return write_json(dst, obj)
 
     def read_localization(self) -> dict:
-        return self._read_json(os.path.join(self.game_path, 'Localization.json'))['table']['en']
+        return read(os.path.join(self.game_path, 'Localization.json'))['table']['en']
 
     def write_localization(self, obj: dict):
         obj = obj.get('table', obj)
         if len(obj) <= 6 and 'en' in obj:  # sometimes 'en' is a key for languages, sometimes it's not
             obj = obj['en']
-        source = self._read_json(os.path.join(self.game_path, 'Localization.json'))
+        source = read(os.path.join(self.game_path, 'Localization.json'))
         l10n = source['table']['en']
         assert set(l10n) <= set(obj), f'Source has untranslated fields: {", ".join(set(l10n) - set(obj))}'
         l10n.update(obj)
@@ -193,7 +193,7 @@ class Game:
         return self._update_media_dict_template(source, translation, editable, r'^[\$#]\[(\d+)].*$')
 
     def _encode_localization(self, source: str, destination: str):
-        obj = self._read_json(source)
+        obj = read(source, 'json')
         try:
             obj = obj['table']['en']
         except KeyError:
@@ -231,7 +231,7 @@ class Game:
         return source
 
     def _decode_swf_media(self, path_media: str, path_expanded: str, trans: dict, path_save: str, ignore_tags=False):
-        media = self._read(path_media)
+        media = read(path_media)
         cnt_sep = media.count('^')
         expanded = self._read_json(path_expanded)
         if isinstance(expanded, dict) and expanded.get('media'):
