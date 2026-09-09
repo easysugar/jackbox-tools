@@ -9,47 +9,57 @@ from settings.old_teeko import *
 
 
 class OldTeeKO(Game):
-    folder = PATH_ENCODED
+    name = 'AwShirt'
+    name_short = 'AwShirt'
+    pack = JPP3_PATH
+    folder = './data/pp3/teeko/'
+    build = './build/uk/JPP3/TeeKO/'
 
-    @decode_mapping(PATH_MENU, folder + 'menu.json')
-    def encode_menu(self, obj):
-        return {i: {'title': x['title'], 'description': x['description']} for i, x in enumerate(obj)}
+    def encode_menu(self):
+        obj = self.read_from_game('menu.jet')
+        res = {i: {'title': x['title'], 'description': x['description']} for i, x in enumerate(obj)}
+        self.write_to_data('menu.json', res)
 
-    @decode_mapping(PATH_LEADERBOARDS, folder + 'leaderboards.json')
-    def encode_leaderboards(self, obj):
-        return {
+    def encode_leaderboards(self):
+        obj = self.read_from_game('leaderboards.jet')
+        res = {
             'columns': {i['id']: i['name'] for i in obj['columns']},
             'views': {i['id']: {'name': i['name'], 'description': i['description']} for i in obj['views']},
         }
+        self.write_to_data('leaderboards.json', res)
 
-    @decode_mapping(PATH_SETTINGS, folder + 'settings.json')
-    def encode_settings(self, obj):
-        return {
+    def encode_settings(self):
+        obj = self.read_from_game('settings.jet')
+        res = {
             i['source']: {'title': i['title'], 'description': i['description']} for i in obj['items']
         }
+        self.write_to_data('settings.json', res)
 
-    @decode_mapping(PATH_MENU, PATH_BUILD + 'menu.json', PATH_MENU)
-    def decode_menu(self, obj, trans):
+    def decode_menu(self):
+        obj = self.read_from_game('menu.jet')
+        trans = self.read_from_build('menu.json')
         for i, c in enumerate(obj):
             c['title'] = trans[str(i)]['title']
             c['description'] = trans[str(i)]['description']
-        return obj
+        self.write_to_game('menu.jet', obj)
 
-    @decode_mapping(PATH_LEADERBOARDS, PATH_BUILD + 'leaderboards.json', PATH_LEADERBOARDS)
-    def decode_leaderboards(self, obj, trans):
+    def decode_leaderboards(self):
+        obj = self.read_from_game('leaderboards.jet')
+        trans = self.read_from_build('leaderboards.json')
         for i in obj['columns']:
             i['name'] = trans['columns'][i['id']]
         for i in obj['views']:
             i['name'] = trans['views'][i['id']]['name']
             i['description'] = trans['views'][i['id']]['description']
-        return obj
+        self.write_to_game('leaderboards.jet', obj)
 
-    @decode_mapping(PATH_SETTINGS, PATH_BUILD + 'settings.json', PATH_SETTINGS)
-    def decode_settings(self, obj, trans):
+    def decode_settings(self):
+        obj = self.read_from_game('settings.jet')
+        trans = self.read_from_build('settings.json')
         for i in obj['items']:
             i['title'] = trans[i['source']]['title']
             i['description'] = trans[i['source']]['description']
-        return obj
+        self.write_to_game('settings.jet', obj)
 
     def decode_from_tjsp_teeko(self):
         self.copy_suggestions()
@@ -78,30 +88,26 @@ class OldTeeKO(Game):
     def copy_slogan_suggestions(self, old, new):
         return self._copy_template(old, new)
 
-    @decode_mapping(PATH_EXPANDED, folder + 'text_subtitles.json')
-    def encode_text_subtitles(self, obj: dict):
-        return {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'}
+    def encode_text_subtitles(self):
+        obj = self._read_json('expanded.json')
+        res = {v['id']: v['text'] for c in obj for v in c['versions'] if c['type'] == 'T'}
+        self.write_to_data('text_subtitles.json', res)
 
-    @decode_mapping(folder + 'text_subtitles.json', teeko.PATH_DATA + 'encoded/text_subtitles.json',
-                    teeko.PATH_DATA + 'translated/text_subtitles.json', PATH_DATA + 'translated/text_subtitles.json')
-    def copy_text_subtitles(self, obj, tjsp, trans):
+    def copy_text_subtitles(self):
+        obj = self.read_from_data('encoded/text_subtitles.json')
+        tjsp = self._read_json(teeko.PATH_DATA + 'encoded/text_subtitles.json')
+        trans = self._read_json(teeko.PATH_DATA + 'translated/text_subtitles.json')
         tjsp_r = {v: k for k, v in tjsp.items()}
         id_map = {_id: tjsp_r[text] for _id, text in obj.items()}
         for i in obj:
             obj[i] = trans[id_map[i]]
         assert set(obj) == set(id_map)
-        return obj
+        self.write_to_data('text_subtitles.json', obj)
 
-    # @decode_mapping(PATH_DATA + 'translated/text_subtitles.json', PATH_TRANSLATED_DICT, out_json=False)
-    # def decode_media_dict(self, translations):
-    #     source = self._read(PATH_SOURCE_DICT)
-    #     editable = self._read(PATH_EDITABLE_DICT)
-    #     return self._update_old_media_dict(source, translations, editable)
-
-    @decode_mapping(PATH_DATA + 'translated/text_subtitles.json', out=False)
-    def decode_media(self, text: dict):
-        self._decode_swf_media(path_media=PATH_SOURCE_DICT, path_expanded=PATH_EXPANDED,
-                               trans=text, path_save=PATH_TRANSLATED_DICT)
+    def decode_media(self):
+        text = self.read_from_data('text_subtitles.json')
+        self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'expanded.json',
+                               trans=text, path_save=self.folder + 'translated_dict.txt')
 
     @decode_mapping(PATH_EXPANDED, './data/tjsp/teeko/encoded/audio_subtitles.json', folder + 'audio_mapping.json')
     def get_games_audio_mapping(self, obj, ext):
