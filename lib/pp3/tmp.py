@@ -1,9 +1,12 @@
+import os
 import re
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import tqdm
 
+from lib.audio import gather_audio_files
 from lib.drive import Drive
 from lib.game import Game, encode_mapping, decode_mapping, read_from_folder, write_to_folder
 from paths import JPP3_PATH
@@ -24,6 +27,7 @@ class TMP(Game):
     folder = './data/pp3/tmp/encoded/'
     folder_swf = './data/pp3/tmp/swf/'
     build = './build/uk/JPP3/TMP/'
+    drive_audio = '1aDBBpBb_AiFD3gesOmDtshOtEJELuttv'
     drive_questions = '13pgPPykkpp8XhDzNolev9y0Gxuzg_o6O'
 
     @encode_mapping(PATH_QUESTION, folder + 'questions.json')
@@ -213,3 +217,71 @@ class TMP(Game):
             })
         data.sort(key=lambda x: x['id'])
         pd.DataFrame(data).to_csv(self.folder + 'audio_questions.tsv', sep='\t', encoding='utf8', index=False)
+
+    def export_audio_old_man(self):
+        original = self.read_from_data('audio.json')
+        translated = self.read_from_build('audio.json')
+        ids = self.read_from_data('oldman_audio_ids.txt').splitlines()
+        data = []
+        for cid, source in tqdm.tqdm(original.items()):
+            if cid not in ids:
+                continue
+            translation = translated[cid]
+            context = source.get('crowdinContext', '').strip()
+            ogg = f'{cid}.ogg'
+            data.append({
+                'id': cid,
+                'ogg': ogg,
+                'original': source['text'],
+                'translation': translation['text'],
+                'context': context,
+            })
+        data.sort(key=lambda x: x['id'])
+        gather_audio_files(self.media_path, [_['ogg'] for _ in data], os.path.join(self.folder, 'old_man_tmp.wav'))
+        pd.DataFrame(data).to_csv(self.folder + 'audio_old_man.tsv', sep='\t', encoding='utf8', index=False)
+
+    def export_audio_lines(self):
+        d = Drive(self.drive_audio)
+        original = self.read_from_data('audio.json')
+        translated = self.read_from_build('audio.json')
+
+        data = []
+        for cid, source in tqdm.tqdm(original.items()):
+            translation = translated[cid]
+            context = source.get('crowdinContext', '').strip()
+            ogg = f'{cid}.ogg'
+            data.append({
+                'id': cid,
+                'ogg': ogg,
+                'original': source['text'],
+                'translation': translation['text'],
+                'context': context,
+            })
+
+        rows_to_upload = [row for row in data if row['ogg'] not in d.uploaded]
+
+        def upload(row):
+            link = d.copy_to_drive(
+                self.drive_audio,
+                os.path.join(self.media_path, row['ogg']),
+                row['ogg'],
+            )
+            return row['id'], row['ogg'], link
+
+        with ThreadPoolExecutor(max_workers=16) as executor:
+            uploads = [executor.submit(upload, row) for row in rows_to_upload]
+            for future in tqdm.tqdm(as_completed(uploads), total=len(uploads)):
+                cid, ogg, link = future.result()
+                d.uploaded.add(ogg)
+                d.links[cid] = link
+
+        for row in data:
+            row['link'] = d.get_link(row['ogg'])
+
+        data.sort(key=lambda row: (row['context'], row['id']))
+        pd.DataFrame(data, columns=['id', 'ogg', 'original', 'translation', 'context', 'link']).to_csv(
+            self.folder + 'audio.tsv',
+            sep='\t',
+            encoding='utf8',
+            index=False,
+        )
