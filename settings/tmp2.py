@@ -32,7 +32,7 @@ PATH_QUIPLASH_DIR = PATH_EN + r'\QuiplashContent'
 PATH_FINAL_ROUND_DIR = PATH_EN + r'\TDFinalRound'
 
 # encoded
-PATH_DATA = '../data/tjsp/tmp2/'
+PATH_DATA = './data/tjsp/tmp2/'
 PATH_ENCODED_QUIPLASH = PATH_DATA + r'encoded/EncodedTMP2QuiplashContent.json'
 PATH_ENCODED_DICTATION = PATH_DATA + r'encoded/EncodedTMP2Dictation.json'
 PATH_ENCODED_SEQUEL = PATH_DATA + r'encoded/EncodedTDSequel.json'
@@ -46,8 +46,8 @@ PATH_EXPANDED = PATH_DATA + r'swf/expanded.json'
 PATH_RELEASE = TJSP_RELEASE_PATH
 
 # build
-PATH_BUILD = '../build/uk/TMP2/'
-PATH_BUILD_GAME = '../build/uk/TMP2/in-game/'
+PATH_BUILD = './build/uk/TMP2/'
+PATH_BUILD_GAME = './build/uk/TMP2/in-game/'
 PATH_BUILD_QUIPLASH = PATH_BUILD_GAME + r'EncodedTMP2QuiplashContent.json'
 PATH_BUILD_DICTATION = PATH_BUILD_GAME + r'EncodedTMP2Dictation.json'
 PATH_BUILD_SEQUEL = PATH_BUILD_GAME + r'EncodedTDSequel.json'

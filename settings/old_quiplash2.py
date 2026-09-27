@@ -22,7 +22,7 @@ PATH_COMIC_LASH = PATH + r'\content\ComicLash.jet'
 PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # encoded
-PATH_DATA = '../data/pp3/quiplash2/'
+PATH_DATA = './data/pp3/quiplash2/'
 PATH_ENCODED = PATH_DATA + 'encoded/'
 # PATH_EXPANDED = PATH_DATA + 'swf/expanded.json'
 # PATH_SOURCE_DICT = PATH_DATA + 'swf/dict.txt'
@@ -30,7 +30,7 @@ PATH_ENCODED = PATH_DATA + 'encoded/'
 # PATH_TRANSLATED_DICT = PATH_DATA + r'swf/translated_dict.txt'
 
 # build
-PATH_BUILD = '../build/uk/JPP3/Quiplash2/'
+PATH_BUILD = './build/uk/JPP3/Quiplash2/'
 PATH_BUILD_EXTRA_QUESTIONS = PATH_BUILD + 'extra_questions.json'
 # PATH_BUILD_GAME = PATH_BUILD + 'in-game/'
 # PATH_BUILD_SLOGANS = PATH_BUILD_GAME + 'slogans.json'

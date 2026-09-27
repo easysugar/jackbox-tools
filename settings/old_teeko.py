@@ -13,7 +13,7 @@ PATH_SETTINGS = PATH + r'\settings.jet'
 PATH_AUDIO = PATH + r'\TalkshowExport\project\media'
 
 # encoded
-PATH_DATA = '../data/pp3/teeko/'
+PATH_DATA = './data/pp3/teeko/'
 PATH_ENCODED = PATH_DATA + 'encoded/'
 PATH_EXPANDED = PATH_DATA + 'swf/expanded.json'
 PATH_SOURCE_DICT = PATH_DATA + 'swf/dict.txt'
@@ -21,4 +21,4 @@ PATH_EDITABLE_DICT = PATH_DATA + 'swf/editable.txt'
 PATH_TRANSLATED_DICT = PATH_DATA + r'swf/translated_dict.txt'
 
 # build
-PATH_BUILD = '../build/uk/JPP3/TeeKO/'
+PATH_BUILD = './build/uk/JPP3/TeeKO/'
