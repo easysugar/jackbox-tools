@@ -12,7 +12,7 @@ from ..pack import GamePack
 class JPP3(GamePack):
     path_game = JPP3_PATH
     path_release = JPP3_RELEASE_PATH
-    install_date = datetime(2024, 10, 15, 23)
+    install_date = datetime(2026, 1, 1, 1)
     release_name = 'JPP3-UA.zip'
     games = [Fakin, OldQuiplash2, OldTeeKO, TMP, Guesspionage]
     localizations = {
