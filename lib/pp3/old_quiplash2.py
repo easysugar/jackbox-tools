@@ -10,6 +10,8 @@ from settings.old_quiplash2 import *
 
 
 class OldQuiplash2(Game):
+    name = 'Quiplash2'
+    pack = JPP3_PATH
     folder = PATH_ENCODED
     folder_swf = PATH_DATA + 'swf/'
 
