@@ -1,7 +1,7 @@
 import os
 import re
 
-from lib.game import Game, update_localization
+from lib.game import Game, update_localization, clean_text
 from lib.pp4.fibbage3 import is_translated
 from paths import JPP8_PATH
 
@@ -289,3 +289,19 @@ class TheWheelOfEnormousProportions(Game):
         for i, b in enumerate(buckets[:len(trans)]):
             b['answers'] = [_['text'] for _ in trans[i]]
         self.write_json('answerbuckets.json', obj)
+
+    def encode_audio_subtitles(self):
+        obj = self.read_from_data('TheWheel.json')
+        audio = {
+            v['id']: {'text': clean_text(v['text']), 'crowdinContext': c.get('crowdinContext', '')}
+            for c in obj['media']
+            for v in c['versions']
+            if c['type'] == 'A'
+        }
+        self.write_to_data('audio.json', audio)
+
+    def decode_media(self):
+        text = self.read_from_build('audio.json')
+        text = {k: v['text'] for k, v in text.items()}
+        self._decode_swf_media(path_media=self.folder + 'dict.txt', path_expanded=self.folder + 'TheWheel.json',
+                               trans=text, path_save=self.folder + 'translated_dict.txt')
