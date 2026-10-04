@@ -105,7 +105,7 @@ class Game:
     def get_context(content: dict, *extra: str) -> str:
         head = '\n'.join(filter(bool, extra))
         traits = []
-        if content.get('us'):
+        if content.get('us') or content.get('countrySpecific'):
             traits.append('for USA')
         if content.get('x'):
             traits.append('18+')
